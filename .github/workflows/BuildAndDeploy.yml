@@ -21,14 +21,6 @@ jobs:
     outputs:
       datetime: ${{ steps.set_datetime.outputs.datetime }}
     steps:
-      - name: Restore cached docker image
-        id: cache-restore
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            path/to/dependencies
-            some/other/dependencies
-          key: docker-${{ runner.os }}-${{ hashFiles('**/Dockerfile') }}
       - name: Set current datetime output variable
         id: set_datetime
         run: echo "datetime=$(date +"1.%y%m%d.%H%M%S")" >> "$GITHUB_OUTPUT"
@@ -37,6 +29,13 @@ jobs:
       - name: Checkout
         id: checkout
         uses: actions/checkout@v3
+      - name: Restore cached docker image
+        id: cache-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            cached-docker-image
+          key: docker-${{ runner.os }}-${{ hashFiles('Dockerfile') }}
       - name: Make using docker
         run: |
           [ -f ./cached-docker-image ] && docker load -i ./cached-docker-image
@@ -58,8 +57,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: |
-            path/to/dependencies
-            some/other/dependencies
+            cached-docker-image
           key: ${{ steps.cache-restore.outputs.cache-primary-key }}
 
 
