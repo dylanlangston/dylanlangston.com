@@ -35,7 +35,7 @@ jobs:
         with:
           path: |
             ./cached-docker-image
-          key: docker-${{ runner.os }}-${{ hashFiles('Dockerfile') }}
+          key: docker-${{ runner.os }}-${{ hashFiles('Dockerfile') }}-${{ hashFiles('**/BuildAndDeploy.yml') }}
       - name: Make using docker
         run: |
           [ -f ./cached-docker-image ] && docker load -i ./cached-docker-image
