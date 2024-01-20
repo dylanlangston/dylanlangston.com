@@ -91,18 +91,17 @@ jobs:
     - name: Create ZIP
       run: |
         cd ${{ steps.download.outputs.download-path }}/../
-        ls
-        zip -r ./asteroids-v${{ needs.build.outputs.datetime}}.zip ./asteroids/
+        zip -r ./dylanlangstoncom-v${{ needs.build.outputs.datetime}}.zip ./dylanlangston.com/
     - name: Create Release
       id: create_release
       uses: ncipollo/release-action@v1
       with:
-        artifacts: "${{ steps.download.outputs.download-path }}/../asteroids-v${{ needs.build.outputs.datetime}}.zip"
+        artifacts: "${{ steps.download.outputs.download-path }}/../dylanlangstoncom-v${{ needs.build.outputs.datetime}}.zip"
         artifactContentType: application/zip
         body: |
-          **Asteroids Game - _Release v${{ needs.build.outputs.datetime }}_**
+          **DylanLangston.com - _Prerelease v${{ needs.build.outputs.datetime }}_**
           ${{ github.event.head_commit.message }}
-        prerelease: false
+        prerelease: true
         draft: false
         commit: ${{ github.head_ref }}
         tag: v${{ needs.build.outputs.datetime }}
