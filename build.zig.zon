@@ -1,0 +1,22 @@
+.{
+    .name = "dylanlangston.com",
+    .version = "1.240119.225946",
+    .minimum_zig_version = "0.11.0",
+    .dependencies = .{
+        .raylib = .{
+            .path = "raylib",
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "zig-src",
+        "site",
+        "emsdk",
+        "LICENSE",
+        "README.md",
+        "compose-dev.yaml",
+        "Dockerfile",
+        "Makefile",
+    },
+}

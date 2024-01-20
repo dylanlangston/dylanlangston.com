@@ -1,0 +1,56 @@
+{
+    "configurations": [
+        
+        {
+            "type": "lldb",
+            "request": "custom",
+            "name": "Debug Desktop",
+            "targetCreateCommands": [
+                "target create ${workspaceFolder}/zig-out/bin/dylanlangston.com"
+            ],
+            "processCreateCommands": [
+                "process launch"
+            ],
+            "preLaunchTask": "Build Desktop Debug",
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+        // {
+        //     "name": "Debug Web",
+        //     "request": "launch",
+        //     "runtimeArgs": [
+        //         "run",
+        //         "dev",
+        //         "--",
+        //         "--open"
+        //     ],
+        //     "runtimeExecutable": "npm",
+        //     "skipFiles": [
+        //         "<node_internals>/**"
+        //     ],
+        //     "type": "node",
+        //     "localRoot": "${workspaceFolder}/site",
+        //     "preLaunchTask": "Build Web Debug",
+        // },
+        {
+            "type": "bun",
+            "request": "launch",
+            "name": "Debug Web",
+                  
+            "cwd": "${workspaceFolder}/site/",
+            "env": {},
+            "strictEnv": false,
+            "watchMode": false,
+            "stopOnEntry": false,
+            "noDebug": false,
+            "runtime": "bun",
+    
+            "runtimeArgs": [
+                "-b", 
+                "run", 
+                "--cwd", 
+                "./site build",
+            ],
+            "preLaunchTask": "Build Web Debug",
+          },
+    ]
+}

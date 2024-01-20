@@ -1,0 +1,31 @@
+{
+	"name": "dylanlangston.com",
+	"build": { 
+		"dockerfile": "Dockerfile",
+		"target": "base"
+	},
+	"containerUser": "root",
+	"postCreateCommand": "zvm i -D=zls master",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"svelte.svelte-vscode",
+				"ziglang.vscode-zig",
+				"vadimcn.vscode-lldb",
+				"ms-vscode.makefile-tools",
+				"oven.bun-vscode",
+				"ms-azuretools.vscode-docker",
+				"ms-vscode-remote.remote-containers",
+				"gitpod.gitpod-desktop",
+				"github.vscode-github-actions",
+				"GitHub.codespaces",
+				"bierner.markdown-preview-github-styles"
+			],
+			"settings": {
+				"zig.path": "",
+				"zig.zls.path": "",
+				"zig.initialSetupDone": true
+			}
+		}
+	}
+}

@@ -1,0 +1,10 @@
+version: "3.8"
+services:
+  develop:
+    build:
+      dockerfile: Dockerfile
+      target: develop
+    ports:
+      - "5173:5173"
+    volumes:
+       - ./:/root/dylanlangston.com

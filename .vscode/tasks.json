@@ -1,0 +1,95 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build Desktop Debug",
+            "type": "shell",
+            "command": "make build-desktop OPTIMIZE='Debug'",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Build Desktop Fast",
+            "type": "shell",
+            "command": "make build-desktop OPTIMIZE='ReleaseFast'",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        },
+        {
+            "label": "Build Desktop Safe",
+            "type": "shell",
+            "command": "make build-desktop OPTIMIZE='ReleaseSafe'",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        },
+        {
+            "label": "Build Desktop Small",
+            "type": "shell",
+            "command": "make build-desktop OPTIMIZE='ReleaseSmall'",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        },
+                {
+            "label": "Build Web Debug",
+            "type": "shell",
+            "command": "make build-web OPTIMIZE='Debug'",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Build Web Fast",
+            "type": "shell",
+            "command": "make build-web OPTIMIZE='ReleaseFast'",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        },
+        {
+            "label": "Build Web Safe",
+            "type": "shell",
+            "command": "make build-web OPTIMIZE='ReleaseSafe'",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        },
+        {
+            "label": "Build Web Small",
+            "type": "shell",
+            "command": "make build-web OPTIMIZE='ReleaseSmall'",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        },
+        {
+            "label": "Clean",
+            "type": "shell",
+            "command": "make clean",
+            "problemMatcher": [],
+            "group": {
+                "kind": "none",
+                "isDefault": true
+            }
+        },
+    ]
+}

@@ -1,0 +1,1 @@
+<h1 class="text-center text-2xl lg:text-6xl font-bold">Hello World</h1>

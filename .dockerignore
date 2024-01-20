@@ -1,0 +1,11 @@
+emsdk/.dockerignore
+site/node_modules
+site/.svelte-kit
+site/.eslist*
+site/.prettier*
+site/build
+README.md
+Dockerfile*
+compose-dev.yaml
+zig-cache
+zig-out

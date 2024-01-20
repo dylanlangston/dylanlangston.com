@@ -1,0 +1,7 @@
+version: "3.7"
+services:
+  develop:
+    build:
+      target: develop
+volumes:
+  - ./:/root/dylanlangston.com
