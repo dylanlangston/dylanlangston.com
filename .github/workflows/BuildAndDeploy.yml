@@ -22,7 +22,8 @@ jobs:
       datetime: ${{ steps.set_datetime.outputs.datetime }}
     steps:
       - name: Cache Docker images
-        uses: ScribeMD/docker-cache@0.3.7
+        uses: satackey/action-docker-layer-caching@v0.0.11
+        continue-on-error: true
         with:
           key: docker-${{ runner.os }}-${{ hashFiles('**/Dockerfile') }}
       - name: Set current datetime output variable
@@ -35,6 +36,12 @@ jobs:
         uses: actions/checkout@v3
       - name: Make using docker
         run: make release-docker VERSION=${{ steps.set_datetime.outputs.datetime }} OPTIMIZE='ReleaseFast'
+      - name: Upload artifact
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-artifact
+          path: '${{ github.workspace }}/src/asteroids-website/build'
       - name: Upload github pages artifact
         id: upload-compressed
         uses: actions/upload-pages-artifact@v2
