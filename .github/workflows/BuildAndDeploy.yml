@@ -34,7 +34,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: |
-            cached-docker-image
+            ./cached-docker-image
           key: docker-${{ runner.os }}-${{ hashFiles('Dockerfile') }}
       - name: Make using docker
         run: |
@@ -57,7 +57,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: |
-            cached-docker-image
+            ./cached-docker-image
           key: ${{ steps.cache-restore.outputs.cache-primary-key }}
 
 
@@ -91,6 +91,7 @@ jobs:
     - name: Create ZIP
       run: |
         cd ${{ steps.download.outputs.download-path }}/../
+        ls
         zip -r ./asteroids-v${{ needs.build.outputs.datetime}}.zip ./asteroids/
     - name: Create Release
       id: create_release
