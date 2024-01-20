@@ -47,7 +47,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: release-artifact
-          path: '${{ github.workspace }}/src/asteroids-website/build'
+          path: '${{ github.workspace }}/site/build'
       - name: Upload github pages artifact
         id: upload-compressed
         uses: actions/upload-pages-artifact@v2
