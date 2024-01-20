@@ -21,10 +21,13 @@ jobs:
     outputs:
       datetime: ${{ steps.set_datetime.outputs.datetime }}
     steps:
-      - name: Cache Docker images
-        uses: satackey/action-docker-layer-caching@v0.0.11
-        continue-on-error: true
+      - name: Restore cached docker image
+        id: cache-restore
+        uses: actions/cache/restore@v4
         with:
+          path: |
+            path/to/dependencies
+            some/other/dependencies
           key: docker-${{ runner.os }}-${{ hashFiles('**/Dockerfile') }}
       - name: Set current datetime output variable
         id: set_datetime
@@ -35,7 +38,10 @@ jobs:
         id: checkout
         uses: actions/checkout@v3
       - name: Make using docker
-        run: make release-docker VERSION=${{ steps.set_datetime.outputs.datetime }} OPTIMIZE='ReleaseFast'
+        run: |
+          [ -f ./cached-docker-image ] && docker load -i ./cached-docker-image
+          make release-docker VERSION=${{ steps.set_datetime.outputs.datetime }} OPTIMIZE='ReleaseFast'
+          docker save -o ./cached-docker-image dylanlangston.com:latest
       - name: Upload artifact
         id: upload
         uses: actions/upload-artifact@v4
@@ -47,6 +53,14 @@ jobs:
         uses: actions/upload-pages-artifact@v2
         with:
           path: '${{ github.workspace }}/site/build'
+      - name: Save docker images
+        id: cache-save
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            path/to/dependencies
+            some/other/dependencies
+          key: ${{ steps.cache-restore.outputs.cache-primary-key }}
 
 
   deploy-github-pages:
