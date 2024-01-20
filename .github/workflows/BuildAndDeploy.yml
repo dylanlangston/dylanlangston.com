@@ -36,11 +36,11 @@ jobs:
           path: |
             ./cached-docker-image
           key: docker-${{ runner.os }}-${{ hashFiles('Dockerfile') }}-${{ hashFiles('**/BuildAndDeploy.yml') }}
-      - name: Make using docker
+      - name: Load docker image or build a new one
         run: |
-          [ -f ./cached-docker-image ] && docker load -i ./cached-docker-image
-          make release-docker VERSION=${{ steps.set_datetime.outputs.datetime }} OPTIMIZE='ReleaseFast'
-          docker save -o ./cached-docker-image dylanlangston.com:latest
+          [ -f ./cached-docker-image ] && docker load -i ./cached-docker-image || (docker build -t dylanlangston.com . --target base --build-arg VERSION=${{ steps.set_datetime.outputs.datetime }} --build-arg OPTIMIZE='ReleaseFast' && docker save -o ./cached-docker-image dylanlangston.com:latest)
+      - name: Make using docker
+        run: make release-docker VERSION=${{ steps.set_datetime.outputs.datetime }} OPTIMIZE='ReleaseFast'
       - name: Upload artifact
         id: upload
         uses: actions/upload-artifact@v4
