@@ -21,6 +21,10 @@ jobs:
     outputs:
       datetime: ${{ steps.set_datetime.outputs.datetime }}
     steps:
+      - name: Cache Docker images
+        uses: ScribeMD/docker-cache@0.3.7
+        with:
+          key: docker-${{ runner.os }}-${{ hashFiles('**/Dockerfile') }}
       - name: Set current datetime output variable
         id: set_datetime
         run: echo "datetime=$(date +"1.%y%m%d.%H%M%S")" >> "$GITHUB_OUTPUT"
@@ -35,7 +39,8 @@ jobs:
         id: upload-compressed
         uses: actions/upload-pages-artifact@v2
         with:
-          path: '${{ github.workspace }}/build'
+          path: '${{ github.workspace }}/site/build'
+
 
   deploy-github-pages:
     runs-on: ubuntu-latest
