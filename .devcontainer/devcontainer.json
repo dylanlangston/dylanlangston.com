@@ -24,7 +24,8 @@
 			"settings": {
 				"zig.path": "",
 				"zig.zls.path": "",
-				"zig.initialSetupDone": true
+				"zig.initialSetupDone": true,
+				"svelte.enable-ts-plugin": true
 			}
 		}
 	}
