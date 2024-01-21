@@ -8,7 +8,7 @@
 </script>
 
 <svelte:head>
-    <link rel="prefetch" href="/dylanlangston.com.wasm" />
+    <link rel="prefetch" href="dylanlangston.com.wasm" />
 
     <!-- GTAG Partytown 🕶️ -->
 	<script>
