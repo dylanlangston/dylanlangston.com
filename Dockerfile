@@ -18,7 +18,6 @@ COPY ./site/bun.lockb ./dylanlangston.com/site/bun.lockb
 COPY ./site/bunfig.toml ./dylanlangston.com/site/bunfig.toml
 COPY ./.gitmodules ./dylanlangston.com/.gitmodules
 COPY ./Makefile ./dylanlangston.com/Makefile
-COPY ./.git ./dylanlangston.com/.git
 WORKDIR /root/dylanlangston.com
 RUN make clean-cache setup
 
@@ -36,7 +35,7 @@ ARG VERSION
 RUN test -n "$VERSION"
 ARG OPTIMIZE='Debug'
 RUN test -n "$OPTIMIZE"
-RUN make update-version VERSION=$VERSION release OPTIMIZE=$OPTIMIZE
+RUN make setup-git-clone update-version VERSION=$VERSION release OPTIMIZE=$OPTIMIZE
 
 # Default Stage is the Base stage
 FROM base as default

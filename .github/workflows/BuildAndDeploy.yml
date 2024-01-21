@@ -29,6 +29,8 @@ jobs:
       - name: Checkout
         id: checkout
         uses: actions/checkout@v3
+      - name: Setup Submodules
+        run: make setup-git-clone
       - name: Cache docker image
         id: cache
         uses: actions/cache@v4
