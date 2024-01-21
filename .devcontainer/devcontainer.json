@@ -1,7 +1,7 @@
 {
 	"name": "dylanlangston.com",
 	"build": { 
-		"dockerfile": "Dockerfile",
+		"dockerfile": "../Dockerfile",
 		"target": "base"
 	},
 	"containerUser": "root",
