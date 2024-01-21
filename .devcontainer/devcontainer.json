@@ -1,11 +1,10 @@
 {
 	"name": "dylanlangston.com",
 	"build": { 
-		"dockerfile": "../Dockerfile",
-		"target": "base"
+		"dockerfile": "devcontainer.Dockerfile",
+		"target": "base",
+		"context": ".."
 	},
-	"containerUser": "root",
-	"postCreateCommand": "zvm i -D=zls master",
 	"customizations": {
 		"vscode": {
 			"extensions": [
