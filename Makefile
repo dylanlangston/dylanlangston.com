@@ -7,7 +7,7 @@ endif
 
 # Set default build version
 ifeq ($(VERSION),)
-	VERSION = $(shell date +"1.%y%m%d.%H%M%S")
+	VERSION = $(shell echo 1.$(shell echo $(shell date +"%y%m%d") | sed 's/^0*//').$(shell echo $(shell date +"%H%M%S") | sed 's/^0*//'))
 endif
 
 # Specify if nodejs should be used instead of bun

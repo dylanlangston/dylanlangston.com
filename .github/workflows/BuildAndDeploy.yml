@@ -23,7 +23,7 @@ jobs:
     steps:
       - name: Set current datetime output variable
         id: set_datetime
-        run: echo "datetime=$(date +"1.%y%m%d.%H%M%S")" >> "$GITHUB_OUTPUT"
+        run: echo 1.$(echo $(date +"%y%m%d") | sed 's/^0*//').$(echo $(date +"%H%M%S") | sed 's/^0*//') >> "$GITHUB_OUTPUT"
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Checkout
