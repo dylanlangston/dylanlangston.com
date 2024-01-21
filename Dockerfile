@@ -12,12 +12,12 @@ RUN zvm i master
 # Install Bun
 RUN curl -fsSL https://bun.sh/install | bash
 # Copy only the files we absolutely need
-COPY ./emsdk ./dylanlangston.com/emsdk
 COPY ./site/package.json ./dylanlangston.com/site/package.json
 COPY ./site/bun.lockb ./dylanlangston.com/site/bun.lockb
 COPY ./site/bunfig.toml ./dylanlangston.com/site/bunfig.toml
 COPY ./.gitmodules ./dylanlangston.com/.gitmodules
 COPY ./Makefile ./dylanlangston.com/Makefile
+COPY ./emsdk ./dylanlangston.com/emsdk
 WORKDIR /root/dylanlangston.com
 RUN make clean-cache setup
 
