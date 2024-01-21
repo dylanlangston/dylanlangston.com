@@ -1,3 +1,17 @@
 image:
     file: Dockerfile
-    
+    context: .
+
+vscode:
+  extensions:
+    - svelte.svelte-vscode
+    - ziglang.vscode-zig
+    - vadimcn.vscode-lldb
+    - ms-vscode.makefile-tools
+    - oven.bun-vscode
+    - ms-azuretools.vscode-docker
+    - ms-vscode-remote.remote-containers
+    - gitpod.gitpod-desktop
+    - github.vscode-github-actions
+    - GitHub.codespaces
+    - bierner.markdown-preview-github-styles
