@@ -3,5 +3,7 @@ services:
   develop:
     build:
       target: develop
-volumes:
-  - ./:/root/dylanlangston.com
+    volumes:
+      - ./:/root/dylanlangston.com
+    expose:
+      - 5173
