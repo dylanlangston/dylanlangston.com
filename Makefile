@@ -91,10 +91,18 @@ build-web: ## Build Web. Optionally pass in the OPTIMIZE=... argument.
 # zig build -Dtarget=wasm32-freestanding -Doptimize=$(OPTIMIZE)
 	@zig build -Dtarget=wasm32-emscripten -Doptimize=$(OPTIMIZE)
 
-build-site: ## Build Website.
+build-site: ## Build Website. Uses Binaryen to optimize when OPTIMIZE!='Debug', the default.
 ifdef $(USE_NODE)
+ifeq ($(OPTIMIZE),'Debug')
+else
+	@cd ./site; npm exec --package=binaryen -c 'wasm-opt ./static/dylanlangston.com.wasm -all --post-emscripten --low-memory-unused -tnh --converge -Oz --flatten --rereloop -Oz -Oz -o ./static/dylanlangston.com.wasm'; cd ../
+endif
 	@npm run build --prefix ./site
 else
+ifeq ($(OPTIMIZE),'Debug')
+else
+	@cd ./site; bunx --bun binaryen ./static/dylanlangston.com.wasm -all --post-emscripten --low-memory-unused -tnh --converge -Oz --flatten --rereloop -Oz -Oz -o ./static/dylanlangston.com.wasm; cd ../
+endif
 	@bun -b run --cwd ./site build
 endif
 	
@@ -125,5 +133,5 @@ endif
 
 update-version: ## Update Version. Optionally pass in the VERSION=1.0.0 argument.
 	@sed -i -r 's/ .version = "([[:digit:]]{1,}\.*){3,4}"/ .version = "$(VERSION)"/g' ./build.zig.zon
-	@sed -i -r 's/	"version": "([[:digit:]]{1,}\.*){3,4}"/	"version": "$(VERSION)"/g' ./site/package.json
+	@sed -i -r 's/"version": "([[:digit:]]{1,}\.*){3,4}"/"version": "$(VERSION)"/g' ./site/package.json
 	@echo Updated Version to $(VERSION)
