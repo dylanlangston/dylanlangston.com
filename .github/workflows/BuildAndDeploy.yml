@@ -37,7 +37,7 @@ jobs:
         with:
           path: |
             ./cached-docker-image
-          key: docker-${{ runner.os }}-${{ hashFiles('Dockerfile', '**/BuildAndDeploy.yml', 'Makefile') }}
+          key: docker-${{ runner.os }}-${{ hashFiles('Dockerfile', '**/BuildAndDeploy.yml', 'Makefile', '**/bun*', '.gitmodules', 'emsdk') }}
       - name: Load docker image or build a new one
         run: |
           [ -f ./cached-docker-image ] && (docker load -i ./cached-docker-image && docker build --cache-from dylanlangston.com:build --cache-from debian:stable-slim -t dylanlangston.com:build --target default . ) || (docker build -t dylanlangston.com:build --target default --cache-to type=inline . && docker save -o ./cached-docker-image dylanlangston.com:build)
