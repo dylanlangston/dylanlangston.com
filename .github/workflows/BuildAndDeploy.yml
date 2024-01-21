@@ -29,24 +29,16 @@ jobs:
       - name: Checkout
         id: checkout
         uses: actions/checkout@v3
-      # - name: Cache docker image
-      #   id: cache
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: |
-      #       ./cached-docker-image
-      #     key: docker-${{ runner.os }}-${{ hashFiles('Dockerfile', '**/BuildAndDeploy.yml', 'Makefile') }}
-      - name: Build and push
-        uses: docker/build-push-action@v5
+      - name: Cache docker image
+        id: cache
+        uses: actions/cache@v4
         with:
-          context: .
-          push: true
-          tags: "dylanlangston.com:latest"
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-      # - name: Load docker image or build a new one
-      #   run: |
-      #     [ -f ./cached-docker-image ] && docker load -i ./cached-docker-image || (docker build -t dylanlangston.com . --target base --build-arg VERSION=${{ steps.set_datetime.outputs.datetime }} --build-arg OPTIMIZE='ReleaseFast' && docker save -o ./cached-docker-image dylanlangston.com:latest)
+          path: |
+            ./cached-docker-image
+          key: docker-${{ runner.os }}-${{ hashFiles('Dockerfile', '**/BuildAndDeploy.yml', 'Makefile') }}
+      - name: Load docker image or build a new one
+        run: |
+          [ -f ./cached-docker-image ] && (docker load -i ./cached-docker-image && docker build --cache-from dylanlangston:latest -t dylanlangston.com:latest . --target base ) || (docker build -t dylanlangston.com . --target base && docker save -o ./cached-docker-image dylanlangston.com:latest)
       - name: Make using docker
         run: make release-docker VERSION=${{ steps.set_datetime.outputs.datetime }} OPTIMIZE='ReleaseFast'
       - name: Upload artifact
