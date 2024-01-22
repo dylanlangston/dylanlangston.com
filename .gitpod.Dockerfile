@@ -1,8 +1,8 @@
 FROM gitpod/workspace-full:latest as base
 
-USER root
-RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-     && apt-get -y install --no-install-recommends bash curl unzip xz-utils make git python3
+RUN sudo apt-get update \
+     && sudo apt-get -y install --no-install-recommends bash curl unzip xz-utils make git python3 \
+     && sudo apt-get clean && rm -rf /var/cache/apt/* && rm -rf /var/lib/apt/lists/* && rm -rf /tmp/*
 
 # Important we change to the gitpod user that the devcontainer runs under
 USER gitpod

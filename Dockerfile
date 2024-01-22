@@ -3,7 +3,8 @@
 # Using Debian Latest
 FROM debian:stable-slim as base
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-     && apt-get -y install --no-install-recommends bash curl unzip xz-utils make git python3
+     && apt-get -y install --no-install-recommends bash curl unzip xz-utils make git python3 \
+     && apt-get clean && rm -rf /var/cache/apt/* && rm -rf /var/lib/apt/lists/* && rm -rf /tmp/*
 WORKDIR /root
 # Install ZVM - https://github.com/tristanisham/zvm
 RUN curl https://raw.githubusercontent.com/tristanisham/zvm/master/install.sh | bash
