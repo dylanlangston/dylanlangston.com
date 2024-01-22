@@ -1,11 +1,24 @@
 FROM mcr.microsoft.com/devcontainers/base:debian as base
 
-RUN apt update && apt upgrade
-RUN apt install -y bash curl unzip xz-utils make git python3
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+     && apt-get -y install --no-install-recommends bash curl unzip xz-utils make git python3
+
+# Important we change to the vscode user that the devcontainer runs under
+USER vscode
+WORKDIR /home/vscode
+
 # Install ZVM - https://github.com/tristanisham/zvm
-#RUN curl https://raw.githubusercontent.com/tristanisham/zvm/master/install.sh | bash
-#ENV PATH="$HOME/.bun/bin/:$HOME/.zvm/self/:$HOME/.zvm/bin:$PATH"
-#RUN zvm i master
-#RUN zvm i -D=zls master
+RUN curl https://raw.githubusercontent.com/tristanisham/zvm/master/install.sh | bash
+RUN echo "# ZVM" >> $HOME/.bashrc
+RUN echo export ZVM_INSTALL="$HOME/.zvm" >> $HOME/.bashrc
+RUN echo export PATH="\$PATH:\$ZVM_INSTALL/bin" >> $HOME/.bashrc
+RUN echo export PATH="\$PATH:\$ZVM_INSTALL/self" >> $HOME/.bashrc
+
+# Install ZIG
+RUN $HOME/.zvm/self/zvm i master
+
+# Install ZLS
+RUN $HOME/.zvm/self/zvm i -D=zls master
+
 # Install Bun
-#RUN curl -fsSL https://bun.sh/install | bash
+RUN curl -fsSL https://bun.sh/install | bash

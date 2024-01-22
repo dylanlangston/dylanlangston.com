@@ -5,6 +5,8 @@
 		"target": "base",
 		"context": ".."
 	},
+	"containerUser": "vscode",
+	"postCreateCommand": "make setup-git-clone setup",
 	"customizations": {
 		"vscode": {
 			"extensions": [
