@@ -25,10 +25,21 @@ pub fn main() !void {
         rl.ClearBackground(rl.Color{ .r = 0, .g = 0, .b = 0, .a = 0 });
         rl.DrawText("Hello OpenGL World", 190, 200, 20, rl.LIGHTGRAY);
 
+        var buf: [64:0]u8 = undefined;
+        if (std.fmt.bufPrintZ(&buf, "Mouse X: {}, Mouse Y: {}, Click: {}", .{ rl.GetMouseX(), rl.GetMouseY(), rl.IsMouseButtonDown(rl.MOUSE_BUTTON_LEFT) })) |_| {
+            rl.DrawText(CString(&buf), 190, 225, 20, rl.LIGHTGRAY);
+        } else |_| {
+            rl.DrawText("Failed to get mouse position!", 190, 225, 20, rl.LIGHTGRAY);
+        }
+
         if (rl.IsKeyDown(rl.KEY_SPACE)) {
             rl.DrawText("Space Pressed", 190, 250, 20, rl.LIGHTGRAY);
         }
     }
+}
+
+fn CString(string: [:0]u8) [*c]const u8 {
+    return @as([*c]const u8, @ptrCast(string));
 }
 
 test "simple test" {

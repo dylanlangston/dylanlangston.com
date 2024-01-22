@@ -3,7 +3,6 @@ export enum IPCMessageType {
 	Initialized,
     AddEventHandler,
     EventHandlerCallback,
-    PointerEvent,
 }
 
 // This class is used for communication between web worker and main page
@@ -21,7 +20,6 @@ export class IPCMessage {
         type: string;
         event: any;
     }) => new IPCMessage(IPCMessageType.EventHandlerCallback, eventInfo);
-    public static PointerEvent = (pointerEvent: PointerEvent) => new IPCMessage(IPCMessageType.Initialized, pointerEvent);
 
 	private constructor(type: IPCMessageType, message: IPCMessageDataType = undefined) {
         this.type = type;

@@ -8,15 +8,19 @@ let eventHandlers: { [type: number]: (message: IPCMessageDataType) => void; } = 
 eventHandlers[IPCMessageType.Initialize] = (message: IPCMessageDataType) => {
     self.document = new FakeDOM.Document(<any>message);
 
-    const canvas: OffscreenCanvas = <any>message;
+    // This needs to match the width of the canvas
+    const width = 800;
+    const height = 450;
 
+    const canvas: OffscreenCanvasExtended = <any>message;
+    canvas.clientWidth = width;
+    canvas.clientHeight = height;
     canvas.addEventListener = (type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void => {
         const id = FunctionProxy.Add(listener);
         postMessage(IPCMessage.AddEventHandler({ id, target: 'Canvas', type }));
     };
-
-    (<any>canvas).getBoundingClientRect = () => {
-        return { x: 0, y: 0, width: canvas.width, height: canvas.height, top: 0, right: canvas.width, bottom: canvas.height, left: 0 };
+    canvas.getBoundingClientRect = () => {
+        return { x: 0, y: 0, width: width, height: height, top: 0, right: width, bottom: height, left: 0 };
     }
 
     (<EmscriptenModuleFactory<IEmscripten>>emscriptenModuleFactory)(EmscriptenModule(canvas)).then(emscripten => {
@@ -30,12 +34,24 @@ eventHandlers[IPCMessageType.EventHandlerCallback] = (message) => {
         event: any;
     } = <any>message;
     eventHandler.event.preventDefault = () => {};
+    eventHandler.event.target = self.document.getCanvas();
     const func = FunctionProxy.Get(eventHandler.id);
     func(eventHandler.event);
 };
-eventHandlers[IPCMessageType.PointerEvent] = (message) => {
 
-};
+interface OffscreenCanvasExtended extends OffscreenCanvas {
+    clientWidth: number;
+    clientHeight: number;
+    getBoundingClientRect: () => {
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+        top: number;
+        bottom: number;
+        left: number;
+    };
+}
 
 class FunctionProxy {
     private static index: number = 0;
@@ -133,6 +149,7 @@ namespace FakeDOM {
         querySelector(selectors: string): HTMLElement | null {
             return this.canvas;
         }
+        getCanvas = () => this.canvas;
     }
 };
 

@@ -45,16 +45,15 @@
 							if (e[k] instanceof Window) continue;
 							if (e[k] instanceof Function) continue;
 
-							switch (typeof e[k])
-							{
-								case "undefined":
-								case "boolean":
-								case "number":
-								case "bigint":
-								case "string":
+							switch (typeof e[k]) {
+								case 'undefined':
+								case 'boolean':
+								case 'number':
+								case 'bigint':
+								case 'string':
 									obj[k] = e[k];
 									break;
-								case "object":
+								case 'object':
 									obj[k] = sanitizeEvent(e[k]);
 									break;
 							}
@@ -64,6 +63,7 @@
 
 					switch (eventHandler.target) {
 						case 'Window':
+						case 'Canvas':
 							window.addEventListener(eventHandler.type, (e) => {
 								worker?.postMessage(
 									IPCMessage.EventHandlerCallback({
@@ -75,8 +75,8 @@
 								);
 							});
 							break;
-						case 'Canvas':
-							canvasElement.addEventListener(eventHandler.type, (e) => {
+						case 'Document':
+							document.addEventListener(eventHandler.type, (e) => {
 								worker?.postMessage(
 									IPCMessage.EventHandlerCallback({
 										id: eventHandler.id,
@@ -87,6 +87,18 @@
 								);
 							});
 							break;
+						// case 'Canvas':
+						// 	canvasElement.addEventListener(eventHandler.type, (e) => {
+						// 		worker?.postMessage(
+						// 			IPCMessage.EventHandlerCallback({
+						// 				id: eventHandler.id,
+						// 				target: eventHandler.target,
+						// 				type: eventHandler.type,
+						// 				event: sanitizeEvent(e)
+						// 			})
+						// 		);
+						// 	});
+						// 	break;
 						default:
 							break;
 					}
