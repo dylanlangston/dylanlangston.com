@@ -45,6 +45,8 @@
 						function sanitizeEvent(e: any) {
 							const obj: any = {};
 							for (let k in e) {
+								if (e[k] == null || e[k] == undefined) continue;
+
 								if (e[k] instanceof Node) continue;
 								if (e[k] instanceof Window) continue;
 								if (e[k] instanceof Function) continue;

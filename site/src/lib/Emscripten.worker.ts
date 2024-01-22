@@ -35,8 +35,13 @@ eventHandlers[IPCMessageType.EventHandlerCallback] = (message) => {
         type: string;
         event: any;
     } = <any>message;
-    eventHandler.event.preventDefault = () => {};
+    if (eventHandler.event.changedTouches)
+    {
+        eventHandler.event.changedTouches = Array.from(eventHandler.event.changedTouches);
+    }
+    eventHandler.event.preventDefault = () => { };
     eventHandler.event.target = self.document.getCanvas();
+    if (import.meta.env.DEV) console.debug(eventHandler);
     const func = FunctionProxy.Get(eventHandler.id);
     func(eventHandler.event);
 };
@@ -80,7 +85,7 @@ namespace FakeDOM {
         }
         public matchMedia(query: string): MediaQueryList {
             return <any>{
-                addEventListener: (type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void => {}
+                addEventListener: (type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void => { }
             };
         }
         public get scrollX(): number {
@@ -116,7 +121,7 @@ namespace FakeDOM {
             stopped: false,
             started: false,
         };
-        public get_device_by_index: (e: number) => any = () => { 
+        public get_device_by_index: (e: number) => any = () => {
             return {
                 webaudio: new AudioContext()
             };
