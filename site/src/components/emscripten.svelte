@@ -4,7 +4,7 @@
 	import emscriptenModuleFactory from '../import/emscripten';
 	import { fade, blur, fly, slide, scale, crossfade } from 'svelte/transition';
 	import emscriptenWorker from '$lib/Emscripten.worker?worker';
-	import { IPCMessage, IPCMessageType } from '$lib/Emscripten';
+	import { IPCMessage, IPCMessageType } from '$lib/IPCMessage';
 
 	let worker: Worker | undefined = undefined;
 	let canvas: HTMLCanvasElement | undefined = undefined;
@@ -26,8 +26,72 @@
 		worker.onmessage = (ev: MessageEvent<IPCMessage>) => {
 			switch (ev.data.type) {
 				case IPCMessageType.Initialized:
-                    canvas = canvasElement;
+					canvas = canvasElement;
 					break;
+				case IPCMessageType.AddEventHandler:
+					const eventHandler: {
+						id: number;
+						target: string;
+						type: string;
+						listener: EventListenerOrEventListenerObject;
+					} = <any>ev.data.message;
+
+					// Need to make a recursive function that only saves transferable data types. Number, string etc...
+
+					function sanitizeEvent(e: any) {
+						const obj: any = {};
+						for (let k in e) {
+							if (e[k] instanceof Node) continue;
+							if (e[k] instanceof Window) continue;
+							if (e[k] instanceof Function) continue;
+
+							switch (typeof e[k])
+							{
+								case "undefined":
+								case "boolean":
+								case "number":
+								case "bigint":
+								case "string":
+									obj[k] = e[k];
+									break;
+								case "object":
+									obj[k] = sanitizeEvent(e[k]);
+									break;
+							}
+						}
+						return obj;
+					}
+
+					switch (eventHandler.target) {
+						case 'Window':
+							window.addEventListener(eventHandler.type, (e) => {
+								worker?.postMessage(
+									IPCMessage.EventHandlerCallback({
+										id: eventHandler.id,
+										target: eventHandler.target,
+										type: eventHandler.type,
+										event: sanitizeEvent(e)
+									})
+								);
+							});
+							break;
+						case 'Canvas':
+							canvasElement.addEventListener(eventHandler.type, (e) => {
+								worker?.postMessage(
+									IPCMessage.EventHandlerCallback({
+										id: eventHandler.id,
+										target: eventHandler.target,
+										type: eventHandler.type,
+										event: sanitizeEvent(e)
+									})
+								);
+							});
+							break;
+						default:
+							break;
+					}
+					break;
+
 				default:
 					throw 'Not Implemented';
 			}

@@ -1,4 +1,5 @@
 export interface MiniAudio {
+	device_type: string;
 	referenceCount: number;
 	devices: Array<MiniAudioDevice>;
 	get_device_by_index: (e: number) => MiniAudioDevice;
