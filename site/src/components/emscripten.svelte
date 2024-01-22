@@ -6,6 +6,9 @@
 	import emscriptenWorker from '$lib/Emscripten.worker?worker';
 	import { IPCMessage, IPCMessageType } from '$lib/IPCMessage';
 
+	// Specify if we should use a web worker
+	const UseWorker: boolean = true;
+
 	let worker: Worker | undefined = undefined;
 	let canvas: HTMLCanvasElement | undefined = undefined;
 	onMount(async () => {
@@ -20,94 +23,108 @@
 			'h-screen',
 			'-z-50'
 		);
-		worker = new emscriptenWorker();
-		const offscreenCanvas = canvasElement.transferControlToOffscreen();
-		worker.postMessage(IPCMessage.Initialize(offscreenCanvas), [offscreenCanvas]);
-		worker.onmessage = (ev: MessageEvent<IPCMessage>) => {
-			switch (ev.data.type) {
-				case IPCMessageType.Initialized:
-					canvas = canvasElement;
-					break;
-				case IPCMessageType.AddEventHandler:
-					const eventHandler: {
-						id: number;
-						target: string;
-						type: string;
-						listener: EventListenerOrEventListenerObject;
-					} = <any>ev.data.message;
+		if (UseWorker) {
+			worker = new emscriptenWorker();
+			const offscreenCanvas = canvasElement.transferControlToOffscreen();
+			worker.postMessage(IPCMessage.Initialize(offscreenCanvas), [offscreenCanvas]);
+			worker.onmessage = (ev: MessageEvent<IPCMessage>) => {
+				switch (ev.data.type) {
+					case IPCMessageType.Initialized:
+						canvas = canvasElement;
+						break;
+					case IPCMessageType.AddEventHandler:
+						const eventHandler: {
+							id: number;
+							target: string;
+							type: string;
+							listener: EventListenerOrEventListenerObject;
+						} = <any>ev.data.message;
 
-					// Need to make a recursive function that only saves transferable data types. Number, string etc...
+						// Need to make a recursive function that only saves transferable data types. Number, string etc...
 
-					function sanitizeEvent(e: any) {
-						const obj: any = {};
-						for (let k in e) {
-							if (e[k] instanceof Node) continue;
-							if (e[k] instanceof Window) continue;
-							if (e[k] instanceof Function) continue;
+						function sanitizeEvent(e: any) {
+							const obj: any = {};
+							for (let k in e) {
+								if (e[k] instanceof Node) continue;
+								if (e[k] instanceof Window) continue;
+								if (e[k] instanceof Function) continue;
 
-							switch (typeof e[k]) {
-								case 'undefined':
-								case 'boolean':
-								case 'number':
-								case 'bigint':
-								case 'string':
-									obj[k] = e[k];
-									break;
-								case 'object':
-									obj[k] = sanitizeEvent(e[k]);
-									break;
+								switch (typeof e[k]) {
+									case 'undefined':
+									case 'boolean':
+									case 'number':
+									case 'bigint':
+									case 'string':
+										obj[k] = e[k];
+										break;
+									case 'object':
+										obj[k] = sanitizeEvent(e[k]);
+										break;
+								}
 							}
+							return obj;
 						}
-						return obj;
-					}
 
-					switch (eventHandler.target) {
-						case 'Window':
-						case 'Canvas':
-							window.addEventListener(eventHandler.type, (e) => {
-								worker?.postMessage(
-									IPCMessage.EventHandlerCallback({
-										id: eventHandler.id,
-										target: eventHandler.target,
-										type: eventHandler.type,
-										event: sanitizeEvent(e)
-									})
-								);
-							});
-							break;
-						case 'Document':
-							document.addEventListener(eventHandler.type, (e) => {
-								worker?.postMessage(
-									IPCMessage.EventHandlerCallback({
-										id: eventHandler.id,
-										target: eventHandler.target,
-										type: eventHandler.type,
-										event: sanitizeEvent(e)
-									})
-								);
-							});
-							break;
-						// case 'Canvas':
-						// 	canvasElement.addEventListener(eventHandler.type, (e) => {
-						// 		worker?.postMessage(
-						// 			IPCMessage.EventHandlerCallback({
-						// 				id: eventHandler.id,
-						// 				target: eventHandler.target,
-						// 				type: eventHandler.type,
-						// 				event: sanitizeEvent(e)
-						// 			})
-						// 		);
-						// 	});
-						// 	break;
-						default:
-							break;
-					}
-					break;
+						switch (eventHandler.target) {
+							case 'Window':
+							case 'Canvas':
+								window.addEventListener(eventHandler.type, (e) => {
+									worker?.postMessage(
+										IPCMessage.EventHandlerCallback({
+											id: eventHandler.id,
+											target: eventHandler.target,
+											type: eventHandler.type,
+											event: sanitizeEvent(e)
+										})
+									);
+								});
+								break;
+							case 'Document':
+								document.addEventListener(eventHandler.type, (e) => {
+									worker?.postMessage(
+										IPCMessage.EventHandlerCallback({
+											id: eventHandler.id,
+											target: eventHandler.target,
+											type: eventHandler.type,
+											event: sanitizeEvent(e)
+										})
+									);
+								});
+								break;
+							// case 'Canvas':
+							// 	canvasElement.addEventListener(eventHandler.type, (e) => {
+							// 		worker?.postMessage(
+							// 			IPCMessage.EventHandlerCallback({
+							// 				id: eventHandler.id,
+							// 				target: eventHandler.target,
+							// 				type: eventHandler.type,
+							// 				event: sanitizeEvent(e)
+							// 			})
+							// 		);
+							// 	});
+							// 	break;
+							default:
+								break;
+						}
+						break;
 
-				default:
-					throw 'Not Implemented';
+					default:
+						throw 'Not Implemented';
+				}
+			};
+			worker.onerror = (er) => {
+				worker?.terminate();
+				worker = undefined;
+				canvas = undefined;
+				throw er;
 			}
-		};
+		} else {
+			(<EmscriptenModuleFactory<IEmscripten>>emscriptenModuleFactory)(
+				EmscriptenModule(<any>canvasElement)
+			).then((emscripten) => {
+				canvas = canvasElement;
+			});
+		}
 	});
 
 	onDestroy(() => {});
