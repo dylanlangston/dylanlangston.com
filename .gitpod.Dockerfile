@@ -1,8 +1,10 @@
 FROM gitpod/workspace-full:latest as base
+
+USER root
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
      && apt-get -y install --no-install-recommends bash curl unzip xz-utils make git python3
 
-# Important we change to the vscode user that the devcontainer runs under
+# Important we change to the gitpod user that the devcontainer runs under
 USER gitpod
 WORKDIR /home/gitpod
 
