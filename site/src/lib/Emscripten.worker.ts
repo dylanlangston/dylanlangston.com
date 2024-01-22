@@ -1,6 +1,7 @@
 import { type IEmscripten, EmscriptenModule } from '$lib/Emscripten';
 import { IPCMessage, IPCMessageType, type IPCMessageDataType } from '$lib/IPCMessage';
 import emscriptenModuleFactory from '../import/emscripten';
+import { Environment } from "$lib/Common";
 
 // Define all events here
 // The rest of this file should be boilerplate code...
@@ -41,7 +42,7 @@ eventHandlers[IPCMessageType.EventHandlerCallback] = (message) => {
     }
     eventHandler.event.preventDefault = () => { };
     eventHandler.event.target = self.document.getCanvas();
-    if (import.meta.env.DEV) console.debug(eventHandler);
+    if (Environment.Dev) console.debug(eventHandler);
     const func = FunctionProxy.Get(eventHandler.id);
     func(eventHandler.event);
 };
