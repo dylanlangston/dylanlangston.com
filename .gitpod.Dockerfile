@@ -1,4 +1,4 @@
-FROM gitpod/workspace-full:latest as base
+FROM gitpod/workspace-base:latest as base
 
 RUN sudo apt-get update \
      && sudo apt-get -y install --no-install-recommends bash curl unzip xz-utils make git python3 \
