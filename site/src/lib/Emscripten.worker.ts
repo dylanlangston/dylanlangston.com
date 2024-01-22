@@ -5,6 +5,7 @@ import emscriptenModuleFactory from '../import/emscripten';
 // Define all events here
 // The rest of this file should be boilerplate code...
 let eventHandlers: { [type: number]: (message: IPCMessageDataType) => void; } = {};
+// On Initialized
 eventHandlers[IPCMessageType.Initialize] = (message: IPCMessageDataType) => {
     self.document = new FakeDOM.Document(<any>message);
 
@@ -27,6 +28,7 @@ eventHandlers[IPCMessageType.Initialize] = (message: IPCMessageDataType) => {
         postMessage(IPCMessage.Initialized())
     })
 };
+// Event Handler Callback
 eventHandlers[IPCMessageType.EventHandlerCallback] = (message) => {
     let eventHandler: {
         id: number;
@@ -71,11 +73,15 @@ class FunctionProxy {
 namespace FakeDOM {
     export class Window {
         public addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void {
+            // Skip resize events
+            if (type == "resize") return;
             const id = FunctionProxy.Add(listener);
             postMessage(IPCMessage.AddEventHandler({ id, target: 'Window', type }));
         }
         public matchMedia(query: string): MediaQueryList {
-            return <any>new FakeMediaQueryList(query);
+            return <any>{
+                addEventListener: (type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void => {}
+            };
         }
         public get scrollX(): number {
             return 0;
@@ -83,59 +89,8 @@ namespace FakeDOM {
         public get scrollY(): number {
             return 0;
         }
-        //public miniaudio = new FakeMiniAudio();
-        //public AudioContext = FakeAudioContext;
-    }
-    class FakeMiniAudio {
-        public device_type: string = "";
-        public device_state: string = "";
-        public referenceCount: number = 0;
-        public devices: Array<any> = [];
-        public get_device_by_index: (e: number) => any = () => { };
-        public unlock: () => void = () => { };
-        public unlock_event_types: Array<string> = [];
-        public track_device: (device: any) => number = () => 1;
-        public untrack_device: (device: any) => void = () => { };
-        public untrack_device_by_index: (deviceIndex: number) => void = () => { };
-    }
-    class FakeAudioContext {
-        public readonly baseLatency: number = 0;
-        public readonly outputLatency: number = 0;
-        public close(): Promise<void> {
-            return <any>undefined;
-        }
-        public createMediaElementSource(mediaElement: HTMLMediaElement): MediaElementAudioSourceNode {
-            return <any>undefined;
-        }
-        public createMediaStreamDestination(): MediaStreamAudioDestinationNode {
-            return <any>undefined;
-        }
-        public createMediaStreamSource(mediaStream: MediaStream): MediaStreamAudioSourceNode {
-            return <any>undefined;
-        }
-        public getOutputTimestamp(): AudioTimestamp {
-            return <any>undefined;
-        }
-        public resume(): Promise<void> {
-            return <any>undefined;
-        }
-        public suspend(): Promise<void> {
-            return <any>undefined;
-        }
-        public addEventListener<K extends keyof BaseAudioContextEventMap>(type: K, listener: (this: AudioContext, ev: BaseAudioContextEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void {
-        }
-        public removeEventListener<K extends keyof BaseAudioContextEventMap>(type: K, listener: (this: AudioContext, ev: BaseAudioContextEventMap[K]) => any, options?: boolean | EventListenerOptions): void {
-        }
-    }
-    class FakeMediaQueryList {
-        query: string;
-        constructor(query: string) {
-            this.query = query;
-        }
-
-        public addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void {
-
-        }
+        public miniaudio = self.miniaudio;
+        public AudioContext = AudioContext;
     }
     export class Document {
         private canvas: HTMLElement | null;
@@ -150,6 +105,41 @@ namespace FakeDOM {
             return this.canvas;
         }
         getCanvas = () => this.canvas;
+    }
+    export class MiniAudio {
+        public device_type: any = {
+            capture: 2,
+            duplex: 3,
+            playback: 1,
+        };
+        public device_state: any = {
+            stopped: false,
+            started: false,
+        };
+        public get_device_by_index: (e: number) => any = () => { 
+            return {
+                webaudio: new AudioContext()
+            };
+        };
+        public track_device: (device: any) => number = () => 1;
+    }
+    // Update this to use an AudioWorkletNode
+    // https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/createScriptProcessor
+    // https://developer.mozilla.org/en-US/docs/Web/API/AudioWorkletNode
+    // Might use this ? - https://github.com/chrisguttandin/standardized-audio-context
+    class AudioContext {
+        public suspend(): Promise<void> {
+            return <any>undefined;
+        }
+        public createScriptProcessor(a1: any, a2: any, a3: any, a4: any) {
+            return {
+                connect: (args: any) => {
+                    console.log("Audio Connected");
+                }
+            };
+        }
+        //public destination: any = undefined;
+        //public onaudioprocess: any = undefined;
     }
 };
 
@@ -172,8 +162,11 @@ const MessageHandler = new WorkerMessageEventHandler();
 interface IEmscriptenWorker extends DedicatedWorkerGlobalScope {
     window: FakeDOM.Window;
     document: FakeDOM.Document;
+    miniaudio: FakeDOM.MiniAudio;
 }
 declare let self: IEmscriptenWorker;
+
+self.miniaudio = new FakeDOM.MiniAudio();
 self.window = new FakeDOM.Window();
 self.onmessage = (ev: MessageEvent<IPCMessage>) => {
     if (ev.data !== undefined && ev.data.type !== undefined && ev.data.message !== undefined) {

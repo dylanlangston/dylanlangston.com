@@ -109,6 +109,7 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
         "-sABORTING_MALLOC=" ++ (if (debugging_wasm) "1" else "0"),
         "-sASSERTIONS=" ++ (if (debugging_wasm) "1" else "0"),
         "-sVerbose=" ++ (if (debugging_wasm) "1" else "0"),
+        "-sWEBAUDIO_DEBUG=" ++ (if (debugging_wasm) "1" else "0"),
 
         // Export as a ES6 Module for use in svelte
         "-sMODULARIZE",

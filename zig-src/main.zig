@@ -10,13 +10,24 @@ pub fn main() !void {
     rl.InitWindow(800, 450, undefined);
     defer rl.CloseWindow();
 
+    rl.InitAudioDevice();
+    defer rl.CloseAudioDevice();
+
     rl.SetTargetFPS(0);
 
     rl.TraceLog(rl.LOG_INFO, "Raylib Started");
 
+    const music = loadMusicStreamFromMemory(".ogg", @embedFile("./test_music.ogg"));
+
     while (!rl.WindowShouldClose()) {
         rl.BeginDrawing();
         defer rl.EndDrawing();
+
+        if (!rl.IsMusicStreamPlaying(music)) {
+            rl.PlayMusicStream(music);
+        } else {
+            rl.UpdateMusicStream(music);
+        }
 
         if (builtin.mode == .Debug) {
             rl.DrawFPS(10, 430);
@@ -40,6 +51,10 @@ pub fn main() !void {
 
 fn CString(string: [:0]u8) [*c]const u8 {
     return @as([*c]const u8, @ptrCast(string));
+}
+
+pub fn loadMusicStreamFromMemory(fileType: [:0]const u8, data: []const u8) rl.Music {
+    return rl.LoadMusicStreamFromMemory(@as([*c]const u8, @ptrCast(fileType)), @as([*c]const u8, @ptrCast(data)), @as(c_int, @intCast(data.len)));
 }
 
 test "simple test" {
