@@ -40,7 +40,7 @@ jobs:
           key: docker-${{ runner.os }}-${{ hashFiles('Dockerfile', '**/BuildAndDeploy.yml', 'Makefile', '**/bun*', '.gitmodules') }}
       - name: Load docker image or build a new one
         run: |
-          [ -f ./cached-docker-image ] && (docker load -i ./cached-docker-image && docker build --cache-from dylanlangston.com:build --cache-from debian:stable-slim -t dylanlangston.com:build --target default . ) || (docker build -t dylanlangston.com:build --target default --cache-to type=inline . && docker save -o ./cached-docker-image dylanlangston.com:build)
+          [ -f ./cached-docker-image ] && (docker load -i ./cached-docker-image) || (docker build -t dylanlangston.com:build --target default --cache-to type=inline . && docker save -o ./cached-docker-image dylanlangston.com:build)
       - name: Make using docker
         run: make release-docker VERSION=${{ steps.set_datetime.outputs.datetime }} OPTIMIZE='ReleaseFast'
       - name: Upload artifact
