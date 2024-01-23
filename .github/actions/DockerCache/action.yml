@@ -1,5 +1,5 @@
 name: 'Docker Image Cache'
-description: 'Caching docker image, '
+description: 'Caching docker image, Loads docker image or build a new one'
 inputs:
   key:
     description: 'Cache Key'
