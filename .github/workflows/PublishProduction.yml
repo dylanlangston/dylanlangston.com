@@ -2,7 +2,7 @@ name: Release Site To Production
 
 on:
   workflow_run:
-    workflows: [BuildAndDeploy]
+    workflows: ["Build and Deploy Pages"]
     types: [completed]
 
 jobs:
