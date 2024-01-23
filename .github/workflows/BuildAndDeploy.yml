@@ -32,7 +32,7 @@ jobs:
       - name: Setup Submodules
         run: make setup-git-clone
       - name: Cache Docker Image
-        uses: '${{ github.event.repository.name }}/.github/actions/DockerCache.yml@main'
+        uses: dylanlangston/dylanlanston.com/.github/actions/DockerCache.yml@main'
         with:
           key: docker-${{ runner.os }}-${{ hashFiles('Dockerfile', '.github/workflows/*.yml', 'Makefile', '**/bun*', '.gitmodules') }}
           target: default
