@@ -2,14 +2,20 @@
 version: 2
 updates:
   - package-ecosystem: "npm"
+    commit-message:
+      prefix: "Node/Bun - "
     directory: "/site"
     schedule:
       interval: "weekly"
   - package-ecosystem: "gitsubmodule"
+    commit-message:
+      prefix: "Submodule - "
     directory: "/"
     schedule:
       interval: "weekly"
   - package-ecosystem: "github-actions"
+    commit-message:
+      prefix: "Github Actions - "
     directory: "/"
     schedule:
       interval: "weekly"
