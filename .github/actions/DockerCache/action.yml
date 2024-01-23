@@ -17,7 +17,8 @@ runs:
       id: cache
       uses: actions/cache@v4
       with:
-        path: ${{ inputs.path }}
+        path: |
+          ./cached-docker-image
         key: ${{ inputs.key }}
     - name: Load docker image or build a new one
       shell: bash
