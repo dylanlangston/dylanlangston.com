@@ -1,0 +1,40 @@
+name: Release Site To Production
+
+on:
+  workflow_run:
+    workflows: [BuildAndDeploy]
+    types: [completed]
+
+jobs:
+  production:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: read
+      contents: read
+    steps:
+      - name: 'Download artifact'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               run_id: context.payload.workflow_run.id,
+            });
+            let matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
+              return artifact.name == "release-artifact"
+            })[0];
+            let download = await github.rest.actions.downloadArtifact({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               artifact_id: matchArtifact.id,
+               archive_format: 'zip',
+            });
+            let fs = require('fs');
+            fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/release-artifact.zip`, Buffer.from(download.data));
+
+      - name: 'Unzip artifact'
+        run: unzip release-artifact.zip
+      - name: Placeholder
+        run: |
+          echo "Todo"
