@@ -132,6 +132,7 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
         "-sMALLOC=emmalloc",
         "-sINITIAL_MEMORY=4mb",
         "-sSTACK_SIZE=1mb",
+        "-msimd128",
     });
     emcc_command.step.dependOn(&lib.step);
 
