@@ -2,15 +2,18 @@
 	import Header from '../components/header.svelte';
 	import Footer from '../components/footer.svelte';
 
-    import Emscripten from "../components/emscripten.svelte";
+	import Emscripten from '../components/emscripten.svelte';
 
 	import { partytownSnippet } from '@builder.io/partytown/integration';
+
+	import { page } from '$app/stores';
+	import StatusContainer from '../components/status-container.svelte';
 </script>
 
 <svelte:head>
-    <link rel="prefetch" href="dylanlangston.com.wasm" />
+	<link rel="prefetch" href="dylanlangston.com.wasm" />
 
-    <!-- GTAG Partytown 🕶️ -->
+	<!-- GTAG Partytown 🕶️ -->
 	<script>
 		// Forward the necessary functions to the web worker layer
 		partytown = {
@@ -38,8 +41,26 @@
 
 <Emscripten />
 
-<main>
-	<slot />
-</main>
+{#if $page.error}
+	<main>
+		<slot />
+	</main>
+{:else}
+	<noscript>
+		<style>
+			.jsonly {
+				display: none;
+			}
+		</style>
+		<StatusContainer>
+			<svelte:fragment slot="status-slot">
+				<h1>Please enable Javascript.</h1>
+			</svelte:fragment>
+		</StatusContainer>
+	</noscript>
+	<main class="jsonly">
+		<slot />
+	</main>
+{/if}
 
 <Footer />

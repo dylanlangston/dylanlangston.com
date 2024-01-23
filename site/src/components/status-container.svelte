@@ -10,13 +10,10 @@
 >
 	<div id="status-container" class="rounded-lg bg-green-light/[.5] shadow-xl p-8 m-8">
 		<div class="select-none text-center text-2xl lg:text-6xl font-bold" id="status">
-			<div class="jsonly">
-				<slot name="status-slot" />
-				{#if status}
-					<span class="whitespace-pre-line">{status}</span>
-				{/if}
-			</div>
-			<noscript>Please enable Javascript to play.</noscript>
+			<slot name="status-slot" />
+			{#if status}
+				<span class="whitespace-pre-line">{status}</span>
+			{/if}
 		</div>
 	</div>
 </div>

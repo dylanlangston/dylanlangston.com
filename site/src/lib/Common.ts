@@ -1,6 +1,8 @@
 import { BrowserDetector } from 'browser-dtector';
 
 export class Environment {
+    private constructor() {}
+
     public static get Dev(): boolean {
         return import.meta.env.MODE == 'development';
     }
