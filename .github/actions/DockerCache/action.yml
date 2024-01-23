@@ -15,7 +15,7 @@ runs:
   steps:
     - name: Cache docker image
       id: cache
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: |
           ./cached-docker-image
