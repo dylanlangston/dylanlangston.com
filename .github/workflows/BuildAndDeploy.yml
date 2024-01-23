@@ -51,7 +51,7 @@ jobs:
           path: '${{ github.workspace }}/site/build'
       - name: Upload github pages artifact
         id: upload-compressed
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v3
         with:
           path: '${{ github.workspace }}/site/build'
 
