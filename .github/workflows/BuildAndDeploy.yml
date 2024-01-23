@@ -25,7 +25,7 @@ jobs:
         id: set_datetime
         run: echo "datetime=1.$(echo $(date +"%y%m%d") | sed 's/^0*//').$(echo $(date +"%H%M%S") | sed 's/^0*//')" >> "$GITHUB_OUTPUT"
       - name: Setup Pages
-        uses: actions/configure-pages@v3
+        uses: actions/configure-pages@v4
       - name: Checkout
         id: checkout
         uses: actions/checkout@v3
