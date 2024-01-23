@@ -31,16 +31,22 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Submodules
         run: make setup-git-clone
-      - name: Cache docker image
-        id: cache
-        uses: actions/cache@v4
+      - name: Cache Docker Image
+        uses: .github/actions/DockerCache.yml@main
         with:
-          path: |
-            ./cached-docker-image
           key: docker-${{ runner.os }}-${{ hashFiles('Dockerfile', '.github/workflows/*.yml', 'Makefile', '**/bun*', '.gitmodules') }}
-      - name: Load docker image or build a new one
-        run: |
-          [ -f ./cached-docker-image ] && (docker load -i ./cached-docker-image) || (docker build -t dylanlangston.com:build --target default --cache-to type=inline . && docker save -o ./cached-docker-image dylanlangston.com:build)
+          target: default
+          tag: dylanlangston.com:build
+      # - name: Cache docker image
+      #   id: cache
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: |
+      #       ./cached-docker-image
+      #     key: docker-${{ runner.os }}-${{ hashFiles('Dockerfile', '.github/workflows/*.yml', 'Makefile', '**/bun*', '.gitmodules') }}
+      # - name: Load docker image or build a new one
+      #   run: |
+      #     [ -f ./cached-docker-image ] && (docker load -i ./cached-docker-image) || (docker build -t dylanlangston.com:build --target default --cache-to type=inline . && docker save -o ./cached-docker-image dylanlangston.com:build)
       - name: Make using docker
         run: make release-docker VERSION=${{ steps.set_datetime.outputs.datetime }} OPTIMIZE='ReleaseFast'
       - name: Upload artifact
