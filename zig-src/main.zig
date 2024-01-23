@@ -7,6 +7,8 @@ const rl = @cImport({
 pub fn main() !void {
     if (builtin.mode != .Debug) rl.SetTraceLogLevel(rl.LOG_NONE);
 
+    rl.SetConfigFlags(rl.FLAG_VSYNC_HINT | rl.FLAG_MSAA_4X_HINT);
+
     rl.InitWindow(800, 450, undefined);
     defer rl.CloseWindow();
 
