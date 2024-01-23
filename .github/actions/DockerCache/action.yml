@@ -10,8 +10,6 @@ inputs:
   tag:
     description: 'Docker tag'
     required: true
-outputs:
-
 runs:
   using: "composite"
   steps:
