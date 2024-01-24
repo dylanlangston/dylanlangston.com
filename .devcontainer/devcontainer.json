@@ -20,7 +20,8 @@
 				"gitpod.gitpod-desktop",
 				"github.vscode-github-actions",
 				"GitHub.codespaces",
-				"bierner.markdown-preview-github-styles"
+				"bierner.markdown-preview-github-styles",
+				"bierner.markdown-mermaid"
 			],
 			"settings": {
 				"zig.path": "",

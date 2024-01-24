@@ -17,3 +17,4 @@ vscode:
     - github.vscode-github-actions
     - GitHub.codespaces
     - bierner.markdown-preview-github-styles
+    - bierner.markdown-mermaid
