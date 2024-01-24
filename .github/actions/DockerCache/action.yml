@@ -23,10 +23,11 @@ runs:
       with:
         path: ${{ inputs.image }}
         key: ${{ inputs.key }}
-    - name: Load docker image
+    - name: Load Docker Image
+      if: steps.cache.outputs.cache-hit == 'true'
       shell: sh
       run: docker load -i ${{ inputs.image }}
-    - name: Build Image
+    - name: Build and Save Docker Image
       if: steps.cache.outputs.cache-hit != 'true'
       uses: ./.github/actions/with-post-steps
       with:
