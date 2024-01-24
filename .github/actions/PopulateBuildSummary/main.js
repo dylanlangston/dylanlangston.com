@@ -1,10 +1,4 @@
-// https://github.com/actions/toolkit/blob/main/packages/core/src/summary.ts
-const { EOL } = require("os");
-const fs = require("fs");
+import { summary } from '../summary';
 
-const issueCommand = (cmd) => process.stdout.write(`${cmd}${EOL}`);
-
-const notice = (value) => issueCommand(`::notice::${value}`);
-
-// Todo
-notice("Build Summary Todo...");
+const version = process.env.INPUT_VERSION;
+summary.addHeading(`DylanLangston.com - v${version}`);

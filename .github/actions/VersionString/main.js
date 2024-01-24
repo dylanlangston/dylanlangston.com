@@ -1,5 +1,5 @@
-const { EOL } = require("os");
-const fs = require("fs");
+import { EOL } from 'os';
+import fs from 'fs'
 
 const issueCommand = (cmd) => process.stdout.write(`${cmd}${EOL}`);
 const issueFileCommand = (command, message) => {

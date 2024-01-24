@@ -35,7 +35,7 @@ runs:
       if: steps.cache-restore.outputs.cache-hit != 'true'
       shell: sh
       run: docker save -o ${{ inputs.image }} ${{ inputs.tag }}
-    - name: Cache docker image
+    - name: Cache Docker Image
       id: cache-save
       uses: actions/cache/save@v4
       if: steps.cache-restore.outputs.cache-hit != 'true'

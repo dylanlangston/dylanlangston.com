@@ -1,5 +1,9 @@
 name: 'Populate Build Summary'
 description: 'Populates the build summary with the appropriate info.'
+inputs:
+  version:
+    description: 'Current Build Version'
+    required: true
 runs:
   using: "node20"
   main: "main.js"
