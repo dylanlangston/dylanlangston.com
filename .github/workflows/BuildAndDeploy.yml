@@ -22,33 +22,31 @@ jobs:
     outputs:
       datetime: ${{ steps.get_version.outputs.version }}
     steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+      - name: Checkout Submodules
+        run: make setup-git-clone
       - name: Get Version
         uses: ./.github/actions/VersionString
         id: get_version
         with:
           time: ${{ github.event.head_commit.timestamp }}
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-      - name: Checkout
-        id: checkout
-        uses: actions/checkout@v4
-      - name: Setup Submodules
-        run: make setup-git-clone
       - name: Cache Docker Image
         uses: ./.github/actions/DockerCache
         with:
           key: docker-${{ runner.os }}-${{ hashFiles('Dockerfile', '.github/workflows/*.yml', 'Makefile', '**/bun*', '.gitmodules') }}
           target: default
           tag: dylanlangston.com:build
-      - name: Build using docker
+      - name: Build using Docker
         run: make release-docker VERSION=${{ steps.get_version.outputs.version }} OPTIMIZE='ReleaseFast'
-      - name: Upload artifact
+      - name: Upload Release artifact
         id: upload
         uses: actions/upload-artifact@v4
         with:
           name: dylanlangston.com-v${{ steps.get_version.outputs.version }}
           path: '${{ github.workspace }}/site/build'
-      - name: Upload github pages artifact
+      - name: Upload GitGub Pages artifact
         id: upload-compressed
         uses: actions/upload-pages-artifact@v3
         with:
@@ -65,6 +63,8 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Setup GitGub Pages
+        uses: actions/configure-pages@v4
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
