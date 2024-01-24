@@ -36,5 +36,5 @@ runs:
       shell: sh
       run: docker save -o ${{ inputs.image }} ${{ inputs.tag }}
 branding:
-  icon: 'tool'
+  icon: 'layers'
   color: 'green'
