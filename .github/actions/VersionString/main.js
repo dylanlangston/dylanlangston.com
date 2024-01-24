@@ -7,7 +7,7 @@ const issueFileCommand = (command, message) => {
     if (!filePath) throw new Error(`Unable to find environment variable for file command ${command}`);
     if (!fs.existsSync(filePath)) throw new Error(`Missing file at path: ${filePath}`);
   
-    fs.appendFileSync(filePath, `${message}${os.EOL}`, { encoding: 'utf8' });
+    fs.appendFileSync(filePath, `${message}${EOL}`, { encoding: 'utf8' });
 }
 
 const output = (name, value) => issueFileCommand("output", `${name}=${value}`);
