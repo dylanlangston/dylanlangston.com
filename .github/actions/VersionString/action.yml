@@ -17,7 +17,7 @@ runs:
       with:
         result-encoding: string
         script: |
-          const date = new Date("${{ github.event.head_commit.timestamp }}");
+          const date = new Date("${{ inputs.time }}");
 
           const major = 1;
           const minor = parseInt(`${date.getFullYear()-2000}${date.getMonth()}${date.getDate()}`);

@@ -34,7 +34,7 @@ jobs:
                run_id: context.payload.workflow_run.id,
             });
             let matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
-              return artifact.name == "release-artifact"
+              return artifact.name == "dylanlangston.com-v${{ steps.get_version.outputs.version }}"
             })[0];
             let download = await github.rest.actions.downloadArtifact({
                owner: context.repo.owner,
