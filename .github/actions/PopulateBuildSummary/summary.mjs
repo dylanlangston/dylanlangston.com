@@ -6,12 +6,8 @@ const SUMMARY_ENV_VAR = 'GITHUB_STEP_SUMMARY';
 
 // Source: https://github.com/actions/toolkit/blob/main/packages/core/src/summary.ts
 class Summary {
-    #_buffer;
+    #_buffer='';
     #_filePath;
-
-    constructor() {
-        this.buffer = ''
-    }
 
     /**
      * Finds the summary file path from the environment, rejects if env var is not found or file does not exist
