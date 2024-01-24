@@ -10,6 +10,10 @@ inputs:
   tag:
     description: 'Docker tag'
     required: true
+  image:
+    description: 'Docker tag'
+    required: true
+    default: './cached-docker-image'
 runs:
   using: "composite"
   steps:
@@ -17,9 +21,14 @@ runs:
       id: cache
       uses: actions/cache@v4
       with:
-        path: |
-          ./cached-docker-image
+        path: ${{ inputs.image }}
         key: ${{ inputs.key }}
-    - name: Load docker image or build a new one
-      shell: bash
-      run: ./.github/actions/DockerCache/DockerCache.sh ./cached-docker-image ${{ inputs.tag }} ${{ inputs.target }}
+    - name: Load docker image
+      shell: sh
+      run: docker load -i ${{ inputs.image }}
+    - name: Build Image
+      if: steps.cache.outputs.cache-hit != 'true'
+      uses: ./.github/actions/with-post-steps
+      with:
+        main: docker build -t ${{ inputs.tag }} --target ${{ inputs.target }} --cache-to type=inline .
+        post: docker save -o ${{ inputs.image }} ${{ inputs.tag }}
