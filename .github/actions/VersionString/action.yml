@@ -18,6 +18,8 @@ runs:
         result-encoding: string
         script: |
           const date = new Date("${{ inputs.time }}");
+          
+          if (!isNaN(date)) core.setFailed("Failed to set date input time: ${{ inputs.time }}");
 
           const major = 1;
           const minor = parseInt(`${date.getFullYear()-2000}${date.getMonth()}${date.getDate()}`);
