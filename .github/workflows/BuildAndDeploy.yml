@@ -28,12 +28,12 @@ jobs:
       - name: Checkout Submodules
         run: make setup-git-clone
       - name: Get Version
-        uses: ./.github/actions/VersionString
+        uses: dylanlangston/dylanlangston.com/.github/actions/VersionString@main
         id: get_version
         with:
           time: ${{ github.event.head_commit.timestamp }}
       - name: Cache Docker Image
-        uses: ./.github/actions/DockerCache
+        uses: dylanlangston/dylanlangston.com/.github/actions/DockerCache@main
         with:
           key: docker-${{ runner.os }}-${{ hashFiles('Dockerfile', '.github/workflows/*.yml', 'Makefile', '**/bun*', '.gitmodules') }}
           target: default
