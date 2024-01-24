@@ -22,5 +22,4 @@ runs:
         key: ${{ inputs.key }}
     - name: Load docker image or build a new one
       shell: bash
-      run: |
-        [ -f ./cached-docker-image ] && (docker load -i ./cached-docker-image) || (docker build -t ${{ inputs.tag }} --target ${{ inputs.target }} --cache-to type=inline . && docker save -o ./cached-docker-image ${{ inputs.tag }})
+      run: ./DockerCache.sh ./cached-docker-image ${{ inputs.tag }} ${{ inputs.target }}
