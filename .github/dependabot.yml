@@ -28,6 +28,12 @@ updates:
   - package-ecosystem: "github-actions"
     commit-message:
       prefix: "Github Actions - "
+    directory: ./.github/actions/WithPostStep
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "github-actions"
+    commit-message:
+      prefix: "Github Actions - "
     directory: ./.github/workflows/
     schedule:
       interval: "weekly"
