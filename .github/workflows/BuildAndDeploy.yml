@@ -18,12 +18,13 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     outputs:
       datetime: ${{ steps.set_datetime.outputs.datetime }}
     steps:
       - name: Set current datetime output variable
         id: set_datetime
-        run: echo "datetime=1.$(echo $(date +"%y%m%d") | sed 's/^0*//').$(echo $(date +"%H%M%S") | sed 's/^0*//')" >> "$GITHUB_OUTPUT"
+        run: echo "datetime=1.$(echo $(date --date="${{ github.event.created }}" +"%y%m%d") | sed 's/^0*//').$(echo $(date --date="${{ github.event.created }}" +"%H%M%S") | sed 's/^0*//')" >> "$GITHUB_OUTPUT"
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Checkout
@@ -53,6 +54,7 @@ jobs:
 
   deploy-github-pages:
     runs-on: ubuntu-latest
+    timeout-minutes: 1
     needs: [build]
     permissions:
       pages: write      # to deploy to Pages

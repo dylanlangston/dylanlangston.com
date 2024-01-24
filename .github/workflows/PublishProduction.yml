@@ -8,12 +8,17 @@ on:
 jobs:
   publish-release:
     runs-on: ubuntu-latest
+    timeout-minutes: 1
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     permissions:
       packages: read
       contents: read
     environment:
       name: production
     steps:
+      - name: Set current datetime output variable
+        id: set_datetime
+        run: echo "datetime=1.$(echo $(date --date="${{ github.event.workflow_run.created_at }}" +"%y%m%d") | sed 's/^0*//').$(echo $(date --date="${{ github.event.workflow_run.created_at }}" +"%H%M%S") | sed 's/^0*//')" >> "$GITHUB_OUTPUT"
       - name: 'Download artifact'
         uses: actions/github-script@v6
         with:
@@ -33,18 +38,18 @@ jobs:
                archive_format: 'zip',
             });
             let fs = require('fs');
-            fs.writeFileSync(`${{ steps.download.outputs.download-path }}/dylanlangstoncom-v${{ needs.build.outputs.datetime}}.zip`, Buffer.from(download.data));
+            fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/dylanlangstoncom-v${{ steps.set_datetime.outputs.datetime }}.zip`, Buffer.from(download.data));
       - name: Create Release
         id: create_release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "${{ steps.download.outputs.download-path }}/dylanlangstoncom-v${{ needs.build.outputs.datetime}}.zip"
+          artifacts: "dylanlangstoncom-v${{ steps.set_datetime.outputs.datetime }}.zip"
           artifactContentType: application/zip
           body: |
-            **DylanLangston.com - _Prerelease v${{ needs.build.outputs.datetime }}_**
-            ${{ github.event.head_commit.message }}
+            **DylanLangston.com - _Prerelease v${{ steps.set_datetime.outputs.datetime }}_**
+            ${{ github.event.workflow_run.head_commit.message }}
           prerelease: true
           draft: false
           commit: ${{ github.head_ref }}
-          tag: v${{ needs.build.outputs.datetime }}
+          tag: v${{ steps.set_datetime.outputs.datetime }}
           token: ${{ secrets.GITHUB_TOKEN }}
