@@ -1,0 +1,27 @@
+name: 'Version String'
+description: 'Outputs the version string based on an input date'
+inputs:
+  time:
+    description: 'Time this version was build'
+    required: true
+outputs:
+  version:
+    description: "Version String"
+    value: ${{ steps.set_datetime.outputs.version }}
+runs:
+  using: "composite"
+  steps:
+    - name: Set datetime output variable
+      uses: actions/github-script@v7
+      id: set_datetime
+      with:
+        result-encoding: string
+        script: |
+          const date = new Date("${{ github.event.head_commit.timestamp }}");
+
+          const major = 1;
+          const minor = parseInt(`${date.getFullYear()-2000}${date.getMonth()}${date.getDate()}`);
+          const patch = parseInt(`${date.getHours()}${date.getMinutes()}${date.getSeconds()}`);
+
+          core.exportVariable('version', `${major}.${minor}.${patch}`);
+          core.notice(`Version: ${major}.${minor}.${patch}`);

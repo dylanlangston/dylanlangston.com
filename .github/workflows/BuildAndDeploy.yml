@@ -20,22 +20,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     outputs:
-      datetime: ${{ steps.set_datetime.outputs.datetime }}
+      datetime: ${{ steps.get_version.outputs.version }}
     steps:
-      - name: Set datetime output variable
-        uses: actions/github-script@v7
-        id: set_datetime
+      - name: Get Version
+        uses: ./.github/actions/VersionString
+        id: get_version
         with:
-          result-encoding: string
-          script: |
-            const date = new Date("${{ github.event.head_commit.timestamp }}");
-
-            const major = 1;
-            const minor = parseInt(`${date.getFullYear()-2000}${date.getMonth()}${date.getDate()}`);
-            const patch = parseInt(`${date.getHours()}${date.getMinutes()}${date.getSeconds()}`);
-
-            core.exportVariable('datetime', `${major}.${minor}.${patch}`);
-            core.notice(`Version: ${major}.${minor}.${patch}`);
+          time: ${{ github.event.head_commit.timestamp }}
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Checkout
@@ -49,13 +40,13 @@ jobs:
           key: docker-${{ runner.os }}-${{ hashFiles('Dockerfile', '.github/workflows/*.yml', 'Makefile', '**/bun*', '.gitmodules') }}
           target: default
           tag: dylanlangston.com:build
-      - name: Make using docker
-        run: make release-docker VERSION=${{ steps.set_datetime.outputs.datetime }} OPTIMIZE='ReleaseFast'
+      - name: Build using docker
+        run: make release-docker VERSION=${{ steps.get_version.outputs.version }} OPTIMIZE='ReleaseFast'
       - name: Upload artifact
         id: upload
         uses: actions/upload-artifact@v4
         with:
-          name: dylanlangston.com-v${{ steps.set_datetime.outputs.datetime }}
+          name: dylanlangston.com-v${{ steps.get_version.outputs.version }}
           path: '${{ github.workspace }}/site/build'
       - name: Upload github pages artifact
         id: upload-compressed
