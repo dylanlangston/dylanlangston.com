@@ -16,7 +16,7 @@ updates:
   - package-ecosystem: "github-actions"
     commit-message:
       prefix: "Github Actions - "
-    directory: ./.github/actions/DockerCache
+    directory: ./.github/actions/
     schedule:
       interval: "weekly"
   - package-ecosystem: "github-actions"
