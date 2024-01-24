@@ -1,9 +1,7 @@
 # Source: https://github.com/abiwinanda/composite-post-gha/
 # Ref: https://github.com/pyTooling/Actions/blob/main/with-post-step/action.yml
 name: With post step
-
 description: "Generic JS Action to execute a main command and set a command as a post step."
-
 inputs:
   main:
     description: "Main command/script."
@@ -15,7 +13,6 @@ inputs:
     description: "Name of the state variable used to detect the post step."
     required: false
     default: POST
-
 runs:
   using: "node20"
   main: "main.js"

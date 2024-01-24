@@ -29,7 +29,7 @@ runs:
       run: docker load -i ${{ inputs.image }}
     - name: Build and Save Docker Image
       if: steps.cache.outputs.cache-hit != 'true'
-      uses: ./.github/actions/with-post-steps
+      uses: dylanlangston/dylanlangston.com/.github/actions/WithPostStep
       with:
         main: docker build -t ${{ inputs.tag }} --target ${{ inputs.target }} --cache-to type=inline .
         post: docker save -o ${{ inputs.image }} ${{ inputs.tag }}
