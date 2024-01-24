@@ -22,9 +22,20 @@ jobs:
     outputs:
       datetime: ${{ steps.set_datetime.outputs.datetime }}
     steps:
-      - name: Set current datetime output variable
+      - name: Set datetime output variable
+        uses: actions/github-script@v7
         id: set_datetime
-        run: echo "datetime=1.$(echo $(date --date="${{ github.event.head_commit.timestamp }}" +"%y%m%d") | sed 's/^0*//').$(echo $(date --date="${{ github.event.head_commit.timestamp }}" +"%H%M%S") | sed 's/^0*//')" >> "$GITHUB_OUTPUT"
+        with:
+          result-encoding: string
+          script: |
+            const date = new Date(${{ github.event.head_commit.timestamp }});
+
+            const major = 1;
+            const minor = parseInt(date.getFullYear()-2000+""+date.getMonth()+""+date.getDate());
+            const patch = parseInt(date.getHours()+""+date.getMinutes()+""+date.getSeconds());
+
+            core.exportVariable('datetime', `${major}.${minor}.${patch}`);
+            core.notice(`Version: ${major}.${minor}.${patch}`);
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Checkout
@@ -44,7 +55,7 @@ jobs:
         id: upload
         uses: actions/upload-artifact@v4
         with:
-          name: release-artifact
+          name: dylanlangston.com-v${{ steps.set_datetime.outputs.datetime }}
           path: '${{ github.workspace }}/site/build'
       - name: Upload github pages artifact
         id: upload-compressed
