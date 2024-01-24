@@ -17,10 +17,9 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Cache docker image
+    - name: Restore Cache docker image
       id: cache
-      uses: actions/cache@v4
-      save-always: true
+      uses: actions/cache/restore@v4
       with:
         path: ${{ inputs.image }}
         key: ${{ inputs.key }}
@@ -36,6 +35,13 @@ runs:
       if: steps.cache.outputs.cache-hit != 'true'
       shell: sh
       run: docker save -o ${{ inputs.image }} ${{ inputs.tag }}
+    - name: Cache docker image
+      id: cache
+      uses: actions/cache/save@v4
+      if: steps.cache.outputs.cache-hit != 'true'
+      with:
+        path: ${{ inputs.image }}
+        key: ${{ inputs.key }}
 branding:
   icon: 'layers'
   color: 'green'
