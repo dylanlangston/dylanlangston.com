@@ -10,7 +10,7 @@ outputs:
     value: ${{ steps.set_datetime.outputs.version }}
 runs:
   using: "node20"
-  main: "main.js"
+  main: "main.mjs"
 branding:
   icon: 'git-commit'
   color: 'green'
