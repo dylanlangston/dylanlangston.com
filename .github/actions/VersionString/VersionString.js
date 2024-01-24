@@ -5,7 +5,7 @@ module.exports = ({core, time}) => {
     const minor = parseInt(`${date.getFullYear()-2000}${date.getMonth()}${date.getDate()}`);
     const patch = parseInt(`${date.getHours()}${date.getMinutes()}${date.getSeconds()}`);
 
-    if (isNaN(minor) || isNaN(patch)) core.setFailed("Failed to set date input time: ${{ inputs.time }}");
+    if (isNaN(minor) || isNaN(patch)) core.setFailed(`Failed to set date input time: ${time}`);
     
     core.setOutput('version', `${major}.${minor}.${patch}`);
     core.notice(`Version: ${major}.${minor}.${patch}`);
