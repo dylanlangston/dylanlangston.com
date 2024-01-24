@@ -6,7 +6,7 @@ inputs:
     required: true
 runs:
   using: "node20"
-  main: "main.js"
+  main: "main.mjs"
 branding:
   icon: 'file-text'
   color: 'green'
