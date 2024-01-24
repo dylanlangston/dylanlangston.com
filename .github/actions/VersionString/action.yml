@@ -17,5 +17,5 @@ runs:
       with:
         result-encoding: string
         script: |
-          const script = require('./VersionString.js')
+          const script = require('./.github/actions/VersionString/VersionString.js')
           script({core});
