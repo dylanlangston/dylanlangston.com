@@ -1,5 +1,5 @@
-module.exports = ({core}) => {
-    const date = new Date(core.getInput('time', { required: true }));
+module.exports = ({core, time}) => {
+    const date = new Date(time);
     
     const major = 1;
     const minor = parseInt(`${date.getFullYear()-2000}${date.getMonth()}${date.getDate()}`);
