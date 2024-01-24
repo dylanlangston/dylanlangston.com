@@ -18,7 +18,7 @@ jobs:
     steps:
       - name: Set current datetime output variable
         id: set_datetime
-        run: echo "datetime=1.$(echo $(date --date="${{ github.event.workflow_run.created_at }}" +"%y%m%d") | sed 's/^0*//').$(echo $(date --date="${{ github.event.workflow_run.created_at }}" +"%H%M%S") | sed 's/^0*//')" >> "$GITHUB_OUTPUT"
+        run: echo "datetime=1.$(echo $(date --date="${{ github.event.workflow_run.head_commit.timestamp }}" +"%y%m%d") | sed 's/^0*//').$(echo $(date --date="${{ github.event.workflow_run.head_commit.timestamp }}" +"%H%M%S") | sed 's/^0*//')" >> "$GITHUB_OUTPUT"
       - name: 'Download artifact'
         uses: actions/github-script@v6
         with:
