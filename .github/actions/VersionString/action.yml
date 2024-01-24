@@ -18,4 +18,5 @@ runs:
         result-encoding: string
         script: |
           const script = require('./.github/actions/VersionString/VersionString.js');
-          script({core, new Date()});
+          const time = "${{ inputs.time }}";
+          script({core, time});
