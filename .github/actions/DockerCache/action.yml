@@ -20,6 +20,7 @@ runs:
     - name: Cache docker image
       id: cache
       uses: actions/cache@v4
+      save-always: true
       with:
         path: ${{ inputs.image }}
         key: ${{ inputs.key }}
