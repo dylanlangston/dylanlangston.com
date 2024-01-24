@@ -6,9 +6,9 @@ inputs:
     required: true
 runs:
   using: "node20"
-  main: "blank.js"
+  main: "main.mjs"
   post-if: "always()"
-  post: "main.mjs"
+  post: "post.mjs"
 branding:
   icon: 'file-text'
   color: 'green'

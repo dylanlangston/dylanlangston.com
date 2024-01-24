@@ -22,6 +22,11 @@ jobs:
     outputs:
       version: ${{ steps.get_version.outputs.version }}
     steps:
+      - name: Build Summary
+        uses: dylanlangston/dylanlangston.com/.github/actions/PopulateBuildSummary@main
+        id: summary
+        with:
+          version: ${{ steps.get_version.outputs.version }}
       - name: Checkout
         id: checkout
         uses: actions/checkout@v4
@@ -51,11 +56,6 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: '${{ github.workspace }}/site/build'
-      - name: Build Summary
-        uses: dylanlangston/dylanlangston.com/.github/actions/PopulateBuildSummary@main
-        id: summary
-        with:
-          version: ${{ steps.get_version.outputs.version }}
 
   deploy-github-pages:
     runs-on: ubuntu-latest
