@@ -1,5 +1,4 @@
-import { summary } from './summary.js';
+import { summary } from './summary.mjs';
 
 const version = process.env.INPUT_VERSION;
-summary.
 summary.addHeading(`DylanLangston.com - v${version}`);
