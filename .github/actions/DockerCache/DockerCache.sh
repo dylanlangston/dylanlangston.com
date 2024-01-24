@@ -6,9 +6,9 @@ test -n $2
 test -n $3
 
 # Vars
-$filename = $1
-$tag = $2
-$target = $3
+filename=$1
+tag=$2
+target=$3
 
 # Load Cached Image
 if [ -f "$filename" ]; then
