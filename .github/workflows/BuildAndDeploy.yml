@@ -28,11 +28,11 @@ jobs:
         with:
           result-encoding: string
           script: |
-            const date = new Date(${{ github.event.head_commit.timestamp }});
+            const date = new Date("${{ github.event.head_commit.timestamp }}");
 
             const major = 1;
-            const minor = parseInt(date.getFullYear()-2000+""+date.getMonth()+""+date.getDate());
-            const patch = parseInt(date.getHours()+""+date.getMinutes()+""+date.getSeconds());
+            const minor = parseInt(`${date.getFullYear()-2000}${date.getMonth()}${date.getDate()}`);
+            const patch = parseInt(`${date.getHours()}${date.getMinutes()}${date.getSeconds()}`);
 
             core.exportVariable('datetime', `${major}.${minor}.${patch}`);
             core.notice(`Version: ${major}.${minor}.${patch}`);
