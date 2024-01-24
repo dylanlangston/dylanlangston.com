@@ -9,5 +9,4 @@ outputs:
     description: "Version String"
     value: ${{ steps.set_datetime.outputs.version }}
 runs:
-  using: "node"
   main: "main.js"
