@@ -12,13 +12,18 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     permissions:
       packages: read
-      contents: read
+      contents: write
     environment:
       name: production
     steps:
-      - name: Set current datetime output variable
-        id: set_datetime
-        run: echo "datetime=1.$(echo $(date --date="${{ github.event.workflow_run.head_commit.timestamp }}" +"%y%m%d") | sed 's/^0*//').$(echo $(date --date="${{ github.event.workflow_run.head_commit.timestamp }}" +"%H%M%S") | sed 's/^0*//')" >> "$GITHUB_OUTPUT"
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+      - name: Get Version
+        uses: ./.github/actions/VersionString
+        id: get_version
+        with:
+          time: ${{ github.event.workflow_run.head_commit.timestamp }}
       - name: 'Download artifact'
         uses: actions/github-script@v6
         with:
@@ -38,18 +43,18 @@ jobs:
                archive_format: 'zip',
             });
             let fs = require('fs');
-            fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/dylanlangstoncom-v${{ steps.set_datetime.outputs.datetime }}.zip`, Buffer.from(download.data));
+            fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/dylanlangston.com-v${{ steps.get_version.outputs.version }}.zip`, Buffer.from(download.data));
       - name: Create Release
         id: create_release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "dylanlangstoncom-v${{ steps.set_datetime.outputs.datetime }}.zip"
+          artifacts: "dylanlangston.com-v${{ steps.get_version.outputs.version }}.zip"
           artifactContentType: application/zip
           body: |
-            **DylanLangston.com - _Prerelease v${{ steps.set_datetime.outputs.datetime }}_**
+            **DylanLangston.com - _Prerelease v${{ steps.get_version.outputs.version }}_**
             ${{ github.event.workflow_run.head_commit.message }}
           prerelease: true
           draft: false
           commit: ${{ github.head_ref }}
-          tag: v${{ steps.set_datetime.outputs.datetime }}
+          tag: v${{ steps.get_version.outputs.version }}
           token: ${{ secrets.GITHUB_TOKEN }}
