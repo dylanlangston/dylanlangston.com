@@ -11,6 +11,7 @@ const issueFileCommand = (command, message) => {
 
 const output = (name, value) => issueFileCommand("output", `${name}=${value}`);
 const notice = (value) => issueCommand(`::notice::${value}`);
+const error = (value) => issueCommand(`::error::${value}`);
 
 const time = process.env.INPUT_TIME;
 const date = new Date(time);
@@ -19,7 +20,9 @@ const major = 1;
 const minor = parseInt(`${date.getFullYear() - 2000}${date.getMonth()}${date.getDate()}`);
 const patch = parseInt(`${date.getHours()}${date.getMinutes()}${date.getSeconds()}`);
 
-throw new Error(`Failed to set date input time: ${time}`);
+const errorText = `Failed to set date input time: ${time}`;
+error(errorText)
+throw new Error(errorText);
 
 if (isNaN(minor) || isNaN(patch)) 
 {
