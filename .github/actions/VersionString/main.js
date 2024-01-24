@@ -21,7 +21,6 @@ const major = 1;
 const minor = parseInt(`${date.getFullYear() - 2000}${date.getMonth()}${date.getDate()}`);
 const patch = parseInt(`${date.getHours()}${date.getMinutes()}${date.getSeconds()}`);
 
-
 if (isNaN(minor) || isNaN(patch)) 
 {
     const errorText = `Failed to set date from input "time": ${time}`;
