@@ -1,6 +1,8 @@
 import { EOL } from 'os';
 import fs from 'fs'
 
+throw new Error("testing");
+
 const issueCommand = (cmd) => process.stdout.write(`${cmd}${EOL}`);
 const issueFileCommand = (command, message) => {
     const filePath = process.env[`GITHUB_${command.toUpperCase()}`]
