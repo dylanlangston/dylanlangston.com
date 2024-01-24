@@ -55,6 +55,8 @@ jobs:
         if: true
         uses: dylanlangston/dylanlangston.com/.github/actions/PopulateBuildSummary@main
         id: summary
+        with:
+          version: ${{ steps.get_version.outputs.version }}
 
   deploy-github-pages:
     runs-on: ubuntu-latest
