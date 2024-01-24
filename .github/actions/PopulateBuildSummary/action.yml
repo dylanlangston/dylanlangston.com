@@ -3,7 +3,8 @@ description: 'Populates the build summary with the appropriate info.'
 inputs:
   version:
     description: 'Current Build Version'
-    required: true
+    required: false
+    default: 'UNKNOWN'
 runs:
   using: "node20"
   main: "main.mjs"
