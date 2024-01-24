@@ -1,9 +1,8 @@
 const { EOL } = require("os");
 
-// ::name key=value
-const issueCommand = (name, key, value) => process.stdout.write(`::${name} ${key}=${value}${EOL}`);
-const output = (name, value) => issueCommand('set-output', name, value);
-const notice = (name, value) => issueCommand('notice', name, value);
+const issueCommand = (cmd) => process.stdout.write(`${cmd}${EOL}`);
+const output = (name, value) => issueCommand(`::set-output name=${name}::${value}`);
+const notice = (value) => issueCommand(`::notice::${value}`);
 
 const date = new Date(process.env.INPUT_TIME);
 
@@ -14,7 +13,7 @@ const patch = parseInt(`${date.getHours()}${date.getMinutes()}${date.getSeconds(
 if (isNaN(minor) || isNaN(patch)) 
 {
     process.stdout.write(`Failed to set date input time: ${time}${EOL}`);
-    process.exitCode = ExitCode.Failure;
+    process.exitCode = 1;
     return;
 }
 
