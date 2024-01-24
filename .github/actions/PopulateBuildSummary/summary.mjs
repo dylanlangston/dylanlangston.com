@@ -6,8 +6,8 @@ const SUMMARY_ENV_VAR = 'GITHUB_STEP_SUMMARY';
 
 // Source: https://github.com/actions/toolkit/blob/main/packages/core/src/summary.ts
 class Summary {
-    #buffer;
-    #filePath;
+    #_buffer;
+    #_filePath;
 
     constructor() {
         this.buffer = ''
