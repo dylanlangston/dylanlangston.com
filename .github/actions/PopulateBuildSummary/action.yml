@@ -6,7 +6,8 @@ inputs:
     required: true
 runs:
   using: "node20"
-  main: "main.mjs"
+  post-if: "always()"
+  post: "main.mjs"
 branding:
   icon: 'file-text'
   color: 'green'
