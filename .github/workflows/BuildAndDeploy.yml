@@ -33,7 +33,7 @@ jobs:
         with:
           time: ${{ github.event.head_commit.timestamp }}
       - name: Cache Docker Image
-        uses: dylanlangston/dylanlangston.com/.github/actions/DockerCache
+        uses: dylanlangston/dylanlangston.com/.github/actions/DockerCache@main
         with:
           key: docker-${{ runner.os }}-${{ hashFiles('Dockerfile', '.github/workflows/*.yml', 'Makefile', '**/bun*', '.gitmodules') }}
           target: default
