@@ -5,6 +5,10 @@ on:
     workflows: ["Build and Deploy Pages"]
     types: [completed]
 
+concurrency:
+  group: "publish"
+  cancel-in-progress: true
+
 jobs:
   publish-release:
     runs-on: ubuntu-latest
