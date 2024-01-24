@@ -1,4 +1,5 @@
 const { EOL } = require("os");
+const fs = require("fs");
 
 const issueCommand = (cmd) => process.stdout.write(`${cmd}${EOL}`);
 const issueFileCommand = (command, message) => {
