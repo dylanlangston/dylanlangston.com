@@ -19,7 +19,7 @@ class Summary {
      *
      * @returns step summary file path
      */
-    async #filePath() {
+    #filePath = async () => {
         if (this._filePath) {
             return this._filePath
         }
@@ -52,7 +52,7 @@ class Summary {
      *
      * @returns {string} content wrapped in HTML element
      */
-    #wrap(tag, content, attrs = {}) {
+    #wrap = (tag, content, attrs = {}) => {
         const htmlAttrs = Object.entries(attrs)
             .map(([key, value]) => ` ${key}="${value}"`)
             .join('')
@@ -150,6 +150,7 @@ class Summary {
         const attrs = {
             ...(lang && { lang })
         }
+        this.#wrap
         const element = this.wrap('pre', this.wrap('code', code), attrs)
         return this.addRaw(element).addEOL()
     }
