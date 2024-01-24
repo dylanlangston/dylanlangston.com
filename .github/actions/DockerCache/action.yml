@@ -18,27 +18,27 @@ runs:
   using: "composite"
   steps:
     - name: Restore Cache docker image
-      id: cache
+      id: cache-restore
       uses: actions/cache/restore@v4
       with:
         path: ${{ inputs.image }}
         key: ${{ inputs.key }}
     - name: Load Docker Image
-      if: steps.cache.outputs.cache-hit == 'true'
+      if: steps.cache-restore.outputs.cache-hit == 'true'
       shell: sh
       run: docker load -i ${{ inputs.image }}
     - name: Build Docker Image
-      if: steps.cache.outputs.cache-hit != 'true'
+      if: steps.cache-restore.outputs.cache-hit != 'true'
       shell: sh
       run: docker build -t ${{ inputs.tag }} --target ${{ inputs.target }} --cache-to type=inline .
     - name: Save Docker Image
-      if: steps.cache.outputs.cache-hit != 'true'
+      if: steps.cache-restore.outputs.cache-hit != 'true'
       shell: sh
       run: docker save -o ${{ inputs.image }} ${{ inputs.tag }}
     - name: Cache docker image
-      id: cache
+      id: cache-save
       uses: actions/cache/save@v4
-      if: steps.cache.outputs.cache-hit != 'true'
+      if: steps.cache-restore.outputs.cache-hit != 'true'
       with:
         path: ${{ inputs.image }}
         key: ${{ inputs.key }}
