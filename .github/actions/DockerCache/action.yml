@@ -22,4 +22,4 @@ runs:
         key: ${{ inputs.key }}
     - name: Load docker image or build a new one
       shell: bash
-      run: ./DockerCache.sh ./cached-docker-image ${{ inputs.tag }} ${{ inputs.target }}
+      run: ./.github/actions/DockerCache/DockerCache.sh ./cached-docker-image ${{ inputs.tag }} ${{ inputs.target }}
