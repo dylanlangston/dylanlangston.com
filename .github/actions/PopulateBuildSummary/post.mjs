@@ -6,10 +6,13 @@ import { js_common } from '../js_common.mjs';
 let version = process.env.INPUT_VERSION;
 const mode = process.env.INPUT_MODE.toLowerCase();
 const runId = process.env.INPUT_RUNID;
-let startTime = "Unknown";
-js_common.getWorkflowDetails(runId, (workflow) => {
-    startTime = workflow.run_started_at;
-});
+const startTime = "Unknown";
+try {
+    startTime = JSON.parse(await js_common.getWorkflowDetails(runId)).run_started_at;
+}
+catch (err) {
+    js_common.error(`Failed to fetch start time: ${err}`);
+}
 
 // Validations
 if (!validations.versionValid(version)) {

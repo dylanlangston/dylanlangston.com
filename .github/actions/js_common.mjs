@@ -8,7 +8,7 @@ class JS_Common {
         const filePath = process.env[`GITHUB_${command.toUpperCase()}`]
         if (!filePath) throw new Error(`Unable to find environment variable for file command ${command}`);
         if (!fs.existsSync(filePath)) throw new Error(`Missing file at path: ${filePath}`);
-    
+
         fs.appendFileSync(filePath, `${message}${EOL}`, { encoding: 'utf8' });
     }
 
@@ -19,29 +19,25 @@ class JS_Common {
         throw new Error(value);
     }
 
-    getWorkflowDetails = (runId, callback) => {
-        let url = `https://api.github.com/repos/dylanlangston/dylanlangston.com/actions/runs/${runId}`;
 
-        https.get(url,(res) => {
-            let body = "";
-        
+    fetch = async (URL) => new Promise((resolve, reject) => {
+        const responseHandler = (res) => {
+            let data = "";
             res.on("data", (chunk) => {
-                body += chunk;
+                data += chunk;
             });
-        
             res.on("end", () => {
-                try {
-                    this.output(body);
-                    let json = JSON.parse(body);
-                    callback(json);
-                } catch (error) {
-                    this.error(error.message);
-                };
+                resolve(data);
             });
-        }).on("error", (error) => {
-            this.error(error.message);
-        });
-    };
+            res.on("error", (err) => {
+                reject(err.message);
+            });
+        };
+
+        https.get(URL, responseHandler);
+    });
+
+    getWorkflowDetails = async (runId) => await this.fetch(`https://api.github.com/repos/dylanlangston/dylanlangston.com/actions/runs/${runId}`);
 }
 
 export const js_common = new JS_Common();
