@@ -6,7 +6,7 @@ import { js_common } from '../js_common.mjs';
 switch (mode) {
     case "onpush":
     case "automerge":
-        return; // Exit
+        process.exit(0); // Exit no error
     case "test":
         Test();
         break;
