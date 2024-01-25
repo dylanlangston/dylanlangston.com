@@ -15,7 +15,7 @@
     "test:unit": "vitest run"
   },
   "devDependencies": {
-    "@builder.io/partytown": "^0.8.2",
+    "@builder.io/partytown": "^0.9.0",
     "@playwright/test": "^1.28.1",
     "@sveltejs/adapter-auto": "^3.0.0",
     "@sveltejs/adapter-static": "^3.0.1",
