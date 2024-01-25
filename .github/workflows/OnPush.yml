@@ -11,6 +11,10 @@ permissions:
   contents: write
   id-token: write
 
+concurrency:
+  group: "build"
+  cancel-in-progress: true
+
 jobs:
   Test:
     uses: dylanlangston/dylanlangston.com/.github/workflows/Test.yml@main
@@ -20,6 +24,7 @@ jobs:
       version: '1.0.0'
   BuildAndDeploy:
     uses: dylanlangston/dylanlangston.com/.github/workflows/BuildAndDeploy.yml@main
+    needs: [Test]
     permissions:
       contents: read
       pages: write
@@ -28,6 +33,7 @@ jobs:
       version: '1.0.0'
   PublishProduction:
     uses: dylanlangston/dylanlangston.com/.github/workflows/PublishProduction.yml@main
+    needs: [BuildAndDeploy]
     permissions:
       packages: read
       contents: write
