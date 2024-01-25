@@ -29,9 +29,9 @@ jobs:
         uses: dylanlangston/dylanlangston.com/.github/actions/PopulateBuildSummary@main
         id: summary
         with:
-          version: '1.0.0'
-          mode: 'deploy'
-          runId: ${{ steps.get_version.outputs.version }}
+          version: ${{ needs.Initialize.outputs.version }}
+          mode: 'onpush'
+          runId: ${{ github.run_id }}
   Test:
     uses: dylanlangston/dylanlangston.com/.github/workflows/Test.yml@main
     needs: [Initialize]

@@ -24,7 +24,7 @@ else {
 }
 validations.validateMode(mode);
 
-function Init() {
+function OnPush() {
     summary.addHeading(`DylanLangston.com - ${version}`, 3);
     summary.addEOL();
 }
@@ -59,14 +59,17 @@ function Release() {
 
 // Start Main
 switch (mode) {
-    case "init":
-        Init();
+    case "onpush":
+        OnPush();
         break;
     case "test":
         Test();
         break;
     case "build":
         Build();
+        break;
+    case "deploy":
+        Deploy();
         break;
     case "release":
         Release();
