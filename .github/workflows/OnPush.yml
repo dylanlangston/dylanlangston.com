@@ -37,6 +37,8 @@ jobs:
           time: ${{ github.event.head_commit.timestamp }}
   Test:
     name: "Step 1️⃣"
+    # We should have already tested in "DependabotAutoMerge.yml" if this is dependabot
+    if: github.actor != 'dependabot[bot]'
     uses: dylanlangston/dylanlangston.com/.github/workflows/Test.yml@main
     needs: [Initialize]
     permissions:
