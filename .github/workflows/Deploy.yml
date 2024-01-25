@@ -1,4 +1,4 @@
-name: 3 - Deploy Site to Github Pages
+name: 3️⃣ - Deploy Site to Github Pages
 
 on:
   workflow_call:
@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   deploy:
-    name: "Deploy Site"
+    name: "Deploy"
     runs-on: ubuntu-latest
     timeout-minutes: 1
     permissions:
