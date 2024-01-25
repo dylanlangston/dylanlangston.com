@@ -6,6 +6,9 @@ on:
     
   workflow_dispatch:
 
+permissions:
+  packages: read
+
 jobs:
   Test:
     uses: dylanlangston/dylanlangston.com/.github/workflows/Test.yml@main
