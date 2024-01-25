@@ -18,7 +18,7 @@ class Validations {
     };
     validateVersion = (version) => {
         if (!semanticVersion.test(version)) {
-            js_common.error(`Invalid "version" input: ${mode}`);
+            js_common.error(`Invalid "version" input: ${version}`);
         }
     };
 }

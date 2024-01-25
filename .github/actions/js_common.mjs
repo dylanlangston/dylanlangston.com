@@ -11,10 +11,10 @@ class JS_Common {
         fs.appendFileSync(filePath, `${message}${EOL}`, { encoding: 'utf8' });
     }
 
-    output = (name, value) => issueFileCommand("output", `${name}=${value}`);
-    notice = (value) => issueCommand(`::notice::${value}`);
+    output = (name, value) => this.issueFileCommand("output", `${name}=${value}`);
+    notice = (value) => this.issueCommand(`::notice::${value}`);
     error = (value) => {
-        issueCommand(`::error::${value}`);
+        this.issueCommand(`::error::${value}`);
         throw new Error(value);
     }
 }

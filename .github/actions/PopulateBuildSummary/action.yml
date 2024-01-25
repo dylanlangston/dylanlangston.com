@@ -11,7 +11,6 @@ inputs:
 runs:
   using: "node20"
   main: "main.mjs"
-  post-if: "always()"
   post: "post.mjs"
 branding:
   icon: 'file-text'
