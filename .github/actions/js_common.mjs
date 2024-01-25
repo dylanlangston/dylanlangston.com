@@ -2,6 +2,8 @@ import { EOL } from 'os';
 import https from 'https';
 import fs from 'fs'
 
+const repo = 'dylanlangston/dylanlangston.com';
+
 class JS_Common {
     issueCommand = (cmd) => process.stdout.write(`${cmd}${EOL}`);
     issueFileCommand = (command, message) => {
@@ -22,26 +24,72 @@ class JS_Common {
 
     fetch = async (URL) => new Promise((resolve, reject) => {
         const responseHandler = (res) => {
+            if (res.statusCode < 200 || res.statusCode > 299) {
+                return reject(new Error(`HTTP status code ${res.statusCode}`))
+            }
+
             let data = "";
-            res.on("data", (chunk) => {
-                data += chunk;
-            });
-            res.on("end", () => {
-                resolve(data);
-            });
-            res.on("error", (err) => {
-                reject(err.message);
-            });
+            res.on('data', (chunk) => data += chunk);
+            res.on('end', () => resolve(data));
+            res.on('error', (err) => reject(err.message));
         };
 
         const options = {
-            headers: { "User-Agent": "dylanlangston.com github actions" }
+            headers: { 
+                'User-Agent': `${repo} github actions` 
+            }
         };
 
         https.get(URL, options, responseHandler);
     });
 
-    getWorkflowDetails = async (runId) => await this.fetch(`https://api.github.com/repos/dylanlangston/dylanlangston.com/actions/runs/${runId}`);
+    post(url, token, dataString) {
+        const options = {
+            method: 'POST',
+            headers: {
+                'User-Agent': `${repo} github actions`,
+                'Accept': 'application/vnd.github.everest-preview+json',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+                'Content-Length': dataString.length,
+            },
+            timeout: 1000, // in ms
+        }
+
+        return new Promise((resolve, reject) => {
+            const req = https.request(url, options, (res) => {
+                if (res.statusCode < 200 || res.statusCode > 299) {
+                    return reject(new Error(`HTTP status code ${res.statusCode}`))
+                }
+
+                let data = "";
+                res.on('data', (chunk) => data += chunk)
+                res.on('end', () => resolve(data));
+                res.on('error', (err) => reject(err.message));
+            });
+
+            req.on('error', (err) => reject(err));
+
+            req.on('timeout', () => {
+                req.destroy();
+                reject(new Error('Request time out'));
+            });
+
+            req.write(dataString);
+            req.end();
+        })
+    }
+
+    getWorkflowDetails = async (runId) => await this.fetch(`https://api.github.com/repos/${repo}/actions/runs/${runId}`);
+
+    triggerWorkflow = async (type, body, token) => {
+        const url = `https://api.github.com/repos/${repo}/dispatches`;
+        const data = {
+            'event_type': type,
+            "client_payload": body
+        };
+        return await post(url, token, JSON.stringify(data));
+    };
 }
 
 export const js_common = new JS_Common();

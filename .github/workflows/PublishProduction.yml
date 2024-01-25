@@ -1,11 +1,8 @@
 name: 3 - Publish Site To Production
 
 on:
-  # workflow_run:
-  #   workflows: ["Build and Deploy Pages"]
-  #   types: [completed]
-
-  workflow_dispatch:
+  repository_dispatch:
+    types: [publish-production]
 
 concurrency:
   group: "publish"
@@ -15,7 +12,6 @@ jobs:
   publish-release:
     runs-on: ubuntu-latest
     timeout-minutes: 1
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     permissions:
       packages: read
       contents: write
@@ -36,7 +32,7 @@ jobs:
         uses: ./.github/actions/VersionString
         id: get_version
         with:
-          time: ${{ github.event.workflow_run.head_commit.timestamp }}
+          time: ${{ github.event.client_payload.workflow_run.head_commit.timestamp }}
       - name: 'Download artifact'
         uses: actions/github-script@v6
         with:
@@ -65,7 +61,7 @@ jobs:
           artifactContentType: application/zip
           body: |
             **DylanLangston.com - _Prerelease v${{ steps.get_version.outputs.version }}_**
-            ${{ github.event.workflow_run.head_commit.message }}
+            ${{ github.event.client_payload.workflow_run.head_commit.message }}
           prerelease: true
           draft: false
           commit: ${{ github.head_ref }}

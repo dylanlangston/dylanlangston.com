@@ -47,3 +47,10 @@ jobs:
           tag: dylanlangston.com:build
       - name: Test using Docker
         run: make test-docker VERSION=${{ steps.get_version.outputs.version }}
+      - name: Trigger Build and Deploy
+        uses: dylanlangston/dylanlangston.com/.github/actions/TriggerWorkflow@main
+        id: trigger-next-workflow
+        with:
+          token: ${{ steps.get_version.outputs.version }}
+          trigger: 'build-and-deploy'
+          runId: ${{ github.run_id }}

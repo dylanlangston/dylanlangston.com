@@ -1,0 +1,18 @@
+name: 'Trigger another Workflow'
+description: 'Triggers a another workflow'
+inputs:
+  runId:
+    description: 'Current Workflow Run ID.'
+    required: true
+  token:
+    description: 'Personal Access Token'
+    required: true
+  trigger:
+    description: 'Workflow trigger'
+    required: true 
+runs:
+  using: "node20"
+  main: "main.mjs"
+branding:
+  icon: 'play'
+  color: 'green'
