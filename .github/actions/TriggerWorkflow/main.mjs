@@ -8,4 +8,4 @@ const workFlowRun = await js_common.getWorkflowDetails(runId);
 const data = JSON.parse(workFlowRun);
 
 // Trigger workflow
-js_common.triggerWorkflow(tigger, data, token);
+js_common.triggerWorkflow(trigger, data, token);
