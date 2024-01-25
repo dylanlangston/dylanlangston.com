@@ -34,7 +34,11 @@ class JS_Common {
             });
         };
 
-        https.get(URL, responseHandler);
+        const options = {
+            headers: { "User-Agent": "dylanlangston.com github actions" }
+        };
+
+        https.get(URL, options, responseHandler);
     });
 
     getWorkflowDetails = async (runId) => await this.fetch(`https://api.github.com/repos/dylanlangston/dylanlangston.com/actions/runs/${runId}`);
