@@ -1,4 +1,4 @@
-name: 4 - Release Site To Production
+name: 4 - Release Site to Production
 
 on:
   workflow_call:
@@ -16,6 +16,7 @@ concurrency:
 
 jobs:
   release:
+    name: "Release Site to Production"
     runs-on: ubuntu-latest
     timeout-minutes: 1
     permissions:

@@ -17,6 +17,7 @@ concurrency:
 
 jobs:
   Initialize:
+    name: ""
     runs-on: ubuntu-latest
     timeout-minutes: 1
     outputs:
@@ -35,6 +36,7 @@ jobs:
         with:
           time: ${{ github.event.head_commit.timestamp }}
   Test:
+    name: ""
     uses: dylanlangston/dylanlangston.com/.github/workflows/Test.yml@main
     needs: [Initialize]
     permissions:
@@ -42,6 +44,7 @@ jobs:
     with:
       version: ${{ needs.Initialize.outputs.version }}
   Build:
+    name: ""
     uses: dylanlangston/dylanlangston.com/.github/workflows/Build.yml@main
     needs: [Initialize, Test]
     permissions:
@@ -49,6 +52,7 @@ jobs:
     with:
       version: ${{ needs.Initialize.outputs.version }}
   Deploy:
+    name: ""
     uses: dylanlangston/dylanlangston.com/.github/workflows/Deploy.yml@main
     needs: [Initialize, Build]
     permissions:
@@ -58,6 +62,7 @@ jobs:
     with:
       version: ${{ needs.Initialize.outputs.version }}
   Release:
+    name: ""
     uses: dylanlangston/dylanlangston.com/.github/workflows/Release.yml@main
     needs: [Initialize, Deploy]
     permissions:

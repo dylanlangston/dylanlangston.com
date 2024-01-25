@@ -13,6 +13,7 @@ concurrency:
 
 jobs:
   test:
+    name: "Test Site"
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
