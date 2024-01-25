@@ -7,7 +7,6 @@ inputs:
 outputs:
   version:
     description: "Version String"
-    value: ${{ steps.set_datetime.outputs.version }}
 runs:
   using: "node20"
   main: "main.mjs"
