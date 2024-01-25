@@ -19,6 +19,8 @@ jobs:
   Initialize:
     runs-on: ubuntu-latest
     timeout-minutes: 1
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
     steps:
       - name: Initialize Summary
         uses: dylanlangston/dylanlangston.com/.github/actions/PopulateBuildSummary@main
