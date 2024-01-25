@@ -1,4 +1,4 @@
-name: Release Site To Production
+name: 3 - Publish Site To Production
 
 on:
   # workflow_run:
