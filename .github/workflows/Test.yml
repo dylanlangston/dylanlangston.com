@@ -23,7 +23,7 @@ jobs:
         with:
           version: ${{ inputs.version }}
           mode: 'test'
-          runId: ${{ github.run_id }}
+          jobId: ${{ github.job }}
       - name: Checkout
         id: checkout
         uses: actions/checkout@v4

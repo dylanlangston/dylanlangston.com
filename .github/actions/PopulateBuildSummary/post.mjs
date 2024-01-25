@@ -5,11 +5,11 @@ import { js_common } from '../js_common.mjs';
 // Inputs
 let version = process.env.INPUT_VERSION;
 const mode = process.env.INPUT_MODE.toLowerCase();
-const runId = process.env.INPUT_RUNID;
+const jobId = process.env.INPUT_JOBID;
 let startTime = "Unknown";
 try {
-    const workFlowRun = await js_common.getWorkflowDetails(runId);
-    startTime = JSON.parse(workFlowRun).run_started_at;
+    const job = await js_common.getJobDetails(jobId);
+    startTime = JSON.parse(workFlowRun).started_at;
 }
 catch (err) {
     js_common.error(`Failed to fetch workflow run details: ${err}`);

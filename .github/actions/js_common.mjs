@@ -81,6 +81,7 @@ class JS_Common {
     }
 
     getWorkflowDetails = async (runId) => await this.fetch(`https://api.github.com/repos/${repo}/actions/runs/${runId}`);
+    getJobDetails = async (jobId) => await this.fetch(`https://api.github.com/repos/${repo}/actions/jobs/${jobId}`);
 
     triggerWorkflow = async (type, body, token) => {
         const url = `https://api.github.com/repos/${repo}/dispatches`;
