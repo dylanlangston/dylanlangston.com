@@ -8,15 +8,15 @@ on:
 
 jobs:
   Test:
-    uses: dylanlangston/dylanlangston.com/.github/workflows/Test@main
+    uses: dylanlangston/dylanlangston.com/.github/workflows/Test.yml@main
     with:
       version: '1.0.0'
   BuildAndDeploy:
-    uses: dylanlangston/dylanlangston.com/.github/workflows/BuildAndDeploy@main
+    uses: dylanlangston/dylanlangston.com/.github/workflows/BuildAndDeploy.yml@main
     with:
       version: '1.0.0'
   PublishProduction:
-    uses: dylanlangston/dylanlangston.com/.github/workflows/PublishProduction@main
+    uses: dylanlangston/dylanlangston.com/.github/workflows/PublishProduction.yml@main
     with:
       version: '1.0.0'
       commit-message: 'test'
