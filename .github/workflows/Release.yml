@@ -34,7 +34,7 @@ jobs:
         with:
           version: ${{ inputs.version }}
           mode: 'release'
-          jobId: ${{ github.job }}
+          runId: ${{ github.run_id }}
       - name: 'Download artifact'
         uses: actions/github-script@v6
         with:

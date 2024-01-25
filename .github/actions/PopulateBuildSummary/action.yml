@@ -8,8 +8,8 @@ inputs:
   mode:
     description: 'A supported mode to generate the build summary.'
     required: true 
-  jobId:
-    description: 'Current Workflow Job ID.'
+  runId:
+    description: 'Current Workflow ID.'
     required: true
 runs:
   using: "node20"

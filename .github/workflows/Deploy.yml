@@ -34,7 +34,7 @@ jobs:
         with:
           version: ${{ inputs.version }}
           mode: 'deploy'
-          jobId: ${{ github.job }}
+          runId: ${{ github.run_id }}
       - name: Setup GitGub Pages
         uses: actions/configure-pages@v4
       - name: Deploy to GitHub Pages

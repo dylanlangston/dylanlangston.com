@@ -5,11 +5,12 @@ import { js_common } from '../js_common.mjs';
 // Inputs
 let version = process.env.INPUT_VERSION;
 const mode = process.env.INPUT_MODE.toLowerCase();
-const jobId = process.env.INPUT_JOBID;
+const runId = process.env.INPUT_RUNID;
 let startTime = "Unknown";
 try {
-    const job = await js_common.getJobDetails(jobId);
-    startTime = JSON.parse(workFlowRun).started_at;
+    const workflowJobs = JSON.parse(await js_common.getWorkflowJobsDetails(runId));
+    const currentJob = workflowJobs.jobs.filter(j => j.status == "in_progress")[0];
+    startTime = currentJob.started_at;
 }
 catch (err) {
     js_common.error(`Failed to fetch workflow run details: ${err}`);
