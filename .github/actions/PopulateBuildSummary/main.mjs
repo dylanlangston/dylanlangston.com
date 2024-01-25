@@ -1,4 +1,5 @@
 import { validations } from './validations.mjs';
+import { js_common } from '../js_common.mjs';
 
 const mode = process.env.INPUT_MODE.toLowerCase();
 
