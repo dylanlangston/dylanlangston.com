@@ -1,4 +1,5 @@
 import { EOL } from 'os';
+import https from 'https';
 import fs from 'fs'
 
 class JS_Common {
@@ -17,6 +18,29 @@ class JS_Common {
         this.issueCommand(`::error::${value}`);
         throw new Error(value);
     }
+
+    getWorkflowDetails = (runId, callback) => {
+        let url = `https://api.github.com/repos/dylanlangston/dylanlangston.com/actions/runs/${runId}`;
+
+        https.get(url,(res) => {
+            let body = "";
+        
+            res.on("data", (chunk) => {
+                body += chunk;
+            });
+        
+            res.on("end", () => {
+                try {
+                    let json = JSON.parse(body);
+                    callback(json);
+                } catch (error) {
+                    this.error(error.message);
+                };
+            });
+        }).on("error", (error) => {
+            this.error(error.message);
+        });
+    };
 }
 
 export const js_common = new JS_Common();

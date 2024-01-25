@@ -16,11 +16,7 @@ class Validations {
             js_common.error(`Unknown "mode" input: ${mode}`);
         }
     };
-    validateVersion = (version) => {
-        if (!semanticVersion.test(version)) {
-            js_common.error(`Invalid "version" input: ${version}`);
-        }
-    };
+    versionValid = (version) => semanticVersion.test(version);
 }
 
 export const validations = new Validations();

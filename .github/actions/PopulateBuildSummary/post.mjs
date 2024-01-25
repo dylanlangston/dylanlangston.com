@@ -2,28 +2,47 @@ import { summary } from './summary.mjs';
 import { validations } from './validations.mjs';
 import { js_common } from '../js_common.mjs';
 
-const version = process.env.INPUT_VERSION;
+// Inputs
+let version = process.env.INPUT_VERSION;
 const mode = process.env.INPUT_MODE.toLowerCase();
+const runId = process.env.INPUT_RUNID;
+let startTime = "Unknown";
+js_common.getWorkflowDetails(runId, (workflow) => {
+    startTime = workflow.run_started_at;
+});
 
-validations.validateVersion(version);
+// Validations
+if (!validations.versionValid(version)) {
+    version = "Unknown"
+}
+else {
+    version = `v${version}`;
+}
 validations.validateMode(mode);
 
 function Test() {
+    summary.addHeading(`🧪 DylanLangston.com - ${version}`);
+    summary.addEOL();
+
+    summary.addRaw(`* Test Started at ${startTime}.`, true);
     summary.addRaw(`* Test Completed at ${new Date().toISOString()}.`, true);
 }
-
 function Build() {
+    summary.addHeading(`🧰 DylanLangston.com - ${version}`);
+    summary.addEOL();
+
+    summary.addRaw(`* Build Started at ${startTime}.`, true);
     summary.addRaw(`* Build Completed at ${new Date().toISOString()}.`, true);
 }
-
 function Publish() {
+    summary.addHeading(`📦 DylanLangston.com - ${version}`);
+    summary.addEOL();
+
+    summary.addRaw(`* Publish Started at ${startTime}.`, true);
     summary.addRaw(`* Publish Completed at ${new Date().toISOString()}.`, true);
 }
 
-// Heading
-summary.addHeading(`🧰 DylanLangston.com - v${version}`);
-summary.addEOL();
-
+// Start Main
 switch (mode) {
     case "test":
         Test();

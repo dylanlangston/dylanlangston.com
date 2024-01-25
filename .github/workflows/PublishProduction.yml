@@ -28,6 +28,7 @@ jobs:
         with:
           version: ${{ steps.get_version.outputs.version }}
           mode: 'publish'
+          runId: ${{ github.run_id }}
       - name: Checkout
         id: checkout
         uses: actions/checkout@v4
