@@ -31,6 +31,7 @@ class JS_Common {
         
             res.on("end", () => {
                 try {
+                    this.output(body);
                     let json = JSON.parse(body);
                     callback(json);
                 } catch (error) {
