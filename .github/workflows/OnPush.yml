@@ -20,18 +20,18 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 1
     steps:
-      - name: Get Version
-        uses: dylanlangston/dylanlangston.com/.github/actions/VersionString@main
-        id: get_version
-        with:
-          time: ${{ github.event.head_commit.timestamp }}
-      - name: Build Summary
+      - name: Initialize Summary
         uses: dylanlangston/dylanlangston.com/.github/actions/PopulateBuildSummary@main
         id: summary
         with:
           version: ${{ steps.get_version.outputs.version }}
           mode: 'onpush'
           runId: ${{ github.run_id }}
+      - name: Get Version
+        uses: dylanlangston/dylanlangston.com/.github/actions/VersionString@main
+        id: get_version
+        with:
+          time: ${{ github.event.head_commit.timestamp }}
   Test:
     uses: dylanlangston/dylanlangston.com/.github/workflows/Test.yml@main
     needs: [Initialize]

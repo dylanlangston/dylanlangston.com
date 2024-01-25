@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  publish-release:
+  release:
     runs-on: ubuntu-latest
     timeout-minutes: 1
     permissions:
@@ -24,7 +24,7 @@ jobs:
     environment:
       name: production
     steps:
-      - name: Build Summary
+      - name: Release Summary
         uses: dylanlangston/dylanlangston.com/.github/actions/PopulateBuildSummary@main
         id: summary
         with:
