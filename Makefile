@@ -43,7 +43,7 @@ test: clean setup-tests ## Default Test Target. clean, setup, and test
 
 release: clean build-web build-site ## Default Release Target. Builds Web Version for publish
 
-setup: setup-emscripten setup-bun # Default Setup Target. Clones git repos, sets up emscripten, and sets up nodejs.
+setup: setup-emscripten setup-bun setup-tests # Default Setup Target. Clones git repos, sets up emscripten, and sets up nodejs.
 
 clean: ## Default Clean Target.
 	@rm -rf ./zig-out/*

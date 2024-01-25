@@ -5,12 +5,15 @@ inputs:
     description: 'Current Build Version'
     required: false
     default: 'UNKNOWN'
+    type: string
   mode:
     description: 'A supported mode to generate the build summary.'
     required: true 
+    type: string
   runId:
     description: 'Current Workflow Run ID.'
     required: true
+    type: string
 runs:
   using: "node20"
   main: "main.mjs"

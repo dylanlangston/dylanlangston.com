@@ -4,10 +4,12 @@ inputs:
   time:
     description: 'Time this version was build'
     required: true
+    type: string
 outputs:
   version:
     description: "Version String"
     value: ${{ steps.set_datetime.outputs.version }}
+    type: string
 runs:
   using: "node20"
   main: "main.mjs"

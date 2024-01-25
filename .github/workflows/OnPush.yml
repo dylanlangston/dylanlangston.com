@@ -1,0 +1,22 @@
+name: On Push
+
+on:
+  push:
+    branches: ["main"]
+    
+  workflow_dispatch:
+
+jobs:
+  Test:
+    uses: dylanlangston/dylanlangston.com/.github/workflows/Test@main
+    with:
+      version: '1.0.0'
+  BuildAndDeploy:
+    uses: dylanlangston/dylanlangston.com/.github/workflows/BuildAndDeploy@main
+    with:
+      version: '1.0.0'
+  PublishProduction:
+    uses: dylanlangston/dylanlangston.com/.github/workflows/PublishProduction@main
+    with:
+      version: '1.0.0'
+      commit-message: 'test'

@@ -4,12 +4,15 @@ inputs:
   runId:
     description: 'Current Workflow Run ID.'
     required: true
+    type: string
   token:
     description: 'Personal Access Token'
     required: true
+    type: string
   trigger:
     description: 'Workflow trigger'
     required: true 
+    type: string
 runs:
   using: "node20"
   main: "main.mjs"

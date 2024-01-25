@@ -1,8 +1,14 @@
 name: 3 - Publish Site To Production
 
 on:
-  repository_dispatch:
-    types: [publish-production]
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+      commit-message:
+        required: true
+        type: string
 
 concurrency:
   group: "publish"
@@ -22,17 +28,9 @@ jobs:
         uses: dylanlangston/dylanlangston.com/.github/actions/PopulateBuildSummary@main
         id: summary
         with:
-          version: ${{ steps.get_version.outputs.version }}
+          version: ${{ inputs.version }}
           mode: 'publish'
           runId: ${{ github.run_id }}
-      - name: Checkout
-        id: checkout
-        uses: actions/checkout@v4
-      - name: Get Version
-        uses: ./.github/actions/VersionString
-        id: get_version
-        with:
-          time: ${{ github.event.client_payload.workflow_run.head_commit.timestamp }}
       - name: 'Download artifact'
         uses: actions/github-script@v6
         with:
@@ -43,7 +41,7 @@ jobs:
                run_id: context.payload.workflow_run.id,
             });
             let matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
-              return artifact.name == "dylanlangston.com-v${{ steps.get_version.outputs.version }}"
+              return artifact.name == "dylanlangston.com-v${{ inputs.version }}"
             })[0];
             let download = await github.rest.actions.downloadArtifact({
                owner: context.repo.owner,
@@ -52,18 +50,18 @@ jobs:
                archive_format: 'zip',
             });
             let fs = require('fs');
-            fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/dylanlangston.com-v${{ steps.get_version.outputs.version }}.zip`, Buffer.from(download.data));
+            fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/dylanlangston.com-v${{ inputs.version }}.zip`, Buffer.from(download.data));
       - name: Create Release
         id: create_release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "dylanlangston.com-v${{ steps.get_version.outputs.version }}.zip"
+          artifacts: "dylanlangston.com-v${{ inputs.version }}.zip"
           artifactContentType: application/zip
           body: |
-            **DylanLangston.com - _Prerelease v${{ steps.get_version.outputs.version }}_**
-            ${{ github.event.client_payload.workflow_run.head_commit.message }}
+            **DylanLangston.com - _Prerelease v${{ inputs.version }}_**
+            ${{ inputs.commit-message }}
           prerelease: true
           draft: false
           commit: ${{ github.head_ref }}
-          tag: v${{ steps.get_version.outputs.version }}
+          tag: v${{ inputs.version }}
           token: ${{ secrets.GITHUB_TOKEN }}
