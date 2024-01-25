@@ -6,22 +6,25 @@ on:
     
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 jobs:
   Test:
     uses: dylanlangston/dylanlangston.com/.github/workflows/Test.yml@main
+    permissions:
+      contents: read
     with:
       version: '1.0.0'
   BuildAndDeploy:
     uses: dylanlangston/dylanlangston.com/.github/workflows/BuildAndDeploy.yml@main
+    permissions:
+      contents: read
+      pages: write
     with:
       version: '1.0.0'
   PublishProduction:
     uses: dylanlangston/dylanlangston.com/.github/workflows/PublishProduction.yml@main
+    permissions:
+      packages: read
+      contents: write
     with:
       version: '1.0.0'
       commit-message: 'test'
