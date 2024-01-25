@@ -36,7 +36,7 @@ jobs:
         with:
           time: ${{ github.event.head_commit.timestamp }}
   Test:
-    name: "Call"
+    name: " "
     uses: dylanlangston/dylanlangston.com/.github/workflows/Test.yml@main
     needs: [Initialize]
     permissions:
