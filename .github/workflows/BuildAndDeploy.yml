@@ -1,8 +1,8 @@
 name: Build and Deploy Pages
 
 on:
-  push:
-    branches: ["main"]
+   push:
+     branches: ["main"]
     
   workflow_dispatch:
 
@@ -27,6 +27,7 @@ jobs:
         id: summary
         with:
           version: ${{ steps.get_version.outputs.version }}
+          mode: 'build'
       - name: Checkout
         id: checkout
         uses: actions/checkout@v4

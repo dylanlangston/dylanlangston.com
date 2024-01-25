@@ -5,6 +5,9 @@ inputs:
     description: 'Current Build Version'
     required: false
     default: 'UNKNOWN'
+  mode:
+    description: 'A supported mode to generate the build summary.'
+    required: true 
 runs:
   using: "node20"
   main: "main.mjs"
