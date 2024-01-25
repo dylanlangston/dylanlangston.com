@@ -9,6 +9,9 @@ on:
       commit-message:
         required: true
         type: string
+      runId:
+        required: true
+        type: string
 
 concurrency:
   group: "publish"
@@ -31,7 +34,7 @@ jobs:
         with:
           version: ${{ inputs.version }}
           mode: 'release'
-          runId: ${{ github.run_id }}
+          runId: ${{ inputs.runId }}
       - name: 'Download artifact'
         uses: actions/github-script@v6
         with:
@@ -39,7 +42,7 @@ jobs:
             let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
                owner: context.repo.owner,
                repo: context.repo.repo,
-               run_id: context.payload.workflow_run.id,
+               run_id: '${{ github.run_id }}',
             });
             let matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
               return artifact.name == "dylanlangston.com-v${{ inputs.version }}"
