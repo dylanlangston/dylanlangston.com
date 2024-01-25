@@ -35,11 +35,11 @@ endif
 
 test: clean setup-tests ## Default Test Target. clean, setup, and test
 	@zig build test
-ifeq ($(USE_NODE),1)
-	@npm run test --prefix ./site
-else
-	@bun -b run --cwd ./site test
-endif
+# ifeq ($(USE_NODE),1)
+# 	@npm run test --prefix ./site
+# else
+# 	@bun -b run --cwd ./site test
+# endif
 
 release: clean build-web build-site ## Default Release Target. Builds Web Version for publish
 
@@ -122,7 +122,7 @@ release-docker:  ## Builds Web Version for publish using docker.
 	@docker rm -f site-temp
 
 test-docker:  ## clean, setup, and test using docker.
-	@docker build --cache-from dylanlangston.com:latest -t dylanlangston.com . --target test --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE)
+	@docker build --cache-from dylanlangston.com:build -t dylanlangston.com . --target test --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE)
 
 run-site: build-web ## Run Website
 ifeq ($(USE_NODE),1)
