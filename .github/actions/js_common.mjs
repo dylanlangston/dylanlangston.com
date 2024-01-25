@@ -88,7 +88,7 @@ class JS_Common {
             'event_type': type,
             "client_payload": body
         };
-        return await post(url, token, JSON.stringify(data));
+        return await this.post(url, token, JSON.stringify(data));
     };
 }
 
