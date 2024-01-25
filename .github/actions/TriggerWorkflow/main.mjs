@@ -8,4 +8,6 @@ const workFlowRun = await js_common.getWorkflowDetails(runId);
 const data = JSON.parse(workFlowRun);
 
 // Trigger workflow
-js_common.triggerWorkflow(trigger, data, token);
+js_common.triggerWorkflow(trigger, {
+    head_commit: data.head_commit
+}, token);
