@@ -20,41 +20,47 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 1
     steps:
+      - name: Get Version
+        uses: dylanlangston/dylanlangston.com/.github/actions/VersionString@main
+        id: get_version
+        with:
+          time: ${{ github.event.head_commit.timestamp }}
       - name: Build Summary
         uses: dylanlangston/dylanlangston.com/.github/actions/PopulateBuildSummary@main
         id: summary
         with:
           version: '1.0.0'
           mode: 'deploy'
-          runId: ${{ github.run_id }}
+          runId: ${{ steps.get_version.outputs.version }}
   Test:
     uses: dylanlangston/dylanlangston.com/.github/workflows/Test.yml@main
+    needs: [Initialize]
     permissions:
       contents: read
     with:
-      version: '1.0.0'
+      version: ${{ needs.Initialize.outputs.version }}
   Build:
     uses: dylanlangston/dylanlangston.com/.github/workflows/Build.yml@main
-    needs: [Test]
+    needs: [Initialize, Test]
     permissions:
       contents: read
     with:
-      version: '1.0.0'
+      version: ${{ needs.Initialize.outputs.version }}
   Deploy:
     uses: dylanlangston/dylanlangston.com/.github/workflows/Deploy.yml@main
-    needs: [Build]
+    needs: [Initialize, Build]
     permissions:
       contents: read
       pages: write
       id-token: write
     with:
-      version: '1.0.0'
+      version: ${{ needs.Initialize.outputs.version }}
   Release:
     uses: dylanlangston/dylanlangston.com/.github/workflows/Release.yml@main
-    needs: [Deploy]
+    needs: [Initialize, Deploy]
     permissions:
       packages: read
       contents: write
     with:
-      version: '1.0.0'
-      commit-message: 'test'
+      version: ${{ needs.Initialize.outputs.version }}
+      commit-message: ${{ github.event.head_commit.message }}
