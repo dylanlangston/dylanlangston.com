@@ -29,7 +29,7 @@ jobs:
         uses: dylanlangston/dylanlangston.com/.github/actions/PopulateBuildSummary@main
         id: summary
         with:
-          version: ${{ needs.Initialize.outputs.version }}
+          version: ${{ steps.get_version.outputs.version }}
           mode: 'onpush'
           runId: ${{ github.run_id }}
   Test:
