@@ -1,0 +1,51 @@
+name: 🤖 Dependabot Auto-Merge
+on: pull_request
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  Initialize:
+    name: "Initialize Workflow"
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
+    steps:
+      - name: Initialize Summary
+        uses: dylanlangston/dylanlangston.com/.github/actions/PopulateBuildSummary@main
+        id: summary
+        with:
+          version: ${{ steps.get_version.outputs.version }}
+          mode: 'onpush'
+          runId: ${{ github.run_id }}
+      - name: Get Version
+        uses: dylanlangston/dylanlangston.com/.github/actions/VersionString@main
+        id: get_version
+        with:
+          time: ${{ github.event.pull_request.head.repo.updated_at }}
+  Test:
+    name: "Step 1️⃣"
+    uses: dylanlangston/dylanlangston.com/.github/workflows/Test.yml@main
+    needs: [Initialize]
+    permissions:
+      contents: read
+    with:
+      version: ${{ needs.Initialize.outputs.version }}
+  dependabot:
+    name: "Merge"
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+    steps:
+      - name: Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v1
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+      - name: Enable auto-merge for Dependabot PRs
+        if: contains(steps.metadata.outputs.dependency-names, 'my-dependency') && steps.metadata.outputs.update-type == 'version-update:semver-patch'
+        run: gh pr merge --auto --merge "$PR_URL"
+        env:
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
