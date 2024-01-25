@@ -1,6 +1,9 @@
 name: Build and Deploy Pages
 
 on:
+  push:
+    branches: ["main"]
+    
   workflow_dispatch:
 
 permissions:
@@ -9,11 +12,11 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "build"
+  group: "test"
   cancel-in-progress: true
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     outputs:
@@ -24,7 +27,7 @@ jobs:
         id: summary
         with:
           version: ${{ steps.get_version.outputs.version }}
-          mode: 'build'
+          mode: 'test'
           runId: ${{ github.run_id }}
       - name: Checkout
         id: checkout
@@ -42,33 +45,5 @@ jobs:
           key: docker-${{ runner.os }}-${{ hashFiles('Dockerfile', '.github/workflows/*.yml', 'Makefile', '**/bun*', '.gitmodules') }}
           target: default
           tag: dylanlangston.com:build
-      - name: Build using Docker
-        run: make release-docker VERSION=${{ steps.get_version.outputs.version }} OPTIMIZE='ReleaseFast'
-      - name: Upload Release artifact
-        id: upload
-        uses: actions/upload-artifact@v4
-        with:
-          name: dylanlangston.com-v${{ steps.get_version.outputs.version }}
-          path: '${{ github.workspace }}/site/build'
-      - name: Upload GitGub Pages artifact
-        id: upload-compressed
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: '${{ github.workspace }}/site/build'
-
-  deploy-github-pages:
-    runs-on: ubuntu-latest
-    timeout-minutes: 1
-    needs: [build]
-    permissions:
-      pages: write      # to deploy to Pages
-      id-token: write   # to verify the deployment originates from an appropriate source
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Setup GitGub Pages
-        uses: actions/configure-pages@v4
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Test using Docker
+        run: make test-docker VERSION=${{ steps.get_version.outputs.version }}
