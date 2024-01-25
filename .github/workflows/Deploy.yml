@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   deploy:
-    name: "Deploy"
+    name: "🚀 Deploy"
     runs-on: ubuntu-latest
     timeout-minutes: 1
     permissions:

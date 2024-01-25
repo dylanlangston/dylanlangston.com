@@ -25,35 +25,19 @@ else {
 }
 validations.validateMode(mode);
 
-function OnPush() {
-    summary.addHeading(`DylanLangston.com - ${version}`, 3);
-    summary.addEOL();
-}
 function Test() {
-    summary.addHeading(`🧪 Tests`, 3);
-    summary.addEOL();
-
     summary.addRaw(`* Started at ${startTime}.`, true);
     summary.addRaw(`* Completed at ${new Date().toISOString()}.`, true);
 }
 function Build() {
-    summary.addHeading(`🧰 Build`, 3);
-    summary.addEOL();
-
     summary.addRaw(`* Started at ${startTime}.`, true);
     summary.addRaw(`* Completed at ${new Date().toISOString()}.`, true);
 }
 function Deploy() {
-    summary.addHeading(`🚀 Deploy`, 3);
-    summary.addEOL();
-
     summary.addRaw(`* Started at ${startTime}.`, true);
     summary.addRaw(`* Completed at ${new Date().toISOString()}.`, true);
 }
 function Release() {
-    summary.addHeading(`📦 Release`, 3);
-    summary.addEOL();
-
     summary.addRaw(`* Started at ${startTime}.`, true);
     summary.addRaw(`* Completed at ${new Date().toISOString()}.`, true);
 }
@@ -61,7 +45,7 @@ function Release() {
 // Start Main
 switch (mode) {
     case "onpush":
-        OnPush();
+    case "automerge":
         break;
     case "test":
         Test();

@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   release:
-    name: "Release to Production"
+    name: "📦 Release"
     runs-on: ubuntu-latest
     timeout-minutes: 1
     permissions:
