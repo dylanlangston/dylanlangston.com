@@ -51,6 +51,6 @@ jobs:
         uses: dylanlangston/dylanlangston.com/.github/actions/TriggerWorkflow@main
         id: trigger-next-workflow
         with:
-          token: ${{ steps.get_version.outputs.version }}
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           trigger: 'build-and-deploy'
           runId: ${{ github.run_id }}
