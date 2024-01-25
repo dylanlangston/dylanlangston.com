@@ -2,6 +2,27 @@ import { summary } from './summary.mjs';
 import { validations } from './validations.mjs';
 import { js_common } from '../js_common.mjs';
 
+// Start Main
+switch (mode) {
+    case "onpush":
+    case "automerge":
+        return; // Exit
+    case "test":
+        Test();
+        break;
+    case "build":
+        Build();
+        break;
+    case "deploy":
+        Deploy();
+        break;
+    case "release":
+        Release();
+        break;
+    default:
+        js_common.error(`Invalid Operation!`);
+};
+
 // Inputs
 let version = process.env.INPUT_VERSION;
 const mode = process.env.INPUT_MODE.toLowerCase();
@@ -41,27 +62,6 @@ function Release() {
     summary.addRaw(`* Started at ${startTime}.`, true);
     summary.addRaw(`* Completed at ${new Date().toISOString()}.`, true);
 }
-
-// Start Main
-switch (mode) {
-    case "onpush":
-    case "automerge":
-        break;
-    case "test":
-        Test();
-        break;
-    case "build":
-        Build();
-        break;
-    case "deploy":
-        Deploy();
-        break;
-    case "release":
-        Release();
-        break;
-    default:
-        js_common.error(`Invalid Operation!`);
-};
 
 // Write the summary
 summary.write({overwrite: false});
