@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   Initialize:
-    name: ""
+    name: "Initialize Workflow"
     runs-on: ubuntu-latest
     timeout-minutes: 1
     outputs:
@@ -36,7 +36,7 @@ jobs:
         with:
           time: ${{ github.event.head_commit.timestamp }}
   Test:
-    name: ""
+    name: "Call"
     uses: dylanlangston/dylanlangston.com/.github/workflows/Test.yml@main
     needs: [Initialize]
     permissions:
