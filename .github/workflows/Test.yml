@@ -1,4 +1,4 @@
-name: 1 - Tests
+name: 1 - Test Site
 
 on:
   workflow_call:

@@ -1,4 +1,4 @@
-name: 3 - Publish Site To Production
+name: 4 - Release Site To Production
 
 on:
   workflow_call:
@@ -29,7 +29,7 @@ jobs:
         id: summary
         with:
           version: ${{ inputs.version }}
-          mode: 'publish'
+          mode: 'release'
           runId: ${{ github.run_id }}
       - name: 'Download artifact'
         uses: actions/github-script@v6

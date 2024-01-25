@@ -1,4 +1,4 @@
-name: 2 - Build and Deploy Pages
+name: 2 - Build Site
 
 on:
   workflow_call:
@@ -9,8 +9,6 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: "build"
@@ -52,20 +50,3 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: '${{ github.workspace }}/site/build'
-
-  deploy-github-pages:
-    runs-on: ubuntu-latest
-    timeout-minutes: 1
-    needs: [build]
-    permissions:
-      pages: write      # to deploy to Pages
-      id-token: write   # to verify the deployment originates from an appropriate source
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Setup GitGub Pages
-        uses: actions/configure-pages@v4
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4

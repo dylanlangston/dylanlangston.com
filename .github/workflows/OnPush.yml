@@ -12,28 +12,46 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "build"
+  group: "onpush"
   cancel-in-progress: true
 
 jobs:
+  Initialize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - name: Build Summary
+        uses: dylanlangston/dylanlangston.com/.github/actions/PopulateBuildSummary@main
+        id: summary
+        with:
+          version: '1.0.0'
+          mode: 'deploy'
+          runId: ${{ github.run_id }}
   Test:
     uses: dylanlangston/dylanlangston.com/.github/workflows/Test.yml@main
     permissions:
       contents: read
     with:
       version: '1.0.0'
-  BuildAndDeploy:
-    uses: dylanlangston/dylanlangston.com/.github/workflows/BuildAndDeploy.yml@main
+  Build:
+    uses: dylanlangston/dylanlangston.com/.github/workflows/Build.yml@main
     needs: [Test]
+    permissions:
+      contents: read
+    with:
+      version: '1.0.0'
+  Deploy:
+    uses: dylanlangston/dylanlangston.com/.github/workflows/Deploy.yml@main
+    needs: [Build]
     permissions:
       contents: read
       pages: write
       id-token: write
     with:
       version: '1.0.0'
-  PublishProduction:
-    uses: dylanlangston/dylanlangston.com/.github/workflows/PublishProduction.yml@main
-    needs: [BuildAndDeploy]
+  Release:
+    uses: dylanlangston/dylanlangston.com/.github/workflows/Release.yml@main
+    needs: [Deploy]
     permissions:
       packages: read
       contents: write

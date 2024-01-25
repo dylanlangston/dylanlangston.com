@@ -24,38 +24,52 @@ else {
 }
 validations.validateMode(mode);
 
+function Init() {
+    summary.addHeading(`DylanLangston.com - ${version}`, 3);
+    summary.addEOL();
+}
 function Test() {
-    summary.addHeading(`🧪 DylanLangston.com - ${version}`);
+    summary.addHeading(`🧪 Tests`, 3);
     summary.addEOL();
 
-    summary.addRaw(`* Test Started at ${startTime}.`, true);
-    summary.addRaw(`* Test Completed at ${new Date().toISOString()}.`, true);
+    summary.addRaw(`* Started at ${startTime}.`, true);
+    summary.addRaw(`* Completed at ${new Date().toISOString()}.`, true);
 }
 function Build() {
-    summary.addHeading(`🧰 DylanLangston.com - ${version}`);
+    summary.addHeading(`🧰 Build`, 3);
     summary.addEOL();
 
-    summary.addRaw(`* Build Started at ${startTime}.`, true);
-    summary.addRaw(`* Build Completed at ${new Date().toISOString()}.`, true);
+    summary.addRaw(`* Started at ${startTime}.`, true);
+    summary.addRaw(`* Completed at ${new Date().toISOString()}.`, true);
 }
-function Publish() {
-    summary.addHeading(`📦 DylanLangston.com - ${version}`);
+function Deploy() {
+    summary.addHeading(`🚀 Deploy`, 3);
     summary.addEOL();
 
-    summary.addRaw(`* Publish Started at ${startTime}.`, true);
-    summary.addRaw(`* Publish Completed at ${new Date().toISOString()}.`, true);
+    summary.addRaw(`* Started at ${startTime}.`, true);
+    summary.addRaw(`* Completed at ${new Date().toISOString()}.`, true);
+}
+function Release() {
+    summary.addHeading(`📦 Release`, 3);
+    summary.addEOL();
+
+    summary.addRaw(`* Started at ${startTime}.`, true);
+    summary.addRaw(`* Completed at ${new Date().toISOString()}.`, true);
 }
 
 // Start Main
 switch (mode) {
+    case "init":
+        Init();
+        break;
     case "test":
         Test();
         break;
     case "build":
         Build();
         break;
-    case "publish":
-        Publish();
+    case "release":
+        Release();
         break;
     default:
         js_common.error(`Invalid Operation!`);

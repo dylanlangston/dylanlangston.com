@@ -1,0 +1,41 @@
+name: 3 - Deploy Site to Github Pages
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "deploy"
+  cancel-in-progress: true
+
+jobs:
+  deploy-github-pages:
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Build Summary
+        uses: dylanlangston/dylanlangston.com/.github/actions/PopulateBuildSummary@main
+        id: summary
+        with:
+          version: ${{ inputs.version }}
+          mode: 'deploy'
+          runId: ${{ github.run_id }}
+      - name: Setup GitGub Pages
+        uses: actions/configure-pages@v4
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
