@@ -5,6 +5,10 @@ permissions:
   contents: write
   pull-requests: write
 
+concurrency:
+  group: "automerge"
+  cancel-in-progress: false
+
 jobs:
   Initialize:
     name: "Initialize Workflow"

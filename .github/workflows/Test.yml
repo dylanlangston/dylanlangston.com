@@ -9,7 +9,7 @@ on:
 
 concurrency:
   group: "test"
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   test:
