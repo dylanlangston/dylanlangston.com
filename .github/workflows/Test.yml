@@ -32,7 +32,7 @@ jobs:
       - name: Cache Docker Image
         uses: dylanlangston/dylanlangston.com/.github/actions/DockerCache@main
         with:
-          key: docker-${{ runner.os }}-${{ hashFiles('Dockerfile', '.github/workflows/*.yml', 'Makefile', '**/bun*', '.gitmodules') }}
+          key: docker-${{ runner.os }}-${{ hashFiles('Dockerfile', '.github/workflows/*.yml', 'Makefile', 'site/bun*', '.gitmodules', 'site/package.json') }}
           target: default
           tag: dylanlangston.com:build
       - name: Test using Docker
