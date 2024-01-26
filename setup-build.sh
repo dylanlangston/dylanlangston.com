@@ -27,4 +27,4 @@ apt-get -y install --no-install-recommends nodejs npm
 # Setup
 make clean-cache setup USE_NODE=1
 
-sudo apt-get clean && sudo rm -rf /var/cache/apt/* && sudo rm -rf /var/lib/apt/lists/* && sudo rm -rf /tmp/*
+apt-get clean && rm -rf /var/cache/apt/* && rm -rf /var/lib/apt/lists/* && rm -rf /tmp/*
