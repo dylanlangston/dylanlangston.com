@@ -2,6 +2,7 @@ import { type IEmscripten, EmscriptenModule } from '$lib/Emscripten';
 import { IPCMessage, IPCMessageType, type IPCMessageDataType } from '$lib/IPCMessage';
 import emscriptenModuleFactory from '../import/emscripten';
 import { Environment } from "$lib/Common";
+import type { MiniAudioDevice } from '../types/miniaudio';
 
 // Define all events here
 // The rest of this file should be boilerplate code...
@@ -36,8 +37,7 @@ eventHandlers[IPCMessageType.EventHandlerCallback] = (message) => {
         type: string;
         event: any;
     } = <any>message;
-    if (eventHandler.event.changedTouches)
-    {
+    if (eventHandler.event.changedTouches) {
         eventHandler.event.changedTouches = Array.from(eventHandler.event.changedTouches);
     }
     eventHandler.event.preventDefault = () => { };
@@ -112,40 +112,94 @@ namespace FakeDOM {
         }
         getCanvas = () => this.canvas;
     }
-    export class MiniAudio {
-        public device_type: any = {
-            capture: 2,
-            duplex: 3,
-            playback: 1,
-        };
-        public device_state: any = {
-            stopped: false,
-            started: false,
-        };
-        public get_device_by_index: (e: number) => any = () => {
-            return {
-                webaudio: new AudioContext()
+
+    export class MiniAudio implements MiniAudio {
+        public referenceCount: number = 0;
+        public device_type: {
+            playback: number;
+            capture: number;
+            duplex: number;
+        } = {
+                playback: 1,
+                capture: 2,
+                duplex: 3
             };
+        public device_state: {
+            stopped: number;
+            started: number;
+        } = {
+                stopped: 1,
+                started: 2
+            };
+        public devices: (MiniAudioDevice | null)[] = [];
+        public track_device: (device: MiniAudioDevice) => number = (device: MiniAudioDevice) => {
+            for (let iDevice = 0; iDevice < this.devices.length; ++iDevice) {
+                if (this.devices[iDevice] == null) {
+                    this.devices[iDevice] = device;
+                    return iDevice;
+                }
+            }
+            this.devices.push(device);
+            return this.devices.length - 1;
         };
-        public track_device: (device: any) => number = () => 1;
+        public untrack_device_by_index: (deviceIndex: number) => void = (deviceIndex: number) => {
+            this.devices[deviceIndex] = null;
+            while (this.devices.length > 0) {
+                if (this.devices[this.devices.length - 1] == null) {
+                    this.devices.pop();
+                } else {
+                    break;
+                }
+            }
+        };
+        public untrack_device: (device: MiniAudioDevice) => void = (device: any) => {
+            for (let iDevice = 0; iDevice < this.devices.length; ++iDevice) {
+                if (this.devices[iDevice] == device) {
+                    return this.untrack_device_by_index(iDevice);
+                }
+            }
+        };
+        public get_device_by_index: (deviceIndex: number) => (MiniAudioDevice | null) = (deviceIndex: number) => this.devices[deviceIndex];
+        public unlock_event_types: string[] = ['touchend', 'click'];
+        public unlock(): void {
+            for (let i = 0; i < this.devices.length; ++i) {
+                const device = this.devices[i];
+                if (device != null && device.webaudio != null && device?.state === this.device_state.started) {
+                    device.webaudio.resume().then(() => {
+                        Module._ma_device__on_notification_unlocked(device.pDevice);
+                    }, (error: any) => {
+                        console.error("Failed to resume audiocontext", error);
+                    });
+                }
+            }
+            this.unlock_event_types.map((event_type) => document.removeEventListener(event_type, this.unlock, true));
+        };
     }
     // Update this to use an AudioWorkletNode
     // https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/createScriptProcessor
     // https://developer.mozilla.org/en-US/docs/Web/API/AudioWorkletNode
-    // Might use this ? - https://github.com/chrisguttandin/standardized-audio-context
+    // https://gist.github.com/beaufortfrancois/4d90c89c5371594dc4c0ac81c3b8dd73
+    // Or just route this to the main thread...
     class AudioContext {
         public suspend(): Promise<void> {
-            return <any>undefined;
+            return new Promise((resolve, reject) => resolve());
         }
-        public createScriptProcessor(a1: any, a2: any, a3: any, a4: any) {
+        public resume(): Promise<void> {
+            return new Promise((resolve, reject) => resolve());
+        }
+        public createScriptProcessor(a1: any, a2: any, a3: any) {
             return {
                 connect: (args: any) => {
-                    console.log("Audio Connected");
-                }
+                    console.log("Script Processor Connected");
+                    console.log(args);
+                },
             };
         }
-        //public destination: any = undefined;
-        //public onaudioprocess: any = undefined;
+        // public createMediaStreamSource(arg: any) {
+        //     console.log(arg);
+        // }
+        public destination: any = {};
+        public onaudioprocess: any = undefined;
     }
 };
 
