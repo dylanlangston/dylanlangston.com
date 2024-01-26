@@ -4,7 +4,7 @@
 FROM debian:stable-slim as base
 USER root
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-     && apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git python3
+     && apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git python3 nodejs
 # Install ZVM - https://github.com/tristanisham/zvm
 RUN curl https://raw.githubusercontent.com/tristanisham/zvm/master/install.sh | bash
 ENV PATH="/root/.bun/bin/:/root/.zvm/self/:/root/.zvm/bin:$PATH"
