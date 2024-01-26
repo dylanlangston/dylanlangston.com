@@ -16,6 +16,7 @@ class JS_Common {
 
     output = (name, value) => this.issueFileCommand("output", `${name}=${value}`);
     notice = (value) => this.issueCommand(`::notice::${value}`);
+    warning = (value) => this.issueCommand(`::warning::${value}`);
     error = (value) => {
         this.issueCommand(`::error::${value}`);
         throw new Error(value);

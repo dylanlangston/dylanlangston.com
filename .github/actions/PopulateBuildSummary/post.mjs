@@ -35,8 +35,9 @@ async function getStartTime() {
         startTime = currentJob.started_at;
     }
     catch (err) {
-        js_common.error(`Failed to fetch workflow run details: ${err}`);
+        js_common.warning(`Failed to fetch workflow run details: ${err}`);
     }
+    return startTime;
 }
 
 async function Test() {
