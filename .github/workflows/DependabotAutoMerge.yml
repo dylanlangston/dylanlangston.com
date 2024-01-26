@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   Initialize:
-    name: "Initialize Workflow"
+    name: "Initialize Workflow ⏳"
     runs-on: ubuntu-latest
     timeout-minutes: 1
     outputs:
@@ -22,7 +22,7 @@ jobs:
         id: summary
         with:
           version: ${{ steps.get_version.outputs.version }}
-          mode: 'onpush'
+          mode: 'automerge'
           runId: ${{ github.run_id }}
       - name: Get Version
         uses: dylanlangston/dylanlangston.com/.github/actions/VersionString@main
@@ -38,7 +38,7 @@ jobs:
     with:
       version: ${{ needs.Initialize.outputs.version }}
   dependabot:
-    name: "Enable Auto-Merge"
+    name: "Enable Auto-Merge ✅"
     runs-on: ubuntu-latest
     needs: [Test]
     if: github.actor == 'dependabot[bot]'

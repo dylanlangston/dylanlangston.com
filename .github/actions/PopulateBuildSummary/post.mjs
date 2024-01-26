@@ -8,16 +8,16 @@ switch (mode) {
     case "automerge":
         process.exit(0); // Exit no error
     case "test":
-        Test();
+        await Test();
         break;
     case "build":
-        Build();
+        await Build();
         break;
     case "deploy":
-        Deploy();
+        await Deploy();
         break;
     case "release":
-        Release();
+        await Release();
         break;
     default:
         js_common.error(`Invalid Operation!`);
