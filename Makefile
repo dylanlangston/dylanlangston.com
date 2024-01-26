@@ -62,7 +62,7 @@ setup-emscripten: ## Install and Activate Emscripten
 	@cd emsdk;./emsdk install latest;./emsdk activate latest;source ./emsdk_env.sh
 
 setup-bun: ## BUN Install
-ifdef $(USE_NODE)
+ifeq ($(USE_NODE),1)
 	@npm install --prefix ./site
 else
 	@bun install --cwd ./site
@@ -72,7 +72,7 @@ setup-docker: ## Docker Compose
 	@docker compose build
 
 setup-tests: ## Setup Playwright
-ifdef $(USE_NODE)
+ifeq ($(USE_NODE),1)
 	@npx --yes playwright install
 	@npx --yes playwright install-deps
 else
@@ -92,7 +92,7 @@ build-web: ## Build Web. Optionally pass in the OPTIMIZE=... argument.
 	@zig build -Dtarget=wasm32-emscripten -Doptimize=$(OPTIMIZE)
 
 build-site: ## Build Website. Uses Binaryen to optimize when OPTIMIZE!='Debug', the default.
-ifdef $(USE_NODE)
+ifeq ($(USE_NODE),1)
 ifeq ($(OPTIMIZE),'Debug')
 else
 	@cd ./site; npm exec --package=binaryen -c 'wasm-opt ./static/dylanlangston.com.wasm -all --post-emscripten --low-memory-unused -tnh --converge -Oz --flatten --rereloop -Oz -Oz -o ./static/dylanlangston.com.wasm'; cd ../
