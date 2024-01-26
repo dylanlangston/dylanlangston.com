@@ -47,7 +47,7 @@ jobs:
       version: ${{ needs.Initialize.outputs.version }}
   Build:
     name: "Step 2️⃣"
-    if: ${{ needs.Test.result == 'success' || needs.Test.result == 'skipped' }}
+    if: ${{ success() || needs.Test.result == 'skipped' }}
     uses: dylanlangston/dylanlangston.com/.github/workflows/Build.yml@main
     needs: [Initialize, Test]
     permissions:
