@@ -4,13 +4,15 @@
 FROM debian:stable-slim as base
 USER root
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-     && apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git python3 nodejs
+     && apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git python3
 # Install ZVM - https://github.com/tristanisham/zvm
 RUN curl https://raw.githubusercontent.com/tristanisham/zvm/master/install.sh | bash
 ENV PATH="/root/.bun/bin/:/root/.zvm/self/:/root/.zvm/bin:$PATH"
 RUN zvm i master
+# Install Node
+RUN apt-get -y install --no-install-recommends nodejs npm
 # Install Bun
-RUN curl -fsSL https://bun.sh/install | bash
+#RUN curl -fsSL https://bun.sh/install | bash
 # Copy only the files we absolutely need
 COPY ./site/package.json /root/dylanlangston.com/site/package.json
 COPY ./site/bun.lockb /root/dylanlangston.com/site/bun.lockb
