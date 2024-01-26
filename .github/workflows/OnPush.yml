@@ -56,7 +56,7 @@ jobs:
       version: ${{ needs.Initialize.outputs.version }}
   Deploy:
     name: "Step 3️⃣"
-    if: ${{ needs.Build.result == 'success' }}
+    if: ${{ success() || needs.Build.result == 'success' }}
     uses: dylanlangston/dylanlangston.com/.github/workflows/Deploy.yml@main
     needs: [Initialize, Build]
     permissions:
@@ -67,7 +67,7 @@ jobs:
       version: ${{ needs.Initialize.outputs.version }}
   Release:
     name: "Step 4️⃣"
-    if: ${{ needs.Deploy.result == 'success' }}
+    if: ${{ success() || needs.Deploy.result == 'success' }}
     uses: dylanlangston/dylanlangston.com/.github/workflows/Release.yml@main
     needs: [Initialize, Deploy]
     permissions:
