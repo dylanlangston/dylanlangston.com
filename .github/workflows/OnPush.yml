@@ -38,7 +38,7 @@ jobs:
   Test:
     name: "Step 1️⃣"
     # We should have already tested in "DependabotAutoMerge.yml" if this is dependabot
-    if: ${{ github.event.commits[0].author != 'dependabot[bot]' }}
+    if: ${{ github.event.commits[0].author.name != 'dependabot[bot]' }}
     uses: dylanlangston/dylanlangston.com/.github/workflows/Test.yml@main
     needs: [Initialize]
     permissions:
