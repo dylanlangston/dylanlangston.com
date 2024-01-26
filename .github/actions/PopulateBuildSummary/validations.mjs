@@ -2,6 +2,7 @@ import { js_common } from '../js_common.mjs';
 
 const availableModes = [
     "onpush",
+    "automerge",
     "test",
     "build",
     "deploy",
