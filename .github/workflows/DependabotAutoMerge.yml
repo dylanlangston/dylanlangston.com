@@ -37,6 +37,7 @@ jobs:
       contents: read
     with:
       version: ${{ needs.Initialize.outputs.version }}
+      shouldCache: false
   dependabot:
     name: "Enable Auto-Merge ✅"
     runs-on: ubuntu-latest

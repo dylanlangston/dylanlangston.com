@@ -6,6 +6,10 @@ on:
       version:
         required: true
         type: string
+      shouldCache:
+        required: false
+        default: true
+        type: boolean
 
 concurrency:
   group: "test"
@@ -30,10 +34,12 @@ jobs:
       - name: Checkout Submodules
         run: make setup-git-clone
       - name: Cache Docker Image
+        if: ${{ inputs.shouldCache }}
         uses: dylanlangston/dylanlangston.com/.github/actions/DockerCache@main
         with:
           key: docker-${{ runner.os }}-${{ hashFiles('Dockerfile', '.github/workflows/*.yml', 'Makefile', 'site/bun*', '.gitmodules', 'site/package.json') }}
           target: default
           tag: dylanlangston.com:build
       - name: Test using Docker
+        if: ${{ always() }}
         run: make test-docker VERSION=${{ inputs.version }}
