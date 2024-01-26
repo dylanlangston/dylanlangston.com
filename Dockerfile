@@ -26,7 +26,7 @@ RUN apt-get clean && rm -rf /var/cache/apt/* && rm -rf /var/lib/apt/lists/* && r
 
 FROM base as test
 COPY . /root/dylanlangston.com/
-RUN make test USE_NODE=1
+RUN make setup-git-clone build-web test USE_NODE=1
 
 FROM base AS develop
 EXPOSE 5173
