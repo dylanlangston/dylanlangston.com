@@ -35,11 +35,11 @@ endif
 
 test: clean ## Default Test Target. clean, setup, and test
 	@zig build test
-# ifeq ($(USE_NODE),1)
-# 	@npm run test --prefix ./site
-# else
-# 	@bun -b run --cwd ./site test
-# endif
+ifeq ($(USE_NODE),1)
+	@npm run test --prefix ./site
+else
+	@bun -b run --cwd ./site test-bun
+endif
 
 release: clean build-web build-site ## Default Release Target. Builds Web Version for publish
 
