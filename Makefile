@@ -33,7 +33,7 @@ else
 	@bash ./watch.sh USE_NODE=0
 endif
 
-test: clean setup-tests ## Default Test Target. clean, setup, and test
+test: clean ## Default Test Target. clean, setup, and test
 	@zig build test
 # ifeq ($(USE_NODE),1)
 # 	@npm run test --prefix ./site
