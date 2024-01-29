@@ -5,13 +5,106 @@
 	import { fade, blur, fly, slide, scale, crossfade } from 'svelte/transition';
 	import emscriptenWorker from '$lib/Emscripten.worker?worker';
 	import { IPCMessage, IPCMessageType } from '$lib/IPCMessage';
+	import { AudioContextProxy, AudioEventType } from '$lib/AudioContextProxy';
+	import { FakeDOM } from '$lib/FakeDOM';
 
 	// Specify if we should use a web worker
-	const UseWorker: boolean = true;
+	const UseWorker: boolean = true; // typeof(Worker) !== "undefined"; 
+
+	function sanitizeEvent(e: any, n: number = 0) {
+		const obj: any = {};
+		for (let k in e) {
+			if (e[k] == null || e[k] == undefined) continue;
+
+			// Only go 6 levels deep
+			if (n > 6) continue;
+
+			if (e[k] instanceof Node) continue;
+			if (e[k] instanceof Window) continue;
+			if (e[k] instanceof Function) continue;
+
+			switch (typeof e[k]) {
+				case 'undefined':
+				case 'boolean':
+				case 'number':
+				case 'bigint':
+				case 'string':
+					obj[k] = e[k];
+					break;
+				case 'object':
+					obj[k] = sanitizeEvent(e[k], n + 1);
+					break;
+			}
+		}
+		return obj;
+	}
+
+	function AddEventHandler(eventHandler: {
+		id: number;
+		target: string;
+		type: string;
+		listener: EventListenerOrEventListenerObject;
+	}) {
+		switch (eventHandler.target) {
+			case 'Window':
+			case 'Canvas':
+				window.addEventListener(eventHandler.type, (e) => {
+					worker?.postMessage(
+						IPCMessage.EventHandlerCallback({
+							id: eventHandler.id,
+							target: eventHandler.target,
+							type: eventHandler.type,
+							event: sanitizeEvent(e)
+						})
+					);
+				});
+				break;
+			case 'Document':
+				document.addEventListener(eventHandler.type, (e) => {
+					worker?.postMessage(
+						IPCMessage.EventHandlerCallback({
+							id: eventHandler.id,
+							target: eventHandler.target,
+							type: eventHandler.type,
+							event: sanitizeEvent(e)
+						})
+					);
+				});
+				break;
+			default:
+				break;
+		}
+	}
+
+	let audioContext: AudioContext;
+	let processorNode: ScriptProcessorNode;
+	function AudioEvent(audioEvent: { type: AudioEventType; details?: any }) {
+		switch (audioEvent.type) {
+			case AudioEventType.Connect:
+				const audioNode = processorNode.connect(audioContext.destination);
+				debugger;
+				break;
+			case AudioEventType.CreateScriptProcessor:
+				processorNode = audioContext.createScriptProcessor(audioEvent.details.bufferSize, audioEvent.details.numberOfInputChannels, audioEvent.details.numberofOutputChannels);
+				break;
+			case AudioEventType.Resume:
+				audioContext.resume();
+				break;
+			case AudioEventType.Suspend:
+				audioContext.suspend();
+				break;
+		}
+	}
 
 	let worker: Worker | undefined = undefined;
 	let canvas: HTMLCanvasElement | undefined = undefined;
 	onMount(async () => {
+		AudioContextProxy.SetContext(AudioContext);
+		window.AudioContext = AudioContextProxy;
+
+		audioContext = new AudioContext();
+
+
 		const canvasElement = document.createElement('canvas');
 		canvasElement.classList.add(
 			'absolute',
@@ -33,83 +126,11 @@
 						canvas = canvasElement;
 						break;
 					case IPCMessageType.AddEventHandler:
-						const eventHandler: {
-							id: number;
-							target: string;
-							type: string;
-							listener: EventListenerOrEventListenerObject;
-						} = <any>ev.data.message;
-
-						// Need to make a recursive function that only saves transferable data types. Number, string etc...
-
-						function sanitizeEvent(e: any) {
-							const obj: any = {};
-							for (let k in e) {
-								if (e[k] == null || e[k] == undefined) continue;
-
-								if (e[k] instanceof Node) continue;
-								if (e[k] instanceof Window) continue;
-								if (e[k] instanceof Function) continue;
-
-								switch (typeof e[k]) {
-									case 'undefined':
-									case 'boolean':
-									case 'number':
-									case 'bigint':
-									case 'string':
-										obj[k] = e[k];
-										break;
-									case 'object':
-										obj[k] = sanitizeEvent(e[k]);
-										break;
-								}
-							}
-							return obj;
-						}
-
-						switch (eventHandler.target) {
-							case 'Window':
-							case 'Canvas':
-								window.addEventListener(eventHandler.type, (e) => {
-									worker?.postMessage(
-										IPCMessage.EventHandlerCallback({
-											id: eventHandler.id,
-											target: eventHandler.target,
-											type: eventHandler.type,
-											event: sanitizeEvent(e)
-										})
-									);
-								});
-								break;
-							case 'Document':
-								document.addEventListener(eventHandler.type, (e) => {
-									worker?.postMessage(
-										IPCMessage.EventHandlerCallback({
-											id: eventHandler.id,
-											target: eventHandler.target,
-											type: eventHandler.type,
-											event: sanitizeEvent(e)
-										})
-									);
-								});
-								break;
-							// case 'Canvas':
-							// 	canvasElement.addEventListener(eventHandler.type, (e) => {
-							// 		worker?.postMessage(
-							// 			IPCMessage.EventHandlerCallback({
-							// 				id: eventHandler.id,
-							// 				target: eventHandler.target,
-							// 				type: eventHandler.type,
-							// 				event: sanitizeEvent(e)
-							// 			})
-							// 		);
-							// 	});
-							// 	break;
-							default:
-								break;
-						}
+						AddEventHandler(<any>ev.data.message);
 						break;
-
+					case IPCMessageType.AudioEvent:
+						AudioEvent(<any>ev.data.message);
+						break;
 					default:
 						throw 'Not Implemented';
 				}
@@ -119,7 +140,7 @@
 				worker = undefined;
 				canvas = undefined;
 				throw er;
-			}
+			};
 		} else {
 			(<EmscriptenModuleFactory<IEmscripten>>emscriptenModuleFactory)(
 				EmscriptenModule(<any>canvasElement)

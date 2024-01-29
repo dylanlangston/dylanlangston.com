@@ -1,8 +1,11 @@
+import type { AudioEventType } from "./AudioContextProxy";
+
 export enum IPCMessageType {
 	Initialize,
 	Initialized,
     AddEventHandler,
     EventHandlerCallback,
+    AudioEvent,
 }
 
 // This class is used for communication between web worker and main page
@@ -20,6 +23,10 @@ export class IPCMessage {
         type: string;
         event: any;
     }) => new IPCMessage(IPCMessageType.EventHandlerCallback, eventInfo);
+    public static AudioEvent = (audioEvent: {
+        type: AudioEventType,
+        details: any
+    }) => new IPCMessage(IPCMessageType.AudioEvent, audioEvent);
 
 	private constructor(type: IPCMessageType, message: IPCMessageDataType = undefined) {
         this.type = type;
@@ -37,5 +44,9 @@ OffscreenCanvas |
     type: string;
     event?: any;
 } | 
+{
+    type: AudioEventType,
+    details?: any
+} |
 PointerEvent | 
 undefined;

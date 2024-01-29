@@ -1,5 +1,9 @@
 export interface MiniAudio {
-	device_type: string;
+	device_type: {
+		playback: number;
+		capture: number;
+		duplex: number;
+	};
 	referenceCount: number;
 	devices: Array<MiniAudioDevice>;
 	get_device_by_index: (e: number) => MiniAudioDevice;
