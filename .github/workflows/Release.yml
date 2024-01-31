@@ -61,8 +61,8 @@ jobs:
               name: "v${{ inputs.version }}",
               make_latest: "true",
               owner: "${{ github.repository_owner }}",
-              prerelease: "true",
-              draft: "false",
+              prerelease: true,
+              draft: false,
               repo: "${{ github.repository }}",
               target_commitish: "${{ github.sha }}",
               tag_name: "v${{ inputs.version }}"
