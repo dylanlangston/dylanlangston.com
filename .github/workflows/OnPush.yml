@@ -39,7 +39,7 @@ jobs:
     name: "Step 1️⃣"
     # We should have already tested in "DependabotAutoMerge.yml" if this is dependabot
     if: ${{ github.event.commits[0].author.name != 'dependabot[bot]' }}
-    uses: dylanlangston/dylanlangston.com/.github/workflows/Test.yml@main
+    uses: dylanlangston/dylanlangston.com/.github/steps/Test.yml@main
     needs: [Initialize]
     permissions:
       contents: read
@@ -48,7 +48,7 @@ jobs:
   Build:
     name: "Step 2️⃣"
     if: ${{ success() || needs.Test.result == 'skipped' }}
-    uses: dylanlangston/dylanlangston.com/.github/workflows/Build.yml@main
+    uses: dylanlangston/dylanlangston.com/.github/steps/Build.yml@main
     needs: [Initialize, Test]
     permissions:
       contents: read
@@ -57,7 +57,7 @@ jobs:
   Deploy:
     name: "Step 3️⃣"
     if: ${{ success() || needs.Build.result == 'success' }}
-    uses: dylanlangston/dylanlangston.com/.github/workflows/Deploy.yml@main
+    uses: dylanlangston/dylanlangston.com/.github/steps/Deploy.yml@main
     needs: [Initialize, Build]
     permissions:
       contents: read
@@ -68,7 +68,7 @@ jobs:
   Release:
     name: "Step 4️⃣"
     if: ${{ success() || needs.Deploy.result == 'success' }}
-    uses: dylanlangston/dylanlangston.com/.github/workflows/Release.yml@main
+    uses: dylanlangston/dylanlangston.com/.github/steps/Release.yml@main
     needs: [Initialize, Deploy]
     permissions:
       packages: read

@@ -37,3 +37,9 @@ updates:
     directory: ./.github/workflows/
     schedule:
       interval: "weekly"
+  - package-ecosystem: "github-actions"
+    commit-message:
+      prefix: "Github Actions - "
+    directory: ./.github/steps/
+    schedule:
+      interval: "weekly"
