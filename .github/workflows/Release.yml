@@ -39,38 +39,46 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
+            const allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
                owner: context.repo.owner,
                repo: context.repo.repo,
                run_id: '${{ github.run_id }}',
             });
-            let matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
+            const matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
               return artifact.name == "dylanlangston.com-v${{ inputs.version }}"
             })[0];
-            let download = await github.rest.actions.downloadArtifact({
+            const download = await github.rest.actions.downloadArtifact({
                owner: context.repo.owner,
                repo: context.repo.repo,
                artifact_id: matchArtifact.id,
                archive_format: 'zip',
             });
-            //let fs = require('fs');
-            //fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/dylanlangston.com-v${{ inputs.version }}.zip`, Buffer.from(download.data));
+            console.log(download);
 
+            const repoName = "${{ github.repository }}".split('/')[1];
             const releaseResponse = await github.rest.repos.createRelease({
-              body: "**DylanLangston.com - _Prerelease v${{ inputs.version }}_**<br/>${{ inputs.commit-message }}",
-              name: "v${{ inputs.version }}",
-              make_latest: "true",
-              owner: "${{ github.repository_owner }}",
-              prerelease: true,
-              draft: false,
-              repo: "${{ github.repository }}".split('/')[1],
-              target_commitish: "${{ github.sha }}",
-              tag_name: "v${{ inputs.version }}"
+                body: "**DylanLangston.com - _Prerelease v${{ inputs.version }}_**<br/>${{ inputs.commit-message }}",
+                name: "v${{ inputs.version }}",
+                make_latest: "true",
+                owner: "${{ github.repository_owner }}",
+                prerelease: true,
+                draft: false,
+                repo: repoName,
+                target_commitish: "${{ github.sha }}",
+                tag_name: "v${{ inputs.version }}"
             });
             const releaseData = releaseResponse.data;
             const releaseId = releaseData.id;
             const uploadUrl = releaseData.upload_url;
-            console.log(releaseResponse);
+
+            const uploadResponse = await github.rest.repos.uploadReleaseAsset({
+                url: uploadUrl,
+                data: download.data,
+                name: "dylanlangston.com-v${{ inputs.version }}.zip",
+                owner: "${{ github.repository_owner }}",
+                release_id: releaseId,
+                repo: repoName
+            });
       # - name: Create Release
       #   id: create_release
       #   uses: ncipollo/release-action@v1
