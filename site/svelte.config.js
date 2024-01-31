@@ -36,7 +36,6 @@ const config = {
 
 export default config;
 
-const args = getArgs();
 function getArgs() {
 	const args = {};
 	process.argv.slice(2, process.argv.length).forEach((arg) => {
@@ -59,5 +58,5 @@ function getArgs() {
 }
 
 function shouldPrecompress() {
-	return Object.keys(args).some((v) => v.toLowerCase() == 'precompress');
+	return Object.keys(getArgs()).some((v) => v.toLowerCase() == 'precompress');
 }
