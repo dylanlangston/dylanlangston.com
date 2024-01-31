@@ -12,5 +12,7 @@ if (isNaN(minor) || isNaN(patch))
     js_common.error(`Failed to set date from input "time": ${time}`)
 }
 
-js_common.output('version', `${major}.${minor}.${patch}`);
-js_common.notice(`Version: ${major}.${minor}.${patch}`);
+const version = `${major}.${new String(minor).padEnd(6, "0")}.${new String(patch).padEnd(6, "0")}`;
+
+js_common.output('version', version);
+js_common.notice(`Version: ${version}`);
