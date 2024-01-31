@@ -12,12 +12,6 @@ on:
       runId:
         required: true
         type: string
-      body:
-        required: false
-        type: string
-        default: |
-          **DylanLangston.com - _Prerelease v${{ inputs.version }}_**
-          ${{ inputs.commit-message }}
 
 concurrency:
   group: "publish"
@@ -63,7 +57,7 @@ jobs:
             //fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/dylanlangston.com-v${{ inputs.version }}.zip`, Buffer.from(download.data));
 
             const releaseResponse = await github.rest.repos.createRelease({
-              body: "${{ inputs.body }}",
+              body: "**DylanLangston.com - _Prerelease v${{ inputs.version }}_**<br/>${{ inputs.commit-message }}",
               name: "v${{ inputs.version }}",
               make_latest: true,
               owner: "${{ github.repository_owner }}",
