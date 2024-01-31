@@ -12,6 +12,12 @@ on:
       runId:
         required: true
         type: string
+      body:
+        required: true
+        type: string
+        default: |
+          **DylanLangston.com - _Prerelease v${{ inputs.version }}_**
+          ${{ inputs.commit-message }}
 
 concurrency:
   group: "publish"
@@ -53,19 +59,32 @@ jobs:
                artifact_id: matchArtifact.id,
                archive_format: 'zip',
             });
-            let fs = require('fs');
-            fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/dylanlangston.com-v${{ inputs.version }}.zip`, Buffer.from(download.data));
-      - name: Create Release
-        id: create_release
-        uses: ncipollo/release-action@v1
-        with:
-          artifacts: "dylanlangston.com-v${{ inputs.version }}.zip"
-          artifactContentType: application/zip
-          body: |
-            **DylanLangston.com - _Prerelease v${{ inputs.version }}_**
-            ${{ inputs.commit-message }}
-          prerelease: true
-          draft: false
-          commit: ${{ github.head_ref }}
-          tag: v${{ inputs.version }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+            //let fs = require('fs');
+            //fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/dylanlangston.com-v${{ inputs.version }}.zip`, Buffer.from(download.data));
+
+            const releaseResponse = await github.rest.repos.createRelease({
+              body: "${{ inputs.body }}",
+              name: "v${{ inputs.version }}",
+              make_latest: true,
+              owner: "${{ github.repository_owner }}",
+              prerelease: true,
+              draft: false,
+              repo: "${{ github.repository }}",
+              target_commitish: "${{ github.sha }}",
+              tag_name: "v${{ inputs.version }}"
+            });
+            console.log(releaseResponse);
+      # - name: Create Release
+      #   id: create_release
+      #   uses: ncipollo/release-action@v1
+      #   with:
+      #     artifacts: "dylanlangston.com-v${{ inputs.version }}.zip"
+      #     artifactContentType: application/zip
+      #     body: |
+      #       **DylanLangston.com - _Prerelease v${{ inputs.version }}_**
+      #       ${{ inputs.commit-message }}
+      #     prerelease: true
+      #     draft: false
+      #     commit: ${{ github.head_ref }}
+      #     tag: v${{ inputs.version }}
+      #     token: ${{ secrets.GITHUB_TOKEN }}
