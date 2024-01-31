@@ -77,8 +77,8 @@ jobs:
             const uploadResponse = await github.rest.repos.uploadReleaseAsset({
                 url: uploadUrl,
                 headers: {
-                    "content-length": download.headers.content-length,
-                    "content-type": download.headers.content-type
+                    "content-length": download.headers['content-length'],
+                    "content-type": download.headers['content-type']
                 },
                 data: download.data,
                 name: "${{ inputs.name-prefix }}${{ inputs.version }}.zip",
