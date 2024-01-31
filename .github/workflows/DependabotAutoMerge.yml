@@ -31,7 +31,7 @@ jobs:
           time: ${{ github.event.pull_request.head.repo.updated_at }}
   Test:
     name: "Step 1️⃣"
-    uses: dylanlangston/dylanlangston.com/.github/steps/Test.yml@main
+    uses: dylanlangston/dylanlangston.com/.github/workflows/steps/Test.yml@main
     needs: [Initialize]
     permissions:
       contents: read
