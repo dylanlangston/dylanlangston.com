@@ -107,7 +107,7 @@ else
 	@cd ./site; npm exec --package=binaryen -c 'wasm-opt ./static/dylanlangston.com.wasm -all --post-emscripten --low-memory-unused -tnh --converge -Oz --flatten --rereloop -Oz -Oz -o ./static/dylanlangston.com.wasm'; cd ../
 endif
 ifeq ($(PRECOMPRESS_RELEASE),1)
-	@npm run build --prefix ./site -- --precompress
+	@npm run build --prefix ./site -- -- --precompress
 else
 	@npm run build --prefix ./site
 endif
@@ -117,7 +117,7 @@ else
 	@cd ./site; bunx --bun binaryen ./static/dylanlangston.com.wasm -all --post-emscripten --low-memory-unused -tnh --converge -Oz --flatten --rereloop -Oz -Oz -o ./static/dylanlangston.com.wasm; cd ../
 endif
 ifeq ($(PRECOMPRESS_RELEASE),1)
-	@bun -b run --cwd ./site build -- --precompress
+	@bun -b run --cwd ./site build -- -- --precompress
 else
 	@bun -b run --cwd ./site build
 endif
