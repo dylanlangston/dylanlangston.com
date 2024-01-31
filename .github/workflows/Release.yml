@@ -59,10 +59,10 @@ jobs:
             const releaseResponse = await github.rest.repos.createRelease({
               body: "**DylanLangston.com - _Prerelease v${{ inputs.version }}_**<br/>${{ inputs.commit-message }}",
               name: "v${{ inputs.version }}",
-              make_latest: true,
+              make_latest: "true",
               owner: "${{ github.repository_owner }}",
-              prerelease: true,
-              draft: false,
+              prerelease: "true",
+              draft: "false",
               repo: "${{ github.repository }}",
               target_commitish: "${{ github.sha }}",
               tag_name: "v${{ inputs.version }}"
