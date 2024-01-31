@@ -19,6 +19,15 @@ else
 $(error "USE_NODE must be 1 or 0")
 endif
 
+# Specify if release should be precompressed or not
+ifeq ($(PRECOMPRESS_RELEASE),)
+	PRECOMPRESS_RELEASE = 0
+else ifeq ($(PRECOMPRESS_RELEASE),0)
+else ifeq ($(PRECOMPRESS_RELEASE),1)
+else
+$(error "PRECOMPRESS_RELEASE must be 1 or 0")
+endif
+
 help: ## Display the help menu.
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
@@ -97,13 +106,21 @@ ifeq ($(OPTIMIZE),'Debug')
 else
 	@cd ./site; npm exec --package=binaryen -c 'wasm-opt ./static/dylanlangston.com.wasm -all --post-emscripten --low-memory-unused -tnh --converge -Oz --flatten --rereloop -Oz -Oz -o ./static/dylanlangston.com.wasm'; cd ../
 endif
+ifeq ($(PRECOMPRESS_RELEASE),1)
+	@npm run build --prefix ./site -- --precompress
+else
 	@npm run build --prefix ./site
+endif
 else
 ifeq ($(OPTIMIZE),'Debug')
 else
 	@cd ./site; bunx --bun binaryen ./static/dylanlangston.com.wasm -all --post-emscripten --low-memory-unused -tnh --converge -Oz --flatten --rereloop -Oz -Oz -o ./static/dylanlangston.com.wasm; cd ../
 endif
+ifeq ($(PRECOMPRESS_RELEASE),1)
+	@bun -b run --cwd ./site build -- --precompress
+else
 	@bun -b run --cwd ./site build
+endif
 endif
 	
 develop-docker-start: setup-docker develop-docker-stop ## Launch a docker container. Control-C to quit.
@@ -116,7 +133,7 @@ develop-docker-stop: ## Stop all docker containers
 	@echo Stopping Docker Container
 
 release-docker:  ## Builds Web Version for publish using docker.
-	@docker build --cache-from dylanlangston.com:build --cache-from debian:stable-slim -t dylanlangston.com:latest --target publish . --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE)
+	@docker build --cache-from dylanlangston.com:build --cache-from debian:stable-slim -t dylanlangston.com:latest --target publish . --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE) --build-arg PRECOMPRESS_RELEASE=$(PRECOMPRESS_RELEASE)
 	@docker create --name site-temp dylanlangston.com
 	@docker cp site-temp:/root/dylanlangston.com/site/build/ ./site/
 	@docker rm -f site-temp

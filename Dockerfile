@@ -32,7 +32,9 @@ ARG VERSION
 RUN test -n "$VERSION"
 ARG OPTIMIZE='Debug'
 RUN test -n "$OPTIMIZE"
-RUN make setup-git-clone update-version VERSION=$VERSION release OPTIMIZE=$OPTIMIZE USE_NODE=1
+ARG PRECOMPRESS_RELEASE='0'
+RUN test -n "$PRECOMPRESS_RELEASE"
+RUN make setup-git-clone update-version VERSION=$VERSION release OPTIMIZE=$OPTIMIZE USE_NODE=1 PRECOMPRESS_RELEASE=$PRECOMPRESS_RELEASE
 
 # Default Stage is the Base stage
 FROM base as default

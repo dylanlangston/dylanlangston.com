@@ -39,7 +39,7 @@ jobs:
           target: default
           tag: dylanlangston.com:build
       - name: Build using Docker
-        run: make release-docker VERSION=${{ inputs.version }} OPTIMIZE='ReleaseFast'
+        run: make release-docker VERSION=${{ inputs.version }} OPTIMIZE='ReleaseFast' PRECOMPRESS_RELEASE=1
       - name: Upload Release artifact
         id: upload
         uses: actions/upload-artifact@v4
