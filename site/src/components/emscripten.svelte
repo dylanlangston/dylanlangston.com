@@ -4,40 +4,14 @@
 	import emscriptenModuleFactory from '../import/emscripten';
 	import { fade, blur, fly, slide, scale, crossfade } from 'svelte/transition';
 	import emscriptenWorker from '$lib/Emscripten.worker?worker';
-	import { IPCMessage, IPCMessageType } from '$lib/IPCMessage';
-	import { AudioContextProxy, AudioEventType } from '$lib/AudioContextProxy';
-	import { FakeDOM } from '$lib/FakeDOM';
+	import { AudioEventType, IPCMessage, IPCMessageType } from '$lib/IPCMessage';
+	import { WorkerDOM } from '$lib/WorkerDOM';
+	import { sanitizeEvent } from '$lib/Common';
+	import { list } from 'postcss';
+	import { IPCProxy } from '$lib/IPCProxy';
 
 	// Specify if we should use a web worker
-	const UseWorker: boolean = true; // typeof(Worker) !== "undefined"; 
-
-	function sanitizeEvent(e: any, n: number = 0) {
-		const obj: any = {};
-		for (let k in e) {
-			if (e[k] == null || e[k] == undefined) continue;
-
-			// Only go 6 levels deep
-			if (n > 6) continue;
-
-			if (e[k] instanceof Node) continue;
-			if (e[k] instanceof Window) continue;
-			if (e[k] instanceof Function) continue;
-
-			switch (typeof e[k]) {
-				case 'undefined':
-				case 'boolean':
-				case 'number':
-				case 'bigint':
-				case 'string':
-					obj[k] = e[k];
-					break;
-				case 'object':
-					obj[k] = sanitizeEvent(e[k], n + 1);
-					break;
-			}
-		}
-		return obj;
-	}
+	const UseWorker: boolean = typeof Worker !== 'undefined';
 
 	function AddEventHandler(eventHandler: {
 		id: number;
@@ -78,14 +52,19 @@
 
 	let audioContext: AudioContext;
 	let processorNode: ScriptProcessorNode;
+	let audioNode: AudioNode;
+	let audioOutput: [[]] = [[]];
 	function AudioEvent(audioEvent: { type: AudioEventType; details?: any }) {
 		switch (audioEvent.type) {
 			case AudioEventType.Connect:
-				const audioNode = processorNode.connect(audioContext.destination);
-				debugger;
+				audioNode = processorNode.connect(<AudioNode>audioContext.destination);
 				break;
 			case AudioEventType.CreateScriptProcessor:
-				processorNode = audioContext.createScriptProcessor(audioEvent.details.bufferSize, audioEvent.details.numberOfInputChannels, audioEvent.details.numberofOutputChannels);
+				processorNode = audioContext.createScriptProcessor(
+					audioEvent.details.bufferSize,
+					audioEvent.details.numberOfInputChannels,
+					audioEvent.details.numberofOutputChannels
+				);
 				break;
 			case AudioEventType.Resume:
 				audioContext.resume();
@@ -93,18 +72,28 @@
 			case AudioEventType.Suspend:
 				audioContext.suspend();
 				break;
+			case AudioEventType.StartProcessAudio:
+				processorNode.onaudioprocess = (ev) => {
+					worker?.postMessage(
+						IPCMessage.AudioEvent(AudioEventType.ProcessAudio, {
+							funcProxy: audioEvent.details,
+							data: sanitizeEvent(ev)
+						})
+					);
+					for (var i = 0; i < audioOutput.length; i++) {
+						ev.outputBuffer.getChannelData(i).set(audioOutput[i]);
+					}
+				};
+				break;
+			case AudioEventType.AudioOutput:
+				audioOutput = audioEvent.details.data;
+				break;
 		}
 	}
 
 	let worker: Worker | undefined = undefined;
 	let canvas: HTMLCanvasElement | undefined = undefined;
 	onMount(async () => {
-		AudioContextProxy.SetContext(AudioContext);
-		window.AudioContext = AudioContextProxy;
-
-		audioContext = new AudioContext();
-
-
 		const canvasElement = document.createElement('canvas');
 		canvasElement.classList.add(
 			'absolute',
@@ -117,9 +106,25 @@
 			'-z-50'
 		);
 		if (UseWorker) {
+			audioContext = new AudioContext();
+
+			['click', 'touchend', 'mousedown', 'keydown'].forEach((e) =>
+				document.body.addEventListener(
+					e,
+					() => {
+						audioContext.resume();
+					},
+					{
+						once: true
+					}
+				)
+			);
+
 			worker = new emscriptenWorker();
 			const offscreenCanvas = canvasElement.transferControlToOffscreen();
-			worker.postMessage(IPCMessage.Initialize(offscreenCanvas), [offscreenCanvas]);
+			worker.postMessage(IPCMessage.Initialize(offscreenCanvas, audioContext.sampleRate), [
+				offscreenCanvas
+			]);
 			worker.onmessage = (ev: MessageEvent<IPCMessage>) => {
 				switch (ev.data.type) {
 					case IPCMessageType.Initialized:

@@ -25,12 +25,6 @@ pub fn main() !void {
         rl.BeginDrawing();
         defer rl.EndDrawing();
 
-        if (!rl.IsMusicStreamPlaying(music)) {
-            rl.PlayMusicStream(music);
-        } else {
-            rl.UpdateMusicStream(music);
-        }
-
         if (builtin.mode == .Debug) {
             rl.DrawFPS(10, 430);
         }
@@ -47,6 +41,14 @@ pub fn main() !void {
 
         if (rl.IsKeyDown(rl.KEY_SPACE)) {
             rl.DrawText("Space Pressed", 190, 250, 20, rl.LIGHTGRAY);
+
+            rl.PauseMusicStream(music);
+        } else {
+            if (!rl.IsMusicStreamPlaying(music)) {
+                rl.PlayMusicStream(music);
+            } else {
+                rl.UpdateMusicStream(music);
+            }
         }
     }
 }

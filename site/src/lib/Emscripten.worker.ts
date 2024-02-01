@@ -1,31 +1,32 @@
 import { type IEmscripten, EmscriptenModule } from '$lib/Emscripten';
-import { IPCMessage, IPCMessageType, type IPCMessageDataType } from '$lib/IPCMessage';
+import { AudioEventType, IPCMessage, IPCMessageType, type IPCMessageDataType } from '$lib/IPCMessage';
 import emscriptenModuleFactory from '../import/emscripten';
 import { Environment } from "$lib/Common";
-import { FunctionProxy } from './FunctionProxy';
-import { FakeDOM } from './FakeDOM';
+import { IPCProxy } from './IPCProxy';
+import { WorkerDOM } from './WorkerDOM';
 
 // Define all events here
 // The rest of this file should be boilerplate code...
 let eventHandlers: { [type: number]: (message: IPCMessageDataType) => void; } = {};
 // On Initialized
 eventHandlers[IPCMessageType.Initialize] = (message: IPCMessageDataType) => {
-    self.document = new FakeDOM.Document(<any>message);
-
     // This needs to match the width of the canvas
     const width = 800;
     const height = 450;
 
-    const canvas: OffscreenCanvasExtended = <any>message;
+    const canvas: OffscreenCanvasExtended = (<any>message).canvas;
     canvas.clientWidth = width;
     canvas.clientHeight = height;
     canvas.addEventListener = (type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void => {
-        const id = FunctionProxy.Add(listener);
+        const id = IPCProxy.Add(listener);
         postMessage(IPCMessage.AddEventHandler({ id, target: 'Canvas', type }));
     };
     canvas.getBoundingClientRect = () => {
         return { x: 0, y: 0, width: width, height: height, top: 0, right: width, bottom: height, left: 0 };
     }
+
+    WorkerDOM.SetSampleRate((<any>message).audioSampleRate);
+    self.document = new WorkerDOM.Document(<any>canvas);
 
     (<EmscriptenModuleFactory<IEmscripten>>emscriptenModuleFactory)(EmscriptenModule(canvas)).then(emscripten => {
         postMessage(IPCMessage.Initialized())
@@ -44,12 +45,38 @@ eventHandlers[IPCMessageType.EventHandlerCallback] = (message) => {
     eventHandler.event.preventDefault = () => { };
     eventHandler.event.target = self.document.getCanvas();
     if (Environment.Dev) console.debug(eventHandler);
-    const func = FunctionProxy.Get(eventHandler.id);
+    const func = IPCProxy.Get(eventHandler.id);
     func(eventHandler.event);
 };
-
+// Audio Callbacks
 eventHandlers[IPCMessageType.AudioEvent] = (message) => {
-    console.log(message);
+    let eventHandler: {
+        details: {
+            funcProxy: number,
+            eventProxy: number,
+            data: any
+        },
+        type: AudioEventType
+    } = <any>message;
+    switch (eventHandler.type) {
+        case AudioEventType.ProcessAudio:
+            const func = IPCProxy.Get(eventHandler.details.funcProxy);
+            const audioEvent = eventHandler.details.data;
+            const audioOutput: any = [[]];
+            audioEvent.outputBuffer.getChannelData = (iChannel: number) => {
+                audioOutput[iChannel] = [];
+                return audioOutput[iChannel];
+            };
+            func(eventHandler.details.data);
+            postMessage(IPCMessage.AudioEvent(
+                AudioEventType.AudioOutput,
+                {
+                    eventProxy: eventHandler.details.eventProxy,
+                    data: audioOutput
+                }
+            ));
+            break;
+    }
 };
 
 interface OffscreenCanvasExtended extends OffscreenCanvas {
@@ -83,14 +110,14 @@ class WorkerMessageEventHandler extends EventTarget {
 
 // Worker TypeScript Def and boilerplate
 interface IEmscriptenWorker extends DedicatedWorkerGlobalScope {
-    window: FakeDOM.Window;
-    document: FakeDOM.Document;
-    miniaudio: FakeDOM.MiniAudio;
+    window: WorkerDOM.Window;
+    document: WorkerDOM.Document;
+    miniaudio: WorkerDOM.MiniAudio;
 }
 declare let self: IEmscriptenWorker;
 
-self.miniaudio = new FakeDOM.MiniAudio();
-self.window = new FakeDOM.Window();
+self.miniaudio = new WorkerDOM.MiniAudio();
+self.window = new WorkerDOM.Window();
 self.onmessage = (ev: MessageEvent<IPCMessage>) => {
     if (ev.data !== undefined && ev.data.type !== undefined && ev.data.message !== undefined) {
         WorkerMessageEventHandler.Handler.OnMessage(ev.data.type, ev.data.message);

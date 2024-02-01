@@ -1,15 +1,19 @@
 import type { MiniAudio as IMiniAudio, MiniAudioDevice } from "../types/miniaudio";
-import { AudioEventType } from "./AudioContextProxy";
-import { FunctionProxy } from "./FunctionProxy";
-import { IPCMessage } from "./IPCMessage";
+import { IPCProxy } from "./IPCProxy";
+import { AudioEventType, IPCMessage } from "./IPCMessage";
 
 // Minimum implementation of the DOM needed to make Emscripten run from our web worker
-export namespace FakeDOM {
+export namespace WorkerDOM {
+    let rate: number = 48000;
+    export function SetSampleRate(r: number) {
+        rate = r;
+    }
+
     export class Window {
         public addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void {
             // Skip resize events
             if (type == "resize") return;
-            const id = FunctionProxy.Add(listener);
+            const id = IPCProxy.Add(listener);
             postMessage(IPCMessage.AddEventHandler({ id, target: 'Window', type }));
         }
         public matchMedia(query: string): MediaQueryList {
@@ -23,6 +27,10 @@ export namespace FakeDOM {
         public get scrollY(): number {
             return 0;
         }
+        public get navigator(): object {
+            debugger;
+            return {};
+        }
         public miniaudio = self.miniaudio;
         public AudioContext = AudioContext;
     }
@@ -32,7 +40,7 @@ export namespace FakeDOM {
             this.canvas = canvas;
         }
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void {
-            const id = FunctionProxy.Add(listener);
+            const id = IPCProxy.Add(listener);
             postMessage(IPCMessage.AddEventHandler({ id, target: 'Document', type }));
         }
         querySelector(selectors: string): HTMLElement | null {
@@ -88,19 +96,9 @@ export namespace FakeDOM {
             }
         };
         public get_device_by_index: (deviceIndex: number) => MiniAudioDevice = (deviceIndex: number) => this.devices[deviceIndex];
-        public unlock_event_types: string[] = ['touchend', 'click'];
+        public unlock_event_types: string[] = [];
         public unlock(): void {
-            for (let i = 0; i < this.devices.length; ++i) {
-                const device = this.devices[i];
-                if (device != null && device.webaudio != null && device?.state === this.device_state.started) {
-                    device.webaudio.resume().then(() => {
-                        //Module._ma_device__on_notification_unlocked(device.pDevice);
-                    }, (error: any) => {
-                        console.error("Failed to resume audiocontext", error);
-                    });
-                }
-            }
-            this.unlock_event_types.map((event_type) => document.removeEventListener(event_type, this.unlock, true));
+            
         };
     }
     // Update this to use an AudioWorkletNode
@@ -111,48 +109,43 @@ export namespace FakeDOM {
     class AudioContext {
         public suspend(): Promise<void> {
             return new Promise((resolve, reject) => {
-                postMessage(IPCMessage.AudioEvent({
-                    type: AudioEventType.Suspend,
-                    details: null
-                }));
+                postMessage(IPCMessage.AudioEvent(AudioEventType.Suspend));
                 resolve();
             });
         }
         public resume(): Promise<void> {
             return new Promise((resolve, reject) => {
-                postMessage(IPCMessage.AudioEvent({
-                    type: AudioEventType.Resume,
-                    details: null
-                }));
+                postMessage(IPCMessage.AudioEvent(AudioEventType.Resume));
                 resolve();
             });
         }
         public createScriptProcessor(bufferSize?: number, numberOfInputChannels?: number, numberOfOutputChannels?: number) {
-            postMessage(IPCMessage.AudioEvent({
-                type: AudioEventType.CreateScriptProcessor,
-                details: {
+            postMessage(IPCMessage.AudioEvent(
+                AudioEventType.CreateScriptProcessor,
+                {
                     bufferSize: bufferSize,
                     numberOfInputChannels: numberOfInputChannels,
                     numberOfOutputChannels: numberOfOutputChannels
                 }
-            }));
-            return {
-                connect: (args: any) => {
-                    postMessage(IPCMessage.AudioEvent({
-                        type: AudioEventType.Connect,
-                        details: null
-                    }));
-                },
-            };
+            ));
+            return new ScriptProcessorNode();
         }
-        // public createMediaStreamSource(arg: any) {
-        //     console.log(arg);
-        // }
-        public destination: any = {};
-        public onaudioprocess: any = undefined;
-
         public get sampleRate(): number {
-            return 48000;
+            return rate;
+        }
+    }
+
+    class ScriptProcessorNode {
+        public set onaudioprocess(value: ((this: ScriptProcessorNode, ev: AudioProcessingEvent) => any) | null) {
+            const funcProxy = IPCProxy.Add(value);
+            postMessage(IPCMessage.AudioEvent(
+                AudioEventType.StartProcessAudio,
+                funcProxy
+            ));
+        }
+        public connect(destinationNode: AudioNode, output?: number, input?: number): AudioNode {
+            postMessage(IPCMessage.AudioEvent(AudioEventType.Connect));
+            return <any>undefined;
         }
     }
 };
