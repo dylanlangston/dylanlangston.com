@@ -41,8 +41,9 @@ jobs:
           runId: ${{ github.run_id }}
       - name: 'Create Release'
         uses: actions/github-script@v7
+        env:
+          INPUT_COMMIT-MESSAGE: ${{ inputs.commit-message }}
         with:
-          commit-message: ${{ inputs.commit-message }}
           script: |
             const allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
                owner: context.repo.owner,
