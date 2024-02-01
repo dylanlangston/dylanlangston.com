@@ -18,14 +18,6 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  Test:
-    name: "Step 1️⃣"
-    uses: dylanlangston/dylanlangston.com/.github/workflows/Test.yml@main
-    permissions:
-      contents: read
-    with:
-      version: ${{ needs.Initialize.outputs.version }}
-      shouldCache: false
   Build:
     name: "Test 🧪 + Build 🧰"
     runs-on: ubuntu-latest
