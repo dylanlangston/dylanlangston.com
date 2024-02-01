@@ -6,6 +6,9 @@ on:
       version:
         required: true
         type: string
+      should-test:
+        required: true
+        type: boolean
 
 permissions:
   contents: read
@@ -15,17 +18,25 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  Test:
+    name: "Step 1️⃣"
+    uses: dylanlangston/dylanlangston.com/.github/workflows/Test.yml@main
+    permissions:
+      contents: read
+    with:
+      version: ${{ needs.Initialize.outputs.version }}
+      shouldCache: false
   Build:
-    name: "Build 🧰"
+    name: "Test 🧪 + Build 🧰"
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Build Summary
+      - name: Test + Build Summary
         uses: dylanlangston/dylanlangston.com/.github/actions/PopulateBuildSummary@main
         id: summary
         with:
           version: ${{ inputs.version }}
-          mode: 'build'
+          mode: 'testandbuild'
           runId: ${{ github.run_id }}
       - name: Checkout
         id: checkout
@@ -38,15 +49,23 @@ jobs:
           key: docker-${{ runner.os }}-${{ hashFiles('Dockerfile', '.github/workflows/*.yml', 'Makefile', 'site/bun*', '.gitmodules', 'site/package.json') }}
           target: default
           tag: dylanlangston.com:build
+      - name: Test using Docker
+        if: ${{ inputs.should-test }}
+        id: test
+        run: make test-docker VERSION=${{ inputs.version }}
       - name: Build using Docker
+        if: ${{ success() || steps.test.conclusion == 'skipped' }}
+        id: build
         run: make release-docker VERSION=${{ inputs.version }} OPTIMIZE='ReleaseFast' PRECOMPRESS_RELEASE=1
       - name: Upload Release artifact
+        if: ${{ success() || steps.build.conclusion == 'success' }}
         id: upload
         uses: actions/upload-artifact@v4
         with:
           name: dylanlangston.com-v${{ inputs.version }}
           path: '${{ github.workspace }}/site/build'
       - name: Upload GitGub Pages artifact
+        if: ${{ success() || steps.upload.conclusion == 'success' }}
         id: upload-compressed
         uses: actions/upload-pages-artifact@v3
         with:

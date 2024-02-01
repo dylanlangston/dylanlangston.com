@@ -4,7 +4,7 @@ const availableModes = [
     "onpush",
     "automerge",
     "test",
-    "build",
+    "testandbuild",
     "deploy",
     "release",
 ];

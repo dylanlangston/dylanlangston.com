@@ -10,7 +10,7 @@ switch (mode) {
     case "test":
         await Test();
         break;
-    case "build":
+    case "testandbuild":
         await Build();
         break;
     case "deploy":
