@@ -108,17 +108,17 @@
 		if (UseWorker) {
 			audioContext = new AudioContext();
 
-			['click', 'touchend', 'mousedown', 'keydown'].forEach((e) =>
-				document.body.addEventListener(
-					e,
-					() => {
-						audioContext.resume();
-					},
-					{
-						once: true
-					}
-				)
+			// Start audio on input event
+			const eventTypes = ['click', 'touchend', 'mousedown', 'keydown'];
+			const listener = () => {
+				audioContext.resume().then(() => {
+					eventTypes.filter(i => i != e).forEach((et) => document.body.removeEventListener(et, listener));
+				})
+			};
+			eventTypes.forEach((e) =>
+				document.body.addEventListener(e, listener, { once: true });
 			);
+			listener();
 
 			worker = new emscriptenWorker();
 			const offscreenCanvas = canvasElement.transferControlToOffscreen();
