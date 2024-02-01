@@ -37,6 +37,7 @@ jobs:
         run: make setup-git-clone
       - name: Cache Docker Image
         uses: dylanlangston/dylanlangston.com/.github/actions/DockerCache@main
+        id: cache
         with:
           key: docker-${{ runner.os }}-${{ hashFiles('Dockerfile', '.github/workflows/*.yml', 'Makefile', 'site/bun*', '.gitmodules', 'site/package.json') }}
           target: default
@@ -46,7 +47,7 @@ jobs:
         id: test
         run: make test-docker VERSION=${{ inputs.version }}
       - name: Build using Docker
-        if: ${{ success() || steps.test.conclusion == 'skipped' }}
+        if: ${{ success() || (steps.test.conclusion == 'skipped' && steps.cache.conclusion == 'success') }}
         id: build
         run: make release-docker VERSION=${{ inputs.version }} OPTIMIZE='ReleaseFast' PRECOMPRESS_RELEASE=1
       - name: Upload Release artifact
