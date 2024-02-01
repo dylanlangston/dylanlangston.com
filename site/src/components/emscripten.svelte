@@ -5,10 +5,7 @@
 	import { fade, blur, fly, slide, scale, crossfade } from 'svelte/transition';
 	import emscriptenWorker from '$lib/Emscripten.worker?worker';
 	import { AudioEventType, IPCMessage, IPCMessageType } from '$lib/IPCMessage';
-	import { WorkerDOM } from '$lib/WorkerDOM';
 	import { sanitizeEvent } from '$lib/Common';
-	import { list } from 'postcss';
-	import { IPCProxy } from '$lib/IPCProxy';
 
 	// Specify if we should use a web worker
 	const UseWorker: boolean = typeof Worker !== 'undefined';
@@ -112,14 +109,13 @@
 			const eventTypes = ['click', 'touchend', 'mousedown', 'keydown'];
 			const listener = () => {
 				audioContext.resume().then(() => {
-					eventTypes.filter(i => i != e).forEach((et) => document.body.removeEventListener(et, listener));
+					eventTypes.forEach((et) => document.body.removeEventListener(et, listener));
 				})
 			};
-			eventTypes.forEach((e) =>
-				document.body.addEventListener(e, listener, { once: true });
-			);
+			eventTypes.forEach((e) => document.body.addEventListener(e, listener, { once: true }));
 			listener();
 
+			// Create Worker
 			worker = new emscriptenWorker();
 			const offscreenCanvas = canvasElement.transferControlToOffscreen();
 			worker.postMessage(IPCMessage.Initialize(offscreenCanvas, audioContext.sampleRate), [
