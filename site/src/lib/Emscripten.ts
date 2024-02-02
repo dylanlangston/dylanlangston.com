@@ -1,4 +1,10 @@
 import { writable, get } from 'svelte/store';
+import emscriptenModuleFactory from '../import/emscripten';
+
+export const EmscriptenModuleFactory: EmscriptenModuleFactory<IEmscripten> = emscriptenModuleFactory;
+export function EmscriptenInitialize(canvas: HTMLCanvasElement | OffscreenCanvas): Promise<IEmscripten> {
+	return EmscriptenModuleFactory(EmscriptenModule(canvas));
+}
 
 export interface IEmscripten extends CustomEmscriptenModule, EmscriptenModule {
 
@@ -27,8 +33,8 @@ class CustomEmscriptenModule implements ICustomEmscriptenModule {
 
 	elementPointerLock: boolean = false;
 
-	public canvas: OffscreenCanvas;
-	constructor(canvas: OffscreenCanvas) {
+	public canvas: HTMLCanvasElement | OffscreenCanvas;
+	constructor(canvas: HTMLCanvasElement | OffscreenCanvas) {
 		this.canvas = canvas;
 	}
 
@@ -83,8 +89,8 @@ class CustomEmscriptenModule implements ICustomEmscriptenModule {
 	}
 }
 
-export const EmscriptenModule: (canvas: OffscreenCanvas) =>
-	ICustomEmscriptenModule = (canvas: OffscreenCanvas) => new CustomEmscriptenModule(canvas);
+export const EmscriptenModule: (canvas: HTMLCanvasElement | OffscreenCanvas) =>
+	ICustomEmscriptenModule = (canvas: HTMLCanvasElement | OffscreenCanvas) => new CustomEmscriptenModule(canvas);
 
 export enum IPCMessageType {
 	Initialize,

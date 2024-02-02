@@ -2,6 +2,7 @@ export enum IPCMessageType {
 	Initialize,
 	Initialized,
     AddEventHandler,
+    RemoveEventHandler,
     EventHandlerCallback,
     AudioEvent,
 }
@@ -18,6 +19,11 @@ export class IPCMessage {
         target: string;
         type: string;
     }) => new IPCMessage(IPCMessageType.AddEventHandler, eventInfo);
+    public static RemoveEventHandler = (eventInfo: {
+        id: number;
+        target: string;
+        type: string;
+    }) => new IPCMessage(IPCMessageType.RemoveEventHandler, eventInfo);
     public static EventHandlerCallback = (eventInfo: {
         id: number;
         target: string;
@@ -58,8 +64,10 @@ undefined;
 export enum AudioEventType {
     Suspend,
     Resume,
+    Close,
     CreateScriptProcessor,
     Connect,
+    Disconnect,
     StartProcessAudio,
     ProcessAudio,
     AudioOutput,

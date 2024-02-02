@@ -1,6 +1,5 @@
-import { type IEmscripten, EmscriptenModule } from '$lib/Emscripten';
+import { EmscriptenInitialize } from '$lib/Emscripten';
 import { AudioEventType, IPCMessage, IPCMessageType, type IPCMessageDataType } from '$lib/IPCMessage';
-import emscriptenModuleFactory from '../import/emscripten';
 import { Environment } from "$lib/Common";
 import { IPCProxy } from './IPCProxy';
 import { WorkerDOM } from './WorkerDOM';
@@ -13,22 +12,15 @@ eventHandlers[IPCMessageType.Initialize] = (message: IPCMessageDataType) => {
     // This needs to match the width of the canvas
     const width = 800;
     const height = 450;
+    const eventDetails: {
+        canvas: OffscreenCanvas,
+        audioSampleRate: number
+    } = <any>message;
 
-    const canvas: OffscreenCanvasExtended = (<any>message).canvas;
-    canvas.clientWidth = width;
-    canvas.clientHeight = height;
-    canvas.addEventListener = (type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void => {
-        const id = IPCProxy.Add(listener);
-        postMessage(IPCMessage.AddEventHandler({ id, target: 'Canvas', type }));
-    };
-    canvas.getBoundingClientRect = () => {
-        return { x: 0, y: 0, width: width, height: height, top: 0, right: width, bottom: height, left: 0 };
-    }
-
-    WorkerDOM.SetSampleRate((<any>message).audioSampleRate);
-    self.document = new WorkerDOM.Document(<any>canvas);
-
-    (<EmscriptenModuleFactory<IEmscripten>>emscriptenModuleFactory)(EmscriptenModule(canvas)).then(emscripten => {
+    const canvas = new WorkerDOM.OffscreenCanvasExtended(eventDetails.canvas);
+    WorkerDOM.SetSampleRate(eventDetails.audioSampleRate);
+    self.document = new WorkerDOM.Document(canvas);
+    EmscriptenInitialize(canvas).then(emscripten => {
         postMessage(IPCMessage.Initialized())
     })
 };
@@ -46,7 +38,9 @@ eventHandlers[IPCMessageType.EventHandlerCallback] = (message) => {
     eventHandler.event.target = self.document.getCanvas();
     if (Environment.Dev) console.debug(eventHandler);
     const func = IPCProxy.Get(eventHandler.id);
-    func(eventHandler.event);
+    if (func) {
+        func(eventHandler.event);
+    }
 };
 // Audio Callbacks
 eventHandlers[IPCMessageType.AudioEvent] = (message) => {
@@ -79,19 +73,7 @@ eventHandlers[IPCMessageType.AudioEvent] = (message) => {
     }
 };
 
-interface OffscreenCanvasExtended extends OffscreenCanvas {
-    clientWidth: number;
-    clientHeight: number;
-    getBoundingClientRect: () => {
-        x: number;
-        y: number;
-        width: number;
-        height: number;
-        top: number;
-        bottom: number;
-        left: number;
-    };
-}
+
 
 // Register Event Handler for all Worker Messages
 class WorkerMessageEventHandler extends EventTarget {

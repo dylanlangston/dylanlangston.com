@@ -1,25 +1,38 @@
 <script lang="ts">
-	import { type IEmscripten, EmscriptenModule } from '$lib/Emscripten';
+	import { EmscriptenInitialize } from '$lib/Emscripten';
 	import { onMount, onDestroy, tick } from 'svelte';
-	import emscriptenModuleFactory from '../import/emscripten';
 	import { fade, blur, fly, slide, scale, crossfade } from 'svelte/transition';
 	import emscriptenWorker from '$lib/Emscripten.worker?worker';
 	import { AudioEventType, IPCMessage, IPCMessageType } from '$lib/IPCMessage';
 	import { sanitizeEvent } from '$lib/Common';
 
-	// Specify if we should use a web worker
-	const UseWorker: boolean = typeof Worker !== 'undefined';
+	function initWorker(canvasElement: HTMLCanvasElement) {
+		const audioContext = new AudioContext();
 
-	function AddEventHandler(eventHandler: {
-		id: number;
-		target: string;
-		type: string;
-		listener: EventListenerOrEventListenerObject;
-	}) {
-		switch (eventHandler.target) {
-			case 'Window':
-			case 'Canvas':
-				window.addEventListener(eventHandler.type, (e) => {
+		let listeners: ((e: Event) => void)[] = [];
+		function HandleEvent(
+			add: boolean,
+			eventHandler: {
+				id: number;
+				target: string;
+				type: string;
+			}
+		) {
+			let target: EventTarget;
+
+			switch (eventHandler.target) {
+				case 'Window':
+				case 'Canvas':
+				default:
+					target = window;
+					break;
+				case 'Document':
+					target = document;
+					break;
+			}
+
+			if (add) {
+				const listener = (e: Event) => {
 					worker?.postMessage(
 						IPCMessage.EventHandlerCallback({
 							id: eventHandler.id,
@@ -28,67 +41,102 @@
 							event: sanitizeEvent(e)
 						})
 					);
-				});
-				break;
-			case 'Document':
-				document.addEventListener(eventHandler.type, (e) => {
-					worker?.postMessage(
-						IPCMessage.EventHandlerCallback({
-							id: eventHandler.id,
-							target: eventHandler.target,
-							type: eventHandler.type,
-							event: sanitizeEvent(e)
-						})
-					);
-				});
-				break;
-			default:
-				break;
-		}
-	}
-
-	let audioContext: AudioContext;
-	let processorNode: ScriptProcessorNode;
-	let audioNode: AudioNode;
-	let audioOutput: [[]] = [[]];
-	function AudioEvent(audioEvent: { type: AudioEventType; details?: any }) {
-		switch (audioEvent.type) {
-			case AudioEventType.Connect:
-				audioNode = processorNode.connect(<AudioNode>audioContext.destination);
-				break;
-			case AudioEventType.CreateScriptProcessor:
-				processorNode = audioContext.createScriptProcessor(
-					audioEvent.details.bufferSize,
-					audioEvent.details.numberOfInputChannels,
-					audioEvent.details.numberofOutputChannels
-				);
-				break;
-			case AudioEventType.Resume:
-				audioContext.resume();
-				break;
-			case AudioEventType.Suspend:
-				audioContext.suspend();
-				break;
-			case AudioEventType.StartProcessAudio:
-				processorNode.onaudioprocess = (ev) => {
-					worker?.postMessage(
-						IPCMessage.AudioEvent(AudioEventType.ProcessAudio, {
-							funcProxy: audioEvent.details,
-							data: sanitizeEvent(ev)
-						})
-					);
-					for (var i = 0; i < audioOutput.length; i++) {
-						ev.outputBuffer.getChannelData(i).set(audioOutput[i]);
-					}
 				};
-				break;
-			case AudioEventType.AudioOutput:
-				audioOutput = audioEvent.details.data;
-				break;
+				listeners[eventHandler.id] = listener;
+				target.addEventListener(eventHandler.type, listener);
+			} else {
+				const listener = listeners[eventHandler.id];
+				target.removeEventListener(eventHandler.type, listener);
+			}
 		}
+
+		let processorNode: ScriptProcessorNode;
+		let audioNode: AudioNode;
+		let audioOutput: [[]] = [[]];
+		function HandleAudio(audioEvent: { type: AudioEventType; details?: any }) {
+			switch (audioEvent.type) {
+				case AudioEventType.Connect:
+					audioNode = processorNode.connect(<AudioNode>audioContext.destination);
+					break;
+				case AudioEventType.CreateScriptProcessor:
+					processorNode = audioContext.createScriptProcessor(
+						audioEvent.details.bufferSize,
+						audioEvent.details.numberOfInputChannels,
+						audioEvent.details.numberofOutputChannels
+					);
+					break;
+				case AudioEventType.Resume:
+					audioContext.resume();
+					break;
+				case AudioEventType.Suspend:
+					audioContext.suspend();
+					break;
+				case AudioEventType.StartProcessAudio:
+					processorNode.onaudioprocess = (ev) => {
+						worker?.postMessage(
+							IPCMessage.AudioEvent(AudioEventType.ProcessAudio, {
+								funcProxy: audioEvent.details,
+								data: sanitizeEvent(ev)
+							})
+						);
+						for (var i = 0; i < audioOutput.length; i++) {
+							ev.outputBuffer.getChannelData(i).set(audioOutput[i]);
+						}
+					};
+					break;
+				case AudioEventType.AudioOutput:
+					audioOutput = audioEvent.details.data;
+					break;
+			}
+		}
+
+		// Start audio on input event
+		const eventTypes = ['click', 'touchend', 'mousedown', 'keydown'];
+		const listener = () => {
+			audioContext.resume().then(() => {
+				eventTypes.forEach((et) => document.body.removeEventListener(et, listener));
+			});
+		};
+		eventTypes.forEach((e) => document.body.addEventListener(e, listener, { once: true }));
+		listener();
+
+		// Create Worker
+		const worker = new emscriptenWorker();
+		const offscreenCanvas = canvasElement.transferControlToOffscreen();
+		worker.postMessage(IPCMessage.Initialize(offscreenCanvas, audioContext.sampleRate), [
+			offscreenCanvas
+		]);
+		worker.onmessage = (ev: MessageEvent<IPCMessage>) => {
+			switch (ev.data.type) {
+				case IPCMessageType.Initialized:
+					canvas = canvasElement;
+					break;
+				case IPCMessageType.AddEventHandler:
+					HandleEvent(true, <any>ev.data.message);
+					break;
+				case IPCMessageType.RemoveEventHandler:
+					HandleEvent(false, <any>ev.data.message);
+					break;
+				case IPCMessageType.AudioEvent:
+					HandleAudio(<any>ev.data.message);
+					break;
+				default:
+					throw 'Not Implemented';
+			}
+		};
+		worker.onerror = (er) => {
+			worker?.terminate();
+			canvas = undefined;
+			throw er;
+		};
 	}
 
-	let worker: Worker | undefined = undefined;
+	function initFallback(canvasElement: HTMLCanvasElement) {
+		EmscriptenInitialize(canvasElement).then((emscripten) => {
+			canvas = canvasElement;
+		});
+	}
+
 	let canvas: HTMLCanvasElement | undefined = undefined;
 	onMount(async () => {
 		const canvasElement = document.createElement('canvas');
@@ -102,52 +150,12 @@
 			'h-screen',
 			'-z-50'
 		);
+
+		const UseWorker: boolean = typeof Worker !== 'undefined';
 		if (UseWorker) {
-			audioContext = new AudioContext();
-
-			// Start audio on input event
-			const eventTypes = ['click', 'touchend', 'mousedown', 'keydown'];
-			const listener = () => {
-				audioContext.resume().then(() => {
-					eventTypes.forEach((et) => document.body.removeEventListener(et, listener));
-				})
-			};
-			eventTypes.forEach((e) => document.body.addEventListener(e, listener, { once: true }));
-			listener();
-
-			// Create Worker
-			worker = new emscriptenWorker();
-			const offscreenCanvas = canvasElement.transferControlToOffscreen();
-			worker.postMessage(IPCMessage.Initialize(offscreenCanvas, audioContext.sampleRate), [
-				offscreenCanvas
-			]);
-			worker.onmessage = (ev: MessageEvent<IPCMessage>) => {
-				switch (ev.data.type) {
-					case IPCMessageType.Initialized:
-						canvas = canvasElement;
-						break;
-					case IPCMessageType.AddEventHandler:
-						AddEventHandler(<any>ev.data.message);
-						break;
-					case IPCMessageType.AudioEvent:
-						AudioEvent(<any>ev.data.message);
-						break;
-					default:
-						throw 'Not Implemented';
-				}
-			};
-			worker.onerror = (er) => {
-				worker?.terminate();
-				worker = undefined;
-				canvas = undefined;
-				throw er;
-			};
+			initWorker(canvasElement);
 		} else {
-			(<EmscriptenModuleFactory<IEmscripten>>emscriptenModuleFactory)(
-				EmscriptenModule(<any>canvasElement)
-			).then((emscripten) => {
-				canvas = canvasElement;
-			});
+			initFallback(canvasElement);
 		}
 	});
 

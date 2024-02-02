@@ -230,7 +230,6 @@ fn define_macros(raylib_module: *std.Build.Module) void {
     // NOTE: By default LOG_DEBUG traces not shown
     if (builtin.mode == .Debug) {
         raylib_module.addCMacro("SUPPORT_TRACELOG", "1");
-    } else {
         raylib_module.addCMacro("SUPPORT_TRACELOG_DEBUG", "1");
     }
 

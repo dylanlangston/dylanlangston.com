@@ -16,9 +16,16 @@ export namespace WorkerDOM {
             const id = IPCProxy.Add(listener);
             postMessage(IPCMessage.AddEventHandler({ id, target: 'Window', type }));
         }
+        public removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void {
+            // Skip resize events
+            if (type == "resize") return;
+            const id = IPCProxy.Remove(listener);
+            postMessage(IPCMessage.RemoveEventHandler({ id, target: 'Window', type }));
+        }
         public matchMedia(query: string): MediaQueryList {
             return <any>{
-                addEventListener: (type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void => { }
+                addEventListener: (type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void => { },
+                removeEventListener: (type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void => { },
             };
         }
         public get scrollX(): number {
@@ -35,18 +42,119 @@ export namespace WorkerDOM {
         public AudioContext = AudioContext;
     }
     export class Document {
-        private canvas: HTMLElement | null;
-        constructor(canvas: HTMLElement | null) {
+        private canvas: IOffscreenCanvasExtended | null;
+        constructor(canvas: IOffscreenCanvasExtended | null) {
             this.canvas = canvas;
         }
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void {
+        public addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void {
             const id = IPCProxy.Add(listener);
             postMessage(IPCMessage.AddEventHandler({ id, target: 'Document', type }));
         }
-        querySelector(selectors: string): HTMLElement | null {
-            return this.canvas;
+        public removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void {
+            // Skip resize events
+            if (type == "resize") return;
+            const id = IPCProxy.Remove(listener);
+            postMessage(IPCMessage.RemoveEventHandler({ id, target: 'Window', type }));
         }
-        getCanvas = () => this.canvas;
+        public querySelector(selectors: string): HTMLElement | null {
+            return <any>this.canvas;
+        }
+        public getCanvas = () => this.canvas;
+    }
+
+    interface IOffscreenCanvasExtended extends OffscreenCanvas {
+        clientWidth: number;
+        clientHeight: number;
+        getBoundingClientRect: () => {
+            x: number;
+            y: number;
+            width: number;
+            height: number;
+            top: number;
+            bottom: number;
+            left: number;
+        };
+        dispatchEvent(event: Event): boolean;
+        addEventListener: (type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions) => void;
+        removeEventListener: (type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions) => void;
+        height: number;
+        oncontextlost: ((this: OffscreenCanvas, ev: Event) => any) | null;
+        oncontextrestored: ((this: OffscreenCanvas, ev: Event) => any) | null;
+        width: number;
+        convertToBlob(options?: ImageEncodeOptions): Promise<Blob>;
+        getContext(contextId: "2d", options?: any): OffscreenCanvasRenderingContext2D | null;
+        getContext(contextId: "bitmaprenderer", options?: any): ImageBitmapRenderingContext | null;
+        getContext(contextId: "webgl", options?: any): WebGLRenderingContext | null;
+        getContext(contextId: "webgl2", options?: any): WebGL2RenderingContext | null;
+        getContext(contextId: OffscreenRenderingContextId, options?: any): OffscreenRenderingContext | null;
+        transferToImageBitmap(): ImageBitmap;
+    }
+    export class OffscreenCanvasExtended implements IOffscreenCanvasExtended {
+        private canvas: OffscreenCanvas;
+        constructor(canvas: OffscreenCanvas) {
+            this.canvas = canvas;
+        }
+        public get clientWidth(): number {
+            return this.canvas.width;
+        }
+        public get clientHeight(): number {
+            return this.canvas.height;
+        }
+        public getBoundingClientRect: () => {
+            x: number;
+            y: number;
+            width: number;
+            height: number;
+            top: number;
+            bottom: number;
+            left: number;
+        } = () => {
+            return { x: 0, y: 0, width: this.canvas.width, height: this.canvas.height, top: 0, right: this.canvas.width, bottom: this.canvas.height, left: 0 };
+        }
+        public dispatchEvent(event: Event): boolean {
+            return this.canvas.dispatchEvent(event);
+        }
+        public addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void {
+            const id = IPCProxy.Add(listener);
+            postMessage(IPCMessage.AddEventHandler({ id, target: 'Canvas', type }));
+        }
+        public removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void {
+            const id = IPCProxy.Remove(listener);
+            postMessage(IPCMessage.RemoveEventHandler({ id, target: 'Canvas', type }));
+        }
+        public set oncontextlost(value: ((this: OffscreenCanvas, ev: Event) => any) | null) {
+            this.canvas.oncontextlost = value;
+        }
+        public get oncontextlost(): ((this: OffscreenCanvas, ev: Event) => any) | null {
+            return this.canvas.oncontextlost;
+        }
+        public set oncontextrestored(value: ((this: OffscreenCanvas, ev: Event) => any) | null) {
+            this.canvas.oncontextrestored = value;
+        }
+        public get oncontextrestored(): ((this: OffscreenCanvas, ev: Event) => any) | null {
+            return this.canvas.oncontextrestored;
+        }
+        public set height(value: number) {
+            this.canvas.height = value;
+        }
+        public get height(): number {
+            return this.canvas.height;
+        }
+        public set width(value: number) {
+            this.canvas.width = value;
+        }
+        public get width(): number {
+            return this.canvas.width;
+        }
+        public convertToBlob(options?: ImageEncodeOptions): Promise<Blob> {
+            return this.canvas.convertToBlob(options);
+        }
+        public getContext(contextId: any, options?: any): any {
+            return this.canvas.getContext(contextId, options);
+        }
+        public transferToImageBitmap(): ImageBitmap {
+            return this.canvas.transferToImageBitmap();
+        }
     }
 
     export class MiniAudio implements IMiniAudio {
@@ -119,6 +227,13 @@ export namespace WorkerDOM {
                 resolve();
             });
         }
+        public close(): Promise<void> {
+            return new Promise((resolve, reject) => {
+                postMessage(IPCMessage.AudioEvent(AudioEventType.Close));
+                resolve();
+            });
+        }
+
         public createScriptProcessor(bufferSize?: number, numberOfInputChannels?: number, numberOfOutputChannels?: number) {
             postMessage(IPCMessage.AudioEvent(
                 AudioEventType.CreateScriptProcessor,
@@ -145,6 +260,10 @@ export namespace WorkerDOM {
         }
         public connect(destinationNode: AudioNode, output?: number, input?: number): AudioNode {
             postMessage(IPCMessage.AudioEvent(AudioEventType.Connect));
+            return <any>undefined;
+        }
+        public disconnect(destinationNode: AudioNode, output?: number, input?: number): AudioNode {
+            postMessage(IPCMessage.AudioEvent(AudioEventType.Disconnect));
             return <any>undefined;
         }
     }

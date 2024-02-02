@@ -6,7 +6,14 @@ const build_assets = @import("./build-assets.zig");
 const name = "dylanlangston.com";
 
 pub fn build(b: *std.Build) !void {
-    const target = b.standardTargetOptions(.{});
+    const target = b.standardTargetOptions(.{
+        // .default_target = .{
+        //     .cpu_arch = .wasm32,
+        //     .cpu_model = .{ .explicit = &std.Target.wasm.cpu.mvp },
+        //     .cpu_features_add = std.Target.wasm.featureSet(&.{ .atomics, .bulk_memory, .simd128 }),
+        //     .os_tag = .emscripten,
+        // },
+    });
     const optimize = b.standardOptimizeOption(.{});
 
     const web_build = target.query.cpu_arch == .wasm32;
@@ -68,6 +75,8 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
     );
 
     lib.addIncludePath(.{ .path = "raylib/src" });
+    lib.addIncludePath(.{ .path = "./emsdk/upstream/emscripten/cache/sysroot/include/" });
+
     lib.linkLibrary(raylib_artifact);
 
     b.installArtifact(lib);
@@ -106,10 +115,11 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
         "zig-out/lib/libraylib.a",
         "-sGL_ENABLE_GET_PROC_ADDRESS",
         "-sUSE_GLFW=3",
+        "-sEXIT_RUNTIME=1",
+        //"-sASYNCIFY",
 
         // Debug behavior
         if (debugging_wasm) "--emit-symbol-map" else "",
-        "-sASYNCIFY",
         if (debugging_wasm) "-g4 -00" else "-02",
         if (debugging_wasm) "" else "--closure 1",
         "-sABORTING_MALLOC=" ++ (if (debugging_wasm) "1" else "0"),
@@ -124,14 +134,14 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
         "-sHTML5_SUPPORT_DEFERRING_USER_SENSITIVE_REQUESTS=0",
         "-sWASM=1",
         "-DPLATFORM_WEB",
-        "-sENVIRONMENT='web'",
+        "-sENVIRONMENT=worker",
         "-sMINIMAL_RUNTIME_STREAMING_WASM_INSTANTIATION=1",
         "-sEXPORTED_FUNCTIONS=['_malloc','_free','_main']",
         "-sEXPORTED_RUNTIME_METHODS=allocateUTF8,UTF8ToString",
         // "--js-library=src/Zig-JS_Bridge.js",
 
         // Configure memory
-        "-sUSE_OFFSET_CONVERTER",
+        if (debugging_wasm or optimize == .ReleaseSafe) "-sUSE_OFFSET_CONVERTER" else "",
         "-sALLOW_MEMORY_GROWTH=1",
         "-sWASM_MEM_MAX=512MB",
         "-sTOTAL_MEMORY=32MB",
@@ -139,6 +149,11 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
         "-sINITIAL_MEMORY=4mb",
         "-sSTACK_SIZE=1mb",
         "-msimd128",
+
+        // Threading
+        // "-pthread",
+        // "-sPTHREAD_POOL_SIZE=4",
+        // "-sPROXY_TO_PTHREAD",
     });
     emcc_command.step.dependOn(&lib.step);
 
