@@ -1,6 +1,7 @@
 const std = @import("std");
 const builtin = @import("builtin");
 const raylib_config = @import("./raylib_config.zig");
+const build_assets = @import("./build-assets.zig");
 
 const name = "dylanlangston.com";
 
@@ -39,7 +40,7 @@ pub fn build(b: *std.Build) !void {
     }
 
     const exe_unit_tests = b.addTest(.{
-        .root_source_file = .{ .path = "zig-src/main.zig" },
+        .root_source_file = .{ .path = "zig/src/main.zig" },
         .target = target,
         .optimize = optimize,
     });
@@ -56,10 +57,15 @@ pub fn build(b: *std.Build) !void {
 fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.builtin.OptimizeMode, raylib_artifact: *std.Build.Step.Compile) !void {
     const lib = b.addStaticLibrary(.{
         .name = name,
-        .root_source_file = .{ .path = "zig-src/main.zig" },
+        .root_source_file = .{ .path = "zig/src/main.zig" },
         .target = target,
         .optimize = optimize,
     });
+
+    try build_assets.addAssets(
+        b,
+        lib,
+    );
 
     lib.addIncludePath(.{ .path = "raylib/src" });
     lib.linkLibrary(raylib_artifact);
@@ -202,10 +208,14 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
 fn build_desktop(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.builtin.OptimizeMode, raylib_artifact: *std.Build.Step.Compile) !void {
     const exe = b.addExecutable(.{
         .name = name,
-        .root_source_file = .{ .path = "zig-src/main.zig" },
+        .root_source_file = .{ .path = "zig/src/main.zig" },
         .target = target,
         .optimize = optimize,
     });
+    try build_assets.addAssets(
+        b,
+        exe,
+    );
     exe.addIncludePath(.{ .path = "raylib/src" });
     exe.linkLibrary(raylib_artifact);
     b.installArtifact(exe);

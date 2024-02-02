@@ -4,7 +4,7 @@
 # The purpose is to allow for an interative design loop with Zig and Svelte togetther
 
 # Vars
-hash=$(ls -lR ./zig-src | sha1sum)
+hash=$(ls -lR ./zig/src | sha1sum)
 exit=""
 if [ "$1" = "USE_NODE=1" ]; then
     USENODE="1"
@@ -21,7 +21,7 @@ echo "Starting"
 
 echo "Press any key to exit"
 until [ "$exit" = "yes" ]; do
-    newHash=$(ls -lR ./zig-src | sha1sum)
+    newHash=$(ls -lR ./zig/src | sha1sum)
     if [ "$hash" != "$newHash" ]; then
         hash=$newHash
         echo "New Hash Detected Rebuilding"

@@ -3,13 +3,18 @@ const builtin = @import("builtin");
 const rl = @cImport({
     @cInclude("raylib.h");
 });
+const music_assset = @import("music_assets").music_assets;
 
 pub fn main() !void {
     if (builtin.mode != .Debug) rl.SetTraceLogLevel(rl.LOG_NONE);
 
+    for (music_assset.names) |name| {
+        std.debug.print("{s}", .{name});
+    }
+
     rl.SetConfigFlags(rl.FLAG_VSYNC_HINT | rl.FLAG_MSAA_4X_HINT);
 
-    rl.InitWindow(800, 450, undefined);
+    rl.InitWindow(800, 450, "Hello World");
     defer rl.CloseWindow();
 
     rl.InitAudioDevice();
@@ -19,7 +24,7 @@ pub fn main() !void {
 
     rl.TraceLog(rl.LOG_INFO, "Raylib Started");
 
-    const music = loadMusicStreamFromMemory(".ogg", @embedFile("./test_music.ogg"));
+    const music = loadMusicStreamFromMemory(".ogg", @embedFile(music_assset.names[0]));
 
     while (!rl.WindowShouldClose()) {
         rl.BeginDrawing();
@@ -42,14 +47,12 @@ pub fn main() !void {
         if (rl.IsKeyDown(rl.KEY_SPACE)) {
             rl.DrawText("Space Pressed", 190, 250, 20, rl.LIGHTGRAY);
 
-            rl.PauseMusicStream(music);
-        } else {
             if (!rl.IsMusicStreamPlaying(music)) {
                 rl.PlayMusicStream(music);
             } else {
                 rl.UpdateMusicStream(music);
             }
-        }
+        } else {}
     }
 }
 
