@@ -6,6 +6,9 @@
         .raylib = .{
             .path = "raylib",
         },
+        .emscripten = .{
+            .path = "emsdk",
+        },
     },
     .paths = .{
         "build.zig",

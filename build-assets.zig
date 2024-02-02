@@ -5,9 +5,6 @@ const assets: []const assetType = &[_]assetType{
     .{ .path = "music", .module_name = "music_assets", .allowed_exts = &[_][]const u8{".ogg"} },
 };
 
-// The Max size for a single file in bytes
-const maxSizeInBytes = 1000000;
-
 const assetType = struct {
     path: [:0]const u8,
     module_name: [:0]const u8,
@@ -37,8 +34,10 @@ inline fn embedFiles(
     b: *std.Build,
     c: *std.Build.Step.Compile,
 ) !void {
-    var paths = std.ArrayList([]const u8).init(b.allocator);
+    const files_step = b.addWriteFiles();
+
     var names = std.ArrayList([]const u8).init(b.allocator);
+    var enums = std.ArrayList([]const u8).init(b.allocator);
     {
         var dir = try std.fs.cwd().openDir(b.pathJoin(&[_][]const u8{
             "zig", "assets", path,
@@ -54,14 +53,16 @@ inline fn embedFiles(
                 if (std.mem.eql(u8, ext, e))
                     break true;
             } else false;
-            if (include_file) {
-                // try sources.append(b.dupe(try std.fmt.allocPrint(b.allocator, ".{s}{s}", .{
-                //     std.fs.path.sep_str,
-                //     b.pathJoin(&[_][]const u8{ path, entry.path }),
-                // })));
-                const fileName = b.pathJoin(&[_][]const u8{ "./zig", "assets", path[0..path.len], entry.path });
 
-                try paths.append(fileName);
+            if (include_file) {
+                const filePath = b.pathJoin(&[_][]const u8{ "./zig", "assets", path[0..path.len], entry.path });
+                const fileEnum = b.dupe(entry.basename[0 .. entry.basename.len - ext.len]);
+
+                _ = files_step.addCopyFile(.{
+                    .path = filePath,
+                }, entry.basename);
+
+                try enums.append(fileEnum);
                 try names.append(try b.allocator.dupe(u8, entry.basename));
             }
         }
@@ -70,28 +71,28 @@ inline fn embedFiles(
     const file_name = try std.mem.concat(b.allocator, u8, &[_][]const u8{ module_name, ".zig" }); // module_name ++ ".zig";
     const format =
         \\pub const {s} = struct {{
-        \\  pub const data = [_][]const u8 {{ "{s}" }};
-        \\  pub const names = [_][]const u8 {{ "{s}" }};
+        \\  pub const files = enum {{ 
+        \\  {s},
+        \\
+        \\  pub const filesTable = [@typeInfo(files).Enum.fields.len][:0]const u8{{
+        \\      @embedFile("{s}")
+        \\  }};
+        \\  pub inline fn data(self: files) [:0]const u8 {{
+        \\      return filesTable[@intFromEnum(self)];
+        \\  }}
+        \\ }};
         \\}};
     ;
 
     const string = try std.fmt.allocPrint(b.allocator, format, .{
         module_name,
-        try std.mem.join(b.allocator, "\", \"", paths.items),
-        try std.mem.join(b.allocator, "\", \"", names.items),
+        try std.mem.join(b.allocator, ", ", enums.items),
+        try std.mem.join(b.allocator, "\"), @embedFile(\"", names.items),
     });
 
-    const files_step = b.addWriteFiles();
     const file = files_step.add(file_name, string);
 
-    // const module = b.addModule(module_name, .{
-    //     .root_source_file = file.dupe(b),
-    // });
-    // c.step.dependOn(&files_step.step);
-    // c.root_module.addImport(module_name, module);
     c.root_module.addAnonymousImport(module_name, .{
         .root_source_file = file.dupe(b),
     });
-
-    //c.addModule(module_name, module);
 }

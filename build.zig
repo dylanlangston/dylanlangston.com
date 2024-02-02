@@ -70,6 +70,7 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
 
     lib.addIncludePath(.{ .path = "raylib/src" });
     lib.addIncludePath(.{ .path = "./emsdk/upstream/emscripten/cache/sysroot/include/" });
+    lib.installHeader("./emsdk/upstream/emscripten/cache/sysroot/include/emscripten.h", "emscripten.h");
 
     lib.linkLibrary(raylib_artifact);
 
@@ -226,6 +227,7 @@ fn build_desktop(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.
         exe,
     );
     exe.addIncludePath(.{ .path = "raylib/src" });
+    exe.installHeader("./emsdk/upstream/emscripten/cache/sysroot/include/emscripten.h", "emscripten.h");
     exe.linkLibrary(raylib_artifact);
     b.installArtifact(exe);
 

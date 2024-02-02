@@ -5,7 +5,7 @@ const rl = @cImport({
 });
 const is_emscripten: bool = builtin.os.tag == .emscripten;
 const emscripten: type = if (is_emscripten) @cImport({
-    @cInclude("emscripten.h");
+    @cInclude("./emscripten.h");
 }) else null;
 const music_assset = @import("music_assets").music_assets;
 
@@ -25,7 +25,7 @@ pub fn main() !void {
 
     rl.TraceLog(rl.LOG_TRACE, "Raylib Started");
 
-    music = loadMusicStreamFromMemory(".ogg", @embedFile(music_assset.names[0]));
+    music = loadMusicStreamFromMemory(".ogg", std.enums.nameCast(music_assset.files, "test_music").data());
 
     rl.SetTargetFPS(0);
 
