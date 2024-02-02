@@ -6,17 +6,11 @@ const build_assets = @import("./build-assets.zig");
 const name = "dylanlangston.com";
 
 pub fn build(b: *std.Build) !void {
-    const target = b.standardTargetOptions(.{
-        // .default_target = .{
-        //     .cpu_arch = .wasm32,
-        //     .cpu_model = .{ .explicit = &std.Target.wasm.cpu.mvp },
-        //     .cpu_features_add = std.Target.wasm.featureSet(&.{ .atomics, .bulk_memory, .simd128 }),
-        //     .os_tag = .emscripten,
-        // },
-    });
+    const target = b.standardTargetOptions(.{});
+    //std.Target.wasm.all_features
     const optimize = b.standardOptimizeOption(.{});
 
-    const web_build = target.query.cpu_arch == .wasm32;
+    const web_build = target.query.cpu_arch == .wasm32 or target.query.cpu_arch == .wasm64;
 
     if (web_build) {
         // Set the sysroot folder for emscripten
@@ -138,6 +132,7 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
         "-sMINIMAL_RUNTIME_STREAMING_WASM_INSTANTIATION=1",
         "-sEXPORTED_FUNCTIONS=['_malloc','_free','_main']",
         "-sEXPORTED_RUNTIME_METHODS=allocateUTF8,UTF8ToString",
+        "-sINCOMING_MODULE_JS_API=['setStatus','printErr','print','instantiateWasm','onRuntimeInitialized','canvas','elementPointerLock','requestFullscreen']",
         // "--js-library=src/Zig-JS_Bridge.js",
 
         // Configure memory
@@ -148,12 +143,11 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
         "-sMALLOC=emmalloc",
         "-sINITIAL_MEMORY=4mb",
         "-sSTACK_SIZE=1mb",
-        "-msimd128",
+        if (target.query.cpu_arch == .wasm64) "-sMEMORY64=1" else "",
 
         // Threading
-        // "-pthread",
-        // "-sPTHREAD_POOL_SIZE=4",
-        // "-sPROXY_TO_PTHREAD",
+        //"-pthread",
+        //"-sPTHREAD_POOL_SIZE=4",
     });
     emcc_command.step.dependOn(&lib.step);
 
