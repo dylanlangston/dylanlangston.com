@@ -98,7 +98,7 @@ run-desktop: ## Run the build desktop binary
 build-web: ## Build Web. Optionally pass in the OPTIMIZE=... argument.
 # Want to try get this working maybe, but it will need a custom platform I think:
 # zig build -Dtarget=wasm64-freestanding -Doptimize=$(OPTIMIZE) -Dcpu=mvp+atomics+bulk_memory 
-	@zig build -Dtarget=wasm32-emscripten -Dcpu=mvp+simd128+relaxed_simd+bulk_memory+tail_call+nontrapping_fptoint -Doptimize=$(OPTIMIZE) 
+	@zig build -Dtarget=wasm32-emscripten -Dcpu=mvp+simd128+relaxed_simd+bulk_memory+nontrapping_fptoint -Doptimize=$(OPTIMIZE) 
 
 build-site: ## Build Website. Uses Binaryen to optimize when OPTIMIZE!='Debug', the default.
 ifeq ($(USE_NODE),1)
