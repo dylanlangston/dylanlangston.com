@@ -6,35 +6,24 @@ pub const Maps = struct {
     pub fn FixedLengthHashMap(comptime K: type, comptime V: type, comptime context: type) type {
         return struct {
             const Self = @This();
-
             pub const len = context.length;
 
-            index: usize = 0,
-            hashes: [len]u64 = undefined,
+            hashes: [len:0]u64 = undefined,
             values: [len]V = undefined,
 
-            /// The number of items in the map.
-            pub fn count(self: Self) usize {
-                return self.values.len;
-            }
-
             pub fn contains(self: Self, key: K) bool {
-                return if (std.mem.indexOfScalar(u64, &self.hashes, context.hash(key)) != null)
-                    true
-                else
-                    false;
+                return std.mem.indexOfScalar(u64, &self.hashes, context.hash(key)) != null;
             }
 
             pub fn get(self: Self, key: K) ?V {
                 const index = std.mem.indexOfScalar(u64, &self.hashes, context.hash(key));
-                if (index == null) return null;
-                return self.values[index.?];
+                return if (index == null) null else self.values[index.?];
             }
 
             pub fn put(self: *Self, key: K, value: V) void {
-                self.hashes[self.index] = context.hash(key);
-                self.values[self.index] = value;
-                self.index += 1;
+                const index = std.mem.indexOfSentinel(u64, 0, &self.hashes);
+                self.hashes[index] = context.hash(key);
+                self.values[index] = value;
             }
         };
     }
