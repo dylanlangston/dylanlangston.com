@@ -14,9 +14,9 @@ pub inline fn getAssets(target: std.Build.ResolvedTarget) []const assetType {
         .{ .path = "music", .module_name = "Music", .allowed_exts = &[_][]const u8{".ogg"} },
         .{ .path = "sound", .module_name = "Sounds", .allowed_exts = &[_][]const u8{".ogg"} },
         .{ .path = "font", .module_name = "Fonts", .allowed_exts = &[_][]const u8{".ttf"} },
-        .{ .path = "texture", .module_name = "Texture", .allowed_exts = &[_][]const u8{".png"} },
-        .{ .path = if (web_build) "shader_fragment/100" else "shader_fragment/300", .module_name = "Fragment_Shaders", .allowed_exts = &[_][]const u8{".fs"} },
-        .{ .path = if (web_build) "shader_vertex/100" else "shader_vertex/300", .module_name = "Vertex_Shaders", .allowed_exts = &[_][]const u8{".vs"} },
+        .{ .path = "texture", .module_name = "Textures", .allowed_exts = &[_][]const u8{".png"} },
+        .{ .path = if (web_build) "shader_fragment/100" else "shader_fragment/330", .module_name = "Fragment_Shaders", .allowed_exts = &[_][]const u8{".fs"} },
+        .{ .path = if (web_build) "shader_vertex/100" else "shader_vertex/330", .module_name = "Vertex_Shaders", .allowed_exts = &[_][]const u8{".vs"} },
     };
 }
 

@@ -1,6 +1,7 @@
 const std = @import("std");
 const Common = @import("Common.zig").Common;
 const raylib = Common.raylib;
+const Maps = @import("Generics.zig").Maps;
 
 pub const AssetManager = struct {
     pub inline fn init() void {
@@ -40,8 +41,9 @@ pub const AssetManager = struct {
     }
     pub inline fn GetFont(key: Fonts) raylib.Font {
         return LoadFromCacheFirst(
-            Fonts,
+            @TypeOf(key),
             raylib.Font,
+            @TypeOf(LoadedFonts),
             key,
             &LoadedFonts,
             LoadFont,
@@ -56,8 +58,9 @@ pub const AssetManager = struct {
     }
     pub inline fn GetMusic(key: Music) raylib.Music {
         return LoadFromCacheFirst(
-            Music,
+            @TypeOf(key),
             raylib.Music,
+            @TypeOf(LoadedMusic),
             key,
             &LoadedMusic,
             LoadMusic,
@@ -73,8 +76,9 @@ pub const AssetManager = struct {
     }
     pub inline fn GetSound(key: Sounds) raylib.Sound {
         return LoadFromCacheFirst(
-            Sounds,
+            @TypeOf(key),
             raylib.Sound,
+            @TypeOf(LoadedSounds),
             key,
             &LoadedSounds,
             LoadSound,
@@ -94,39 +98,58 @@ pub const AssetManager = struct {
     }
     pub inline fn GetTexture(key: Textures) raylib.Texture {
         return LoadFromCacheFirst(
-            Textures,
+            @TypeOf(key),
             raylib.Texture,
+            @TypeOf(LoadedTextures),
             key,
             &LoadedTextures,
             LoadTexture,
         );
     }
 
-    var LoadedShaders: [Fragment_Shaders.count * Vertex_Shaders.count]raylib.Shader = .{};
-    var LoadedShadersHashes: [Fragment_Shaders.count * Vertex_Shaders.count]u64 = .{};
+    const ShaderPair = struct {
+        Vertext: Vertex_Shaders,
+        Fragment: Fragment_Shaders,
+    };
+    pub fn ShaderPairMap() type {
+        return Maps.FixedLengthHashMap(ShaderPair, raylib.Shader, struct {
+            pub const length: usize = Fragment_Shaders.count * Vertex_Shaders.count;
+            pub fn hash(s: ShaderPair) u64 {
+                return s.Fragment.hash() ^ s.Vertext.hash();
+            }
+        });
+    }
 
     pub const Fragment_Shaders = @import("Fragment_Shaders").Fragment_Shaders;
     pub const Vertex_Shaders = @import("Vertex_Shaders").Vertex_Shaders;
-    fn LoadShader(fs: Fragment_Shaders, vs: Vertex_Shaders) raylib.Shader {
-        const s = raylib.LoadShaderFromMemory(vs.data(), fs.data());
+    var LoadedShaders: ShaderPairMap() = ShaderPairMap(){};
+
+    fn LoadShader(shaderPair: ShaderPair) raylib.Shader {
+        const s = raylib.LoadShaderFromMemory(shaderPair.Vertext.data(), shaderPair.Fragment.data());
         return s;
     }
-    // pub inline fn GetFragmentShader(fs: Fragment_Shaders, vs: Vertex_Shaders) raylib.Shader {
+    pub inline fn GetShader(vs: Vertex_Shaders, fs: Fragment_Shaders) raylib.Shader {
+        const key = ShaderPair{
+            .Vertext = vs,
+            .Fragment = fs,
+        };
 
-    //     return LoadFromCacheFirst(
-    //         Fragment_Shaders,
-    //         raylib.Shader,
-    //         key,
-    //         &LoadShader,
-    //         LoadFragmentShader,
-    //     );
-    // }
+        return LoadFromCacheFirst(
+            @TypeOf(key),
+            raylib.Shader,
+            @TypeOf(LoadedShaders),
+            key,
+            &LoadedShaders,
+            LoadShader,
+        );
+    }
 
     inline fn LoadFromCacheFirst(
         comptime E: type,
         comptime T: type,
+        comptime M: type,
         key: E,
-        map: *std.EnumMap(E, T),
+        map: *M,
         loadFn: *const fn (rawAsset: E) T,
     ) T {
         if (map.contains(key)) {

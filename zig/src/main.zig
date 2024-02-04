@@ -3,7 +3,6 @@ const builtin = @import("builtin");
 const Common = @import("Common.zig").Common;
 const raylib = Common.raylib;
 const emscripten = Common.emscripten;
-const music_assset = @import("music_assets").music_assets;
 
 pub fn main() !void {
     Common.init();
@@ -18,17 +17,25 @@ pub fn main() !void {
     raylib.TraceLog(raylib.LOG_TRACE, "Raylib Started");
 
     if (Common.is_emscripten) {
-        emscripten.emscripten_set_main_loop(loop, 0, 1);
+        emscripten.emscripten_set_main_loop(
+            &UpdateFrame,
+            0,
+            1,
+        );
     } else {
         while (!raylib.WindowShouldClose()) {
-            loop();
+            UpdateFrame();
         }
     }
 }
 
-fn loop() callconv(.C) void {
+fn UpdateFrame() callconv(.C) void {
     raylib.BeginDrawing();
     defer raylib.EndDrawing();
+
+    // const shader = Common.Shader.Get(.base, .base);
+    // raylib.BeginShaderMode(shader);
+    // defer raylib.EndShaderMode();
 
     if (builtin.mode == .Debug) {
         raylib.DrawFPS(10, 430);

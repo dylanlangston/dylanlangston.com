@@ -85,7 +85,7 @@ pub const Common = struct {
     };
 
     pub const Shader = struct {
-        pub fn Get(vs: AssetManager.Fragment_Shaders, fs: AssetManager.Fragment_Shaders) raylib.Shader {
+        pub fn Get(vs: AssetManager.Vertex_Shaders, fs: AssetManager.Fragment_Shaders) raylib.Shader {
             return AssetManager.GetShader(vs, fs);
         }
     };
