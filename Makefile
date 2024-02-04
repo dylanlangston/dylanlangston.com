@@ -102,7 +102,7 @@ build-web: ## Build Web. Optionally pass in the OPTIMIZE=... argument.
 
 build-site: ## Build Website. Uses Binaryen to optimize when OPTIMIZE!='Debug', the default.
 ifeq ($(USE_NODE),1)
-ifeq ($(OPTIMIZE),'Debug')
+ifeq ($(OPTIMIZE),Debug)
 else
 	@cd ./site; npm exec --package=binaryen -c 'wasm-opt ./static/dylanlangston.com.wasm -all --post-emscripten --low-memory-unused -tnh --converge -Oz --flatten --rereloop -Oz -Oz -o ./static/dylanlangston.com.wasm'; cd ../
 endif
@@ -112,7 +112,7 @@ else
 	@npm run build --prefix ./site
 endif
 else
-ifeq ($(OPTIMIZE),'Debug')
+ifeq ($(OPTIMIZE),Debug)
 else
 	@cd ./site; bunx --bun binaryen ./static/dylanlangston.com.wasm -all --post-emscripten --low-memory-unused -tnh --converge -Oz --flatten --rereloop -Oz -Oz -o ./static/dylanlangston.com.wasm; cd ../
 endif
