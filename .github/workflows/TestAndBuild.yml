@@ -58,11 +58,14 @@ jobs:
           name: dylanlangston.com-v${{ inputs.version }}
           path: '${{ github.workspace }}/site/build'
       - name: Build Debug using Docker
-        if: ${{ success() || (steps.test.conclusion == 'skipped' && steps.cache.conclusion == 'success') }}
+        if: ${{ success() || (steps.upload.conclusion == 'skipped' && steps.cache.conclusion == 'success') }}
         id: build_debug
-        run: make release-docker VERSION=${{ inputs.version }}
+        run: |
+          cp -r ./site/build/ ./site/release
+          make clean release-docker VERSION=${{ inputs.version }}
+          cp -r ./site/release/ ./site/build/release
       - name: Upload GitGub Pages artifact
-        if: ${{ success() || steps.upload.conclusion == 'success' }}
+        if: ${{ success() || steps.build_debug.conclusion == 'success' }}
         id: upload-compressed
         uses: actions/upload-pages-artifact@v3
         with:
