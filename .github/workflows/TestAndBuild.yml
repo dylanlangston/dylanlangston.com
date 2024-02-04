@@ -46,7 +46,7 @@ jobs:
         if: ${{ inputs.should-test }}
         id: test
         run: make test-docker VERSION=${{ inputs.version }}
-      - name: Build using Docker
+      - name: Build Release using Docker
         if: ${{ success() || (steps.test.conclusion == 'skipped' && steps.cache.conclusion == 'success') }}
         id: build
         run: make release-docker VERSION=${{ inputs.version }} OPTIMIZE='ReleaseFast' PRECOMPRESS_RELEASE=1
@@ -57,6 +57,10 @@ jobs:
         with:
           name: dylanlangston.com-v${{ inputs.version }}
           path: '${{ github.workspace }}/site/build'
+      - name: Build Debug using Docker
+        if: ${{ success() || (steps.test.conclusion == 'skipped' && steps.cache.conclusion == 'success') }}
+        id: build_debug
+        run: make release-docker VERSION=${{ inputs.version }}
       - name: Upload GitGub Pages artifact
         if: ${{ success() || steps.upload.conclusion == 'success' }}
         id: upload-compressed
