@@ -8,12 +8,6 @@ pub fn main() !void {
     Common.init();
     defer Common.deinit();
 
-    raylib.InitWindow(800, 450, "dylanlangston.com");
-    defer raylib.CloseWindow();
-
-    raylib.InitAudioDevice();
-    defer raylib.CloseAudioDevice();
-
     raylib.TraceLog(raylib.LOG_TRACE, "Raylib Started");
 
     if (Common.is_emscripten) {

@@ -5,26 +5,49 @@ const Maps = @import("Generics.zig").Maps;
 
 pub const AssetManager = struct {
     pub inline fn init() void {
-        raylib.SetLoadFileDataCallback(&LoadFileDataCallback);
-        raylib.SetLoadFileTextCallback(&LoadFileTextCallback);
-    }
-
-    fn LoadFileDataCallback(fileName: [*c]const u8, bytesRead: [*c]c_int) callconv(.C) [*c]u8 {
-        // Todo: need to split this into multiple codepaths for each asset type that gets loaded
-        const file: ?Music = Music.fromName(std.mem.span(fileName));
-        if (file == null) @panic("Failed to find file!");
-        bytesRead.* = file.?.size();
-        return std.heap.raw_c_allocator.dupeZ(u8, file.?.data()) catch |err| {
-            std.builtin.panicUnwrapError(null, err);
+        const Callbacks = struct {
+            fn LoadFileData(fileName: [*c]const u8, bytesRead: [*c]c_int) callconv(.C) [*c]u8 {
+                _ = fileName;
+                _ = bytesRead;
+                @panic("Not implemented");
+                // Todo: need to split this into multiple codepaths for each asset type that gets loaded
+                // const file: ?Music = Music.fromName(std.mem.span(fileName));
+                // if (file == null) @panic("Failed to find file!");
+                // bytesRead.* = file.?.size();
+                // return std.heap.raw_c_allocator.dupeZ(u8, file.?.data()) catch |err| {
+                //     std.builtin.panicUnwrapError(null, err);
+                // };
+            }
+            fn LoadFileText(fileName: [*c]const u8) callconv(.C) [*c]u8 {
+                _ = fileName;
+                @panic("Not implemented");
+                // Todo: need to split this into multiple codepaths for each asset type that gets loaded
+                // const file: ?Music = Music.fromName(std.mem.span(fileName));
+                // if (file == null) @panic("Failed to find file!");
+                // return std.heap.raw_c_allocator.dupeZ(u8, file.?.data()) catch |err| {
+                //     std.builtin.panicUnwrapError(null, err);
+                // };
+            }
         };
+        raylib.SetLoadFileDataCallback(&Callbacks.LoadFileData);
+        raylib.SetLoadFileTextCallback(&Callbacks.LoadFileText);
     }
-    fn LoadFileTextCallback(fileName: [*c]const u8) callconv(.C) [*c]u8 {
-        // Todo: need to split this into multiple codepaths for each asset type that gets loaded
-        const file: ?Music = Music.fromName(std.mem.span(fileName));
-        if (file == null) @panic("Failed to find file!");
-        return std.heap.raw_c_allocator.dupeZ(u8, file.?.data()) catch |err| {
-            std.builtin.panicUnwrapError(null, err);
-        };
+    pub inline fn deinit() void {
+        // for (LoadedFonts.values) |font| {
+        //     raylib.UnloadFont(font);
+        // }
+        for (LoadedMusic.values) |music| {
+            raylib.UnloadMusicStream(music);
+        }
+        // for (LoadedSounds.values) |sound| {
+        //     raylib.UnloadSound(sound);
+        // }
+        // for (LoadedTextures.values) |texture| {
+        //     raylib.UnloadTexture(texture);
+        // }
+        // for (LoadedShaders.values) |shader| {
+        //     raylib.UnloadShader(shader);
+        // }
     }
 
     pub const Fonts = @import("Fonts").Fonts;

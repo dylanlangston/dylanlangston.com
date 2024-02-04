@@ -164,12 +164,18 @@ pub const Common = struct {
         raylib.SetTargetFPS(0);
 
         raylib.SetConfigFlags(raylib.FLAG_VSYNC_HINT | raylib.FLAG_MSAA_4X_HINT);
+
+        raylib.InitWindow(800, 450, "dylanlangston.com");
+        raylib.InitAudioDevice();
     }
 
     pub inline fn deinit() void {
-        if (!is_emscripten) {
-            // GeneralPurposeAllocator
+        defer AssetManager.deinit();
+        // GeneralPurposeAllocator
+        defer (if (!is_emscripten and builtin.mode == .Debug) {
             _ = Alloc.gp.deinit();
-        }
+        });
+        defer raylib.CloseWindow();
+        defer raylib.CloseAudioDevice();
     }
 };
