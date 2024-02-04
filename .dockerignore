@@ -9,3 +9,4 @@ Dockerfile*
 compose-dev.yaml
 zig-cache
 zig-out
+cached-docker-image
