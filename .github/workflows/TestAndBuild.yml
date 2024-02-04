@@ -62,6 +62,7 @@ jobs:
         id: build_debug
         run: |
           cp -r ./site/build/ ./site/release
+          docker images prune
           make clean release-docker VERSION=${{ inputs.version }}
           cp -r ./site/release/ ./site/build/release
       - name: Upload GitGub Pages artifact
