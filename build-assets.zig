@@ -7,7 +7,7 @@ pub const assetType = struct {
     allowed_exts: []const []const u8,
 };
 
-pub inline fn addAssets(b: *std.Build, c: *std.Build.Step.Compile, assets: []const assetType) !void {
+pub inline fn addAssets(b: *std.Build, t: std.Build.ResolvedTarget, o: std.builtin.OptimizeMode, c: *std.Build.Step.Compile, assets: []const assetType) !void {
     // Embed Assets
     for (assets) |asset| {
         try embedFiles(
@@ -15,6 +15,8 @@ pub inline fn addAssets(b: *std.Build, c: *std.Build.Step.Compile, assets: []con
             asset.module_name,
             asset.allowed_exts,
             b,
+            t,
+            o,
             c,
         );
     }
@@ -25,9 +27,12 @@ inline fn embedFiles(
     module_name: [:0]const u8,
     allowed_exts: []const []const u8,
     b: *std.Build,
+    t: std.Build.ResolvedTarget,
+    o: std.builtin.OptimizeMode,
     c: *std.Build.Step.Compile,
 ) !void {
-    const files_step = b.addWriteFiles();
+    _ = t;
+    _ = o;
 
     var names = std.ArrayList([]const u8).init(b.allocator);
     var extensions = std.ArrayList([]const u8).init(b.allocator);
@@ -53,14 +58,11 @@ inline fn embedFiles(
                 const filePath = b.pathJoin(&[_][]const u8{ "./zig", "assets", path[0..path.len], entry.path });
                 const fileEnum = b.dupe(entry.basename[0 .. entry.basename.len - ext.len]);
 
-                _ = files_step.addCopyFile(.{
-                    .path = filePath,
-                }, entry.basename);
 
                 try enums.append(fileEnum);
-                try extensions.append(try b.allocator.dupe(u8, ext));
+                try extensions.append(b.dupe(ext));
                 try hashes.append(try std.fmt.allocPrint(b.allocator, "{}", .{std.hash_map.hashString(entry.basename)}));
-                try names.append(try b.allocator.dupe(u8, entry.basename));
+                try names.append(filePath);
             }
         }
     }
@@ -113,11 +115,19 @@ inline fn embedFiles(
         names.items.len,
     });
 
+    const files_step = b.addWriteFiles();
     const file = files_step.add(file_name, string);
-
-    c.root_module.addAnonymousImport(module_name, .{
+    const module = b.addModule(module_name, .{
         .root_source_file = file.dupe(b),
     });
+    for (names.items) |name| {
+        module.addAnonymousImport(name, .{
+            .root_source_file = .{
+                .path = name,
+            },
+        });
+    }
+    c.root_module.addImport(module_name, module);
 }
 
 pub inline fn importViews(
@@ -125,9 +135,14 @@ pub inline fn importViews(
     comptime module_name: [:0]const u8,
     comptime allowed_exts: []const []const u8,
     b: *std.Build,
+    t: std.Build.ResolvedTarget,
+    o: std.builtin.OptimizeMode,
     c: *std.Build.Step.Compile,
 ) !void {
     const files_step = b.addWriteFiles();
+
+    _ = t;
+    _ = o;
 
     var names = std.ArrayList([]const u8).init(b.allocator);
     var enumNames = std.ArrayList([]const u8).init(b.allocator);

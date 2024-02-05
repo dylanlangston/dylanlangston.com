@@ -55,7 +55,7 @@ pub fn build(b: *std.Build) !void {
     test_step.dependOn(&run_exe_unit_tests.step);
 }
 
-fn configure(b: *std.Build, t: std.Build.ResolvedTarget, c: *std.Build.Step.Compile, raylib_artifact: *std.Build.Step.Compile) !void {
+fn configure(b: *std.Build, t: std.Build.ResolvedTarget, o: std.builtin.OptimizeMode, c: *std.Build.Step.Compile, raylib_artifact: *std.Build.Step.Compile) !void {
     const web_build = t.query.cpu_arch == .wasm32 or t.query.cpu_arch == .wasm64;
 
     const assets = &[_]build_assets.assetType{
@@ -68,6 +68,8 @@ fn configure(b: *std.Build, t: std.Build.ResolvedTarget, c: *std.Build.Step.Comp
     };
     try build_assets.addAssets(
         b,
+        t,
+        o,
         c,
         assets,
     );
@@ -80,6 +82,8 @@ fn configure(b: *std.Build, t: std.Build.ResolvedTarget, c: *std.Build.Step.Comp
             ".zig",
         },
         b,
+        t,
+        o,
         c,
     );
 
@@ -100,7 +104,7 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
         .optimize = optimize,
     });
 
-    try configure(b, target, lib, raylib_artifact);
+    try configure(b, target, optimize, lib, raylib_artifact);
 
     const emccOutputDir = "zig-out" ++ std.fs.path.sep_str ++ "emscripten" ++ std.fs.path.sep_str;
     const emccImportDir = "site" ++ std.fs.path.sep_str ++ "src" ++ std.fs.path.sep_str ++ "import" ++ std.fs.path.sep_str;
@@ -260,7 +264,7 @@ fn build_desktop(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.
         .optimize = optimize,
     });
 
-    try configure(b, target, exe, raylib_artifact);
+    try configure(b, target, optimize, exe, raylib_artifact);
 
     const run_cmd = b.addRunArtifact(exe);
     run_cmd.step.dependOn(b.getInstallStep());
