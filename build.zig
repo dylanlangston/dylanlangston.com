@@ -75,17 +75,17 @@ fn configure(b: *std.Build, t: std.Build.ResolvedTarget, o: std.builtin.Optimize
     );
 
     // Views
-    try build_assets.importViews(
-        "View",
-        "Views",
-        &[_][]const u8{
-            ".zig",
-        },
-        b,
-        t,
-        o,
-        c,
-    );
+    // try build_assets.importViews(
+    //     "View",
+    //     "Views",
+    //     &[_][]const u8{
+    //         ".zig",
+    //     },
+    //     b,
+    //     t,
+    //     o,
+    //     c,
+    // );
 
     c.addIncludePath(.{ .path = "raylib/src" });
     c.addIncludePath(.{ .path = "./emsdk/upstream/emscripten/cache/sysroot/include/" });
