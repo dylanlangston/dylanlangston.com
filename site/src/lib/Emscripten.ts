@@ -1,5 +1,6 @@
 import { writable, get } from 'svelte/store';
 import emscriptenModuleFactory from '../import/emscripten';
+import { Environment } from './Common';
 
 export const EmscriptenModule: (canvas: HTMLCanvasElement | OffscreenCanvas) =>
 	ICustomEmscriptenModule = (canvas: HTMLCanvasElement | OffscreenCanvas) => new CustomEmscriptenModule(canvas);
@@ -52,11 +53,11 @@ class CustomEmscriptenModule implements ICustomEmscriptenModule {
 		WebAssembly.instantiateStreaming(fetch(CustomEmscriptenModule.wasmBinaryFile, {
 			cache: 'default'
 		}), imports).then((output) => {
-			console.log('wasm instantiation succeeded');
+			if (Environment.Dev) console.log('wasm instantiation succeeded');
 			successCallback(output.instance);
 		})
 			.catch((e) => {
-				console.log('wasm instantiation failed! ' + e);
+				if (Environment.Dev) console.error('wasm instantiation failed! ' + e);
 				this.setStatus('wasm instantiation failed! ' + e);
 			});
 
@@ -82,8 +83,7 @@ class CustomEmscriptenModule implements ICustomEmscriptenModule {
 
 	public static readonly statusMessage = writable('⏳');
 	public static setStatus(e: string): void {
-		// "Running..." is from emscripten.js and isn't localized so just return"
-		if (e == 'Running...') {
+		if (e == 'Running...' || e == '') {
 			return;
 		}
 		CustomEmscriptenModule.statusMessage.set(e);

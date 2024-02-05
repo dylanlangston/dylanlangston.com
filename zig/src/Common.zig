@@ -53,11 +53,9 @@ pub const Common = struct {
     pub const Log = Logger;
 
     pub const Time = struct {
-        extern fn WASMTimestamp() i64;
-
         pub inline fn getTimestamp() i64 {
-            if (builtin.os.tag == .wasi) {
-                return WASMTimestamp();
+            if (is_emscripten) {
+                return @intFromFloat(emscripten.emscripten_get_now());
             }
             return std.time.milliTimestamp();
         }

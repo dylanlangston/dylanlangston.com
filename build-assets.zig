@@ -1,24 +1,11 @@
 const std = @import("std");
 const builtin = @import("builtin");
 
-const assetType = struct {
+pub const assetType = struct {
     path: [:0]const u8,
     module_name: [:0]const u8,
     allowed_exts: []const []const u8,
 };
-
-pub inline fn getAssets(target: std.Build.ResolvedTarget) []const assetType {
-    const web_build = target.query.cpu_arch == .wasm32 or target.query.cpu_arch == .wasm64;
-
-    return &[_]assetType{
-        .{ .path = "music", .module_name = "Music", .allowed_exts = &[_][]const u8{".ogg"} },
-        .{ .path = "sound", .module_name = "Sounds", .allowed_exts = &[_][]const u8{".ogg"} },
-        .{ .path = "font", .module_name = "Fonts", .allowed_exts = &[_][]const u8{".ttf"} },
-        .{ .path = "texture", .module_name = "Textures", .allowed_exts = &[_][]const u8{".png"} },
-        .{ .path = if (web_build) "shader_fragment/100" else "shader_fragment/330", .module_name = "Fragment_Shaders", .allowed_exts = &[_][]const u8{".fs"} },
-        .{ .path = if (web_build) "shader_vertex/100" else "shader_vertex/330", .module_name = "Vertex_Shaders", .allowed_exts = &[_][]const u8{".vs"} },
-    };
-}
 
 pub inline fn addAssets(b: *std.Build, c: *std.Build.Step.Compile, assets: []const assetType) !void {
     // Embed Assets
@@ -124,6 +111,77 @@ inline fn embedFiles(
         try std.mem.join(b.allocator, "\", \"", extensions.items),
         try std.mem.join(b.allocator, ", ", hashes.items),
         names.items.len,
+    });
+
+    const file = files_step.add(file_name, string);
+
+    c.root_module.addAnonymousImport(module_name, .{
+        .root_source_file = file.dupe(b),
+    });
+}
+
+pub inline fn importViews(
+    comptime path: [:0]const u8,
+    comptime module_name: [:0]const u8,
+    comptime allowed_exts: []const []const u8,
+    b: *std.Build,
+    c: *std.Build.Step.Compile,
+) !void {
+    const files_step = b.addWriteFiles();
+
+    var names = std.ArrayList([]const u8).init(b.allocator);
+    var enumNames = std.ArrayList([]const u8).init(b.allocator);
+    {
+        const cwd = std.fs.cwd();
+        const dir = try cwd.openDir(b.pathJoin(&[_][]const u8{
+            "zig", "src", path,
+        }), .{
+            .access_sub_paths = true,
+            .iterate = true,
+        });
+        var walker = try dir.walk(b.allocator);
+        defer walker.deinit();
+        while (try walker.next()) |entry| {
+            if (std.mem.eql(u8, entry.basename, "View.zig")) continue;
+            const ext = std.fs.path.extension(entry.basename);
+            const include_file = for (allowed_exts) |e| {
+                if (std.mem.eql(u8, ext, e))
+                    break true;
+            } else false;
+            if (include_file) {
+                const extension = std.fs.path.extension(entry.basename);
+                const name = b.dupe(entry.basename[0 .. entry.basename.len - extension.len]);
+                std.mem.replaceScalar(
+                    u8,
+                    name,
+                    ' ',
+                    '_',
+                );
+                try enumNames.append(name);
+                try names.append(try b.allocator.dupe(u8, entry.path));
+            }
+        }
+    }
+
+    const file_name = module_name ++ ".zig";
+    const format =
+        \\pub const {s} = enum {{
+        \\  {s}{s}
+        \\
+        \\  pub const typeTable = [@typeInfo(@This()).Enum.fields.len] type {{
+        \\      @import("{s}")
+        \\  }};
+        // \\  pub inline fn get(self: @This()) type {{
+        // \\      return @import(nameTable[@intFromEnum(self)]);
+        // \\  }}
+        \\}};
+    ;
+
+    const string = try std.fmt.allocPrint(b.allocator, format, .{
+        module_name,
+        try std.mem.join(b.allocator, ", ", enumNames.items),
+        if (names.items.len == 0) "" else ",",
+        try std.mem.join(b.allocator, "\"), @import(\"", names.items),
     });
 
     const file = files_step.add(file_name, string);

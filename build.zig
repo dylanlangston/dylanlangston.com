@@ -56,11 +56,31 @@ pub fn build(b: *std.Build) !void {
 }
 
 fn configure(b: *std.Build, t: std.Build.ResolvedTarget, c: *std.Build.Step.Compile, raylib_artifact: *std.Build.Step.Compile) !void {
-    const assets = build_assets.getAssets(t);
+    const web_build = t.query.cpu_arch == .wasm32 or t.query.cpu_arch == .wasm64;
+
+    const assets = &[_]build_assets.assetType{
+        .{ .path = "music", .module_name = "Music", .allowed_exts = &[_][]const u8{".ogg"} },
+        .{ .path = "sound", .module_name = "Sounds", .allowed_exts = &[_][]const u8{".ogg"} },
+        .{ .path = "font", .module_name = "Fonts", .allowed_exts = &[_][]const u8{".ttf"} },
+        .{ .path = "texture", .module_name = "Textures", .allowed_exts = &[_][]const u8{".png"} },
+        .{ .path = if (web_build) "shader_fragment/100" else "shader_fragment/330", .module_name = "Fragment_Shaders", .allowed_exts = &[_][]const u8{".fs"} },
+        .{ .path = if (web_build) "shader_vertex/100" else "shader_vertex/330", .module_name = "Vertex_Shaders", .allowed_exts = &[_][]const u8{".vs"} },
+    };
     try build_assets.addAssets(
         b,
         c,
         assets,
+    );
+
+    // Views
+    try build_assets.importViews(
+        "View",
+        "Views",
+        &[_][]const u8{
+            ".zig",
+        },
+        b,
+        c,
     );
 
     c.addIncludePath(.{ .path = "raylib/src" });
