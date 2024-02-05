@@ -1,6 +1,8 @@
 import { writable, get } from 'svelte/store';
 import emscriptenModuleFactory from '../import/emscripten';
 
+export const EmscriptenModule: (canvas: HTMLCanvasElement | OffscreenCanvas) =>
+	ICustomEmscriptenModule = (canvas: HTMLCanvasElement | OffscreenCanvas) => new CustomEmscriptenModule(canvas);
 export const EmscriptenModuleFactory: EmscriptenModuleFactory<IEmscripten> = emscriptenModuleFactory;
 export function EmscriptenInitialize(canvas: HTMLCanvasElement | OffscreenCanvas): Promise<IEmscripten> {
 	return EmscriptenModuleFactory(EmscriptenModule(canvas));
@@ -87,30 +89,4 @@ class CustomEmscriptenModule implements ICustomEmscriptenModule {
 		CustomEmscriptenModule.statusMessage.set(e);
 		console.log(e);
 	}
-}
-
-export const EmscriptenModule: (canvas: HTMLCanvasElement | OffscreenCanvas) =>
-	ICustomEmscriptenModule = (canvas: HTMLCanvasElement | OffscreenCanvas) => new CustomEmscriptenModule(canvas);
-
-export enum IPCMessageType {
-	Initialize,
-	Initialized,
-}
-
-export class IPCMessage {
-	public static Initialize(canvas: OffscreenCanvas) {
-		const message = new IPCMessage(IPCMessageType.Initialize);
-		message.canvas = canvas;
-		return message;
-	}
-	public static Initialized() {
-		const message = new IPCMessage(IPCMessageType.Initialized);
-		return message;
-	}
-
-	private constructor(type: IPCMessageType) {
-		this.type = type;
-	}
-	public type: IPCMessageType;
-	public canvas: OffscreenCanvas | undefined;
 }

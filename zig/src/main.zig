@@ -8,7 +8,7 @@ pub fn main() !void {
     Common.init();
     defer Common.deinit();
 
-    raylib.TraceLog(raylib.LOG_TRACE, "Raylib Started");
+    Common.Log.Trace("Raylib Started");
 
     if (Common.is_emscripten) {
         emscripten.emscripten_set_main_loop(
@@ -27,7 +27,8 @@ fn UpdateFrame() callconv(.C) void {
     raylib.BeginDrawing();
     defer raylib.EndDrawing();
 
-    // const shader = Common.Shader.Get(.base, .base);
+    // _ = Common.Shader.Get(.base, .base);
+    // const shader = Common.Shader.Get(.base, .scanlines);
     // raylib.BeginShaderMode(shader);
     // defer raylib.EndShaderMode();
 
@@ -45,12 +46,13 @@ fn UpdateFrame() callconv(.C) void {
         raylib.DrawText("Failed to get mouse position!", 190, 225, 20, raylib.LIGHTGRAY);
     }
 
+    const music = Common.Music.Get(.Test);
     if (raylib.IsKeyDown(raylib.KEY_SPACE)) {
         raylib.DrawText("Space Pressed", 190, 250, 20, raylib.LIGHTGRAY);
 
-        Common.Music.Play(.Test);
+        music.Play();
     } else {
-        Common.Music.Pause(.Test);
+        music.Pause();
     }
 }
 

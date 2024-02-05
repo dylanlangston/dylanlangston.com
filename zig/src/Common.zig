@@ -2,6 +2,7 @@ const builtin = @import("builtin");
 const std = @import("std");
 const RndGen = std.rand.DefaultPrng;
 const AssetManager = @import("AssetManager.zig").AssetManager;
+const Logger = @import("Logger.zig").Logger;
 
 pub const Common = struct {
     pub const raylib = @cImport({
@@ -49,6 +50,8 @@ pub const Common = struct {
         return Alloc.allocator;
     }
 
+    pub const Log = Logger;
+
     pub const Time = struct {
         extern fn WASMTimestamp() i64;
 
@@ -73,82 +76,90 @@ pub const Common = struct {
     };
 
     pub const Font = struct {
-        pub fn Get(font: AssetManager.Fonts) raylib.Font {
-            return AssetManager.GetFont(font);
+        font: raylib.Font,
+
+        pub fn Get(font: AssetManager.Fonts) Font {
+            return Font{
+                .font = AssetManager.GetFont(font),
+            };
         }
     };
 
     pub const Texture = struct {
-        pub fn Get(texture: AssetManager.Textures) raylib.Texture {
-            return AssetManager.GetTexture(texture);
+        texture: raylib.Texture,
+
+        pub fn Get(texture: AssetManager.Textures) Texture {
+            return Texture{
+                .texture = AssetManager.GetTexture(texture),
+            };
         }
     };
 
     pub const Shader = struct {
-        pub fn Get(vs: AssetManager.Vertex_Shaders, fs: AssetManager.Fragment_Shaders) raylib.Shader {
-            return AssetManager.GetShader(vs, fs);
+        shader: raylib.Shader,
+
+        pub fn Get(vs: AssetManager.Vertex_Shaders, fs: AssetManager.Fragment_Shaders) Shader {
+            return Shader{ .shader = AssetManager.GetShader(vs, fs) };
         }
     };
 
     pub const Sound = struct {
-        pub fn Get(sound: AssetManager.Sounds) raylib.Sound {
-            return AssetManager.GetSound(sound);
+        sound: raylib.Sound,
+
+        pub fn Get(sound: AssetManager.Sounds) Sound {
+            return Sound{
+                .sound = AssetManager.GetSound(sound),
+            };
         }
 
-        pub inline fn Play(sound: AssetManager.Sounds) void {
-            const s = Get(sound);
-            raylib.PlaySound(s);
+        pub inline fn Play(sound: Sound) void {
+            raylib.PlaySound(sound.sound);
         }
-        pub inline fn PlaySingleVoice(sound: AssetManager.Sounds) void {
-            const s = Get(sound);
-            raylib.PlaySound(s);
+        pub inline fn PlaySingleVoice(sound: Sound) void {
+            raylib.PlaySound(sound.sound);
         }
-        pub inline fn Pause(sound: AssetManager.Sounds) void {
-            const s = Get(sound);
-            raylib.PauseSound(s);
+        pub inline fn Pause(sound: Sound) void {
+            raylib.PauseSound(sound.sound);
         }
-        pub inline fn Resume(sound: AssetManager.Sounds) void {
-            const s = Get(sound);
-            raylib.ResumeSound(s);
+        pub inline fn Resume(sound: Sound) void {
+            raylib.ResumeSound(sound.sound);
         }
-        pub inline fn Stop(sound: AssetManager.Sounds) void {
-            const s = Get(sound);
-            raylib.StopSound(s);
+        pub inline fn Stop(sound: Sound) void {
+            raylib.StopSound(sound.sound);
         }
     };
 
     pub const Music = struct {
-        pub fn Get(music: AssetManager.Music) raylib.Music {
-            return AssetManager.GetMusic(music);
+        music: raylib.Music,
+
+        pub fn Get(music: AssetManager.Music) Music {
+            return Music{
+                .music = AssetManager.GetMusic(music),
+            };
         }
 
-        pub inline fn Play(music: AssetManager.Music) void {
-            const s = Get(music);
-            if (!raylib.IsMusicStreamPlaying(s)) {
-                raylib.PlayMusicStream(s);
+        pub inline fn Play(self: Music) void {
+            if (!raylib.IsMusicStreamPlaying(self.music)) {
+                raylib.PlayMusicStream(self.music);
             } else {
-                raylib.UpdateMusicStream(s);
+                raylib.UpdateMusicStream(self.music);
             }
         }
-        pub inline fn Pause(music: AssetManager.Music) void {
-            const s = Get(music);
-            if (raylib.IsMusicStreamPlaying(s)) {
-                raylib.PauseMusicStream(s);
+        pub inline fn Pause(self: Music) void {
+            if (raylib.IsMusicStreamPlaying(self.music)) {
+                raylib.PauseMusicStream(self.music);
             }
         }
-        pub inline fn Resume(music: AssetManager.Music) void {
-            const s = Get(music);
-            raylib.ResumeMusicStream(s);
+        pub inline fn Resume(self: Music) void {
+            raylib.ResumeMusicStream(self.music);
         }
-        pub inline fn Stop(music: AssetManager.Music) void {
-            const s = Get(music);
-            if (raylib.IsMusicStreamPlaying(s)) {
-                raylib.StopMusicStream(s);
+        pub inline fn Stop(self: Music) void {
+            if (raylib.IsMusicStreamPlaying(self.music)) {
+                raylib.StopMusicStream(self.music);
             }
         }
-        pub inline fn SetVolume(music: AssetManager.Music, volume: f32) void {
-            const s = Get(music);
-            raylib.SetMusicVolume(s, volume);
+        pub inline fn SetVolume(self: Music, volume: f32) void {
+            raylib.SetMusicVolume(self.music, volume);
         }
     };
 
@@ -156,6 +167,8 @@ pub const Common = struct {
         Random.init();
 
         AssetManager.init();
+
+        Logger.init();
 
         if (builtin.mode == .Debug) {
             raylib.SetTraceLogLevel(raylib.LOG_ALL);
