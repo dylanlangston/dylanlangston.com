@@ -147,6 +147,9 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
         "-sASSERTIONS=" ++ (if (debugging_wasm) "1" else "0"),
         "-sVerbose=" ++ (if (debugging_wasm) "1" else "0"),
         "-sWEBAUDIO_DEBUG=" ++ (if (debugging_wasm) "1" else "0"),
+        if (debugging_wasm) "-gsource-map" else "",
+        if (debugging_wasm) "-sLOAD_SOURCE_MAP=1" else "",
+        //if (debugging_wasm) "" else "-fno-exceptions",
 
         // Export as a ES6 Module for use in svelte
         "-sMODULARIZE",
@@ -197,11 +200,19 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
     }));
     if (debugging_wasm) {
         _ = writeFiles.addCopyFileToSource(std.Build.LazyPath{
-            .path = emccOutputDir ++ name ++ ".js.symbols",
+            .path = emccOutputDir ++ name ++ ".wasm.map",
         }, b.pathJoin(&[_][]const u8{
             "site",
             "static",
-            name ++ ".js.symbols",
+            name ++ ".wasm.map",
+        }));
+        _ = writeFiles.addCopyFileToSource(std.Build.LazyPath{
+            .path = emccOutputDir ++ name ++ ".js.symbols",
+        }, b.pathJoin(&[_][]const u8{
+            "site",
+            "src",
+            "import",
+            "emscripten.js.symbols",
         }));
     }
     writeFiles.step.dependOn(&emcc_command.step);

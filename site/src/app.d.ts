@@ -13,4 +13,6 @@ declare global {
 	}
 }
 
+declare var saveFileFromMEMFSToDisk: (memoryFSname: string, localFSname: string) => void;
+
 export {};

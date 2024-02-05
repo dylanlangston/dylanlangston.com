@@ -57,3 +57,16 @@ export const hash = (str: string, seed: number = 0): number => {
   
     return 4294967296 * (2097151 & h2) + (h1 >>> 0);
 };
+
+globalThis.saveFileFromMEMFSToDisk = (memoryFSname: string, localFSname: string) => {
+	const data = FS.readFile(memoryFSname);
+	const blob = new Blob([data.buffer], { type: 'application/octet-binary' });
+
+	const blobUrl = URL.createObjectURL(blob);
+
+	const link = document.createElement('a');
+	link.href = blobUrl;
+	link.target = '_blank';
+	link.download = localFSname;
+	link.click();
+};

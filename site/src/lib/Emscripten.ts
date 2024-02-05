@@ -29,10 +29,10 @@ interface ICustomEmscriptenModule {
 
 	locateFile(url: string, scriptDirectory: string): string;
 
-	instantiateWasm?: (
-		imports: WebAssembly.Imports,
-		successCallback: (module: WebAssembly.Instance) => void
-	) => WebAssembly.Exports;
+	// instantiateWasm(
+	// 	imports: WebAssembly.Imports,
+	// 	successCallback: (module: WebAssembly.Instance) => void
+	// ): WebAssembly.Exports;
 }
 
 class CustomEmscriptenModule implements ICustomEmscriptenModule {
@@ -45,27 +45,11 @@ class CustomEmscriptenModule implements ICustomEmscriptenModule {
 		this.canvas = canvas;
 	}
 
-	private static wasmBinaryFile: string = new URL('/static/dylanlangston.com.wasm', import.meta.url).href;
-
 	public onRuntimeInitialized(): void {
 	}
 
-	public instantiateWasm(
-		imports: WebAssembly.Imports,
-		successCallback: (module: WebAssembly.Instance) => void
-	): WebAssembly.Exports {
-		WebAssembly.instantiateStreaming(fetch(CustomEmscriptenModule.wasmBinaryFile, {
-			cache: 'default'
-		}), imports).then((output) => {
-			if (Environment.Dev) console.log('wasm instantiation succeeded');
-			successCallback(output.instance);
-		})
-			.catch((e) => {
-				if (Environment.Dev) console.error('wasm instantiation failed! ' + e);
-				this.setStatus('wasm instantiation failed! ' + e);
-			});
-
-		return {};
+	public locateFile(url: string, scriptDirectory: string): string {
+		return "/" + url;
 	}
 
 	public print(t: string): void {
