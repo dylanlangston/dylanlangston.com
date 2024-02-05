@@ -58,7 +58,6 @@ inline fn embedFiles(
                 const filePath = b.pathJoin(&[_][]const u8{ "./zig", "assets", path[0..path.len], entry.path });
                 const fileEnum = b.dupe(entry.basename[0 .. entry.basename.len - ext.len]);
 
-
                 try enums.append(fileEnum);
                 try extensions.append(b.dupe(ext));
                 try hashes.append(try std.fmt.allocPrint(b.allocator, "{}", .{std.hash_map.hashString(entry.basename)}));
@@ -139,8 +138,6 @@ pub inline fn importViews(
     o: std.builtin.OptimizeMode,
     c: *std.Build.Step.Compile,
 ) !void {
-    const files_step = b.addWriteFiles();
-
     _ = t;
     _ = o;
 
@@ -173,7 +170,10 @@ pub inline fn importViews(
                     '_',
                 );
                 try enumNames.append(name);
-                try names.append(try b.allocator.dupe(u8, entry.path));
+
+                try names.append(b.pathJoin(&[_][]const u8{
+                    "./zig", "src", path, entry.path,
+                }));
             }
         }
     }
@@ -184,7 +184,7 @@ pub inline fn importViews(
         \\  {s}{s}
         \\
         \\  pub const typeTable = [@typeInfo(@This()).Enum.fields.len] type {{
-        \\      @import("{s}")
+        \\      @import("{s}").HelloWorldView
         \\  }};
         // \\  pub inline fn get(self: @This()) type {{
         // \\      return @import(nameTable[@intFromEnum(self)]);
@@ -199,9 +199,31 @@ pub inline fn importViews(
         try std.mem.join(b.allocator, "\"), @import(\"", names.items),
     });
 
+    const files_step = b.addWriteFiles();
     const file = files_step.add(file_name, string);
-
-    c.root_module.addAnonymousImport(module_name, .{
+    const module = b.addModule(module_name, .{
         .root_source_file = file.dupe(b),
     });
+
+    for (names.items) |name| {
+        module.addAnonymousImport(name, .{
+            .root_source_file = .{
+                .path = name,
+            },
+        });
+    }
+    c.root_module.addImport(module_name, module);
+
+    // const file = files_step.add(file_name, string);
+
+    // // c.root_module.addAnonymousImport(module_name, .{
+    // //     .root_source_file = file.dupe(b),
+    // // });
+
+    // const module = b.addModule(module_name, .{
+    //     .root_source_file = file.dupe(b),
+    // });
+    // c.step.dependOn(&files_step.step);
+
+    // c.root_module.addImport(module_name, module);
 }

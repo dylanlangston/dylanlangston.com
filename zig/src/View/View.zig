@@ -4,7 +4,6 @@ const ViewModel = @import("../ViewModel/ViewModel.zig").ViewModel;
 const Views = @import("../ViewLocator.zig").Views;
 
 pub const View = struct {
-    Key: Views,
     DrawRoutine: *const fn (self: View) Views,
     VM: *const ViewModel = undefined,
 
