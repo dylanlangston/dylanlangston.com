@@ -136,6 +136,7 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
         "-sGL_ENABLE_GET_PROC_ADDRESS",
         "-sUSE_GLFW=3",
         "-sEXIT_RUNTIME=1",
+        "-sFILESYSTEM=0",
         //"-sASYNCIFY",
 
         // Debug behavior
