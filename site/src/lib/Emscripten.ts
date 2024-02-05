@@ -15,7 +15,9 @@ export interface IEmscripten extends CustomEmscriptenModule, EmscriptenModule {
 
 interface ICustomEmscriptenModule {
 	requestFullscreen?: (lockPointer: boolean, resizeCanvas: boolean) => void;
+	onFullScreen?: (fullscreen: boolean) => void;
 
+	// forcedAspectRatio: number;
 	elementPointerLock: boolean;
 	statusMessage: string;
 	setStatus(e: string): void;
@@ -25,10 +27,12 @@ interface ICustomEmscriptenModule {
 	print(str: string): void;
 	printErr(str: string): void;
 
-	instantiateWasm(
+	locateFile(url: string, scriptDirectory: string): string;
+
+	instantiateWasm?: (
 		imports: WebAssembly.Imports,
 		successCallback: (module: WebAssembly.Instance) => void
-	): WebAssembly.Exports;
+	) => WebAssembly.Exports;
 }
 
 class CustomEmscriptenModule implements ICustomEmscriptenModule {

@@ -235,7 +235,13 @@ fn define_macros(raylib_module: *std.Build.Module) void {
 
     // utils: Configuration values
     //------------------------------------------------------------------------------------
-    raylib_module.addCMacro("MAX_TRACELOG_MSG_LENGTH", "256"); // Max length of one trace-log message
+    raylib_module.addCMacro("MAX_TRACELOG_MSG_LENGTH", "1"); // Max length of one trace-log message
+
+    // Redefine allocators
+    raylib_module.addCMacro("RL_MALLOC(sz)", "malloc(sz)");
+    raylib_module.addCMacro("RL_CALLOC(n,sz)", "calloc(n,sz)");
+    raylib_module.addCMacro("RL_REALLOC(ptr,sz)", "realloc(ptr,sz)");
+    raylib_module.addCMacro("RL_FREE(ptr)", "free(ptr)");
 }
 
 pub fn get_configured_raylib(

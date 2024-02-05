@@ -158,7 +158,7 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
         "-sMINIMAL_RUNTIME_STREAMING_WASM_INSTANTIATION=1",
         "-sEXPORTED_FUNCTIONS=['_malloc','_free','_main']",
         "-sEXPORTED_RUNTIME_METHODS=allocateUTF8,UTF8ToString",
-        "-sINCOMING_MODULE_JS_API=['setStatus','printErr','print','instantiateWasm','onRuntimeInitialized','canvas','elementPointerLock','requestFullscreen']",
+        "-sINCOMING_MODULE_JS_API=['setStatus','printErr','print','instantiateWasm','locateFile','onRuntimeInitialized','canvas','elementPointerLock','requestFullscreen']",
         // "--js-library=src/Zig-JS_Bridge.js",
 
         // Configure memory

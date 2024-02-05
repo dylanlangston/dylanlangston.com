@@ -2,8 +2,13 @@ const std = @import("std");
 const Common = @import("Common.zig").Common;
 const raylib = Common.raylib;
 const emscripten = Common.emscripten;
+const stdio = @cImport({
+    @cInclude("stdio.h");
+});
 
 pub const Logger = struct {
+    const MAX_MESSAGE_LENGTH = 256;
+
     pub inline fn init() void {
         const Callbacks = struct {
             const LogLevels = enum(c_int) {
@@ -17,30 +22,42 @@ pub const Logger = struct {
                 NONE = 7,
             };
 
-            fn TraceLogDesktop(c_logLevel: c_int, c_text: [*c]const u8, va_list: ?*raylib.struct___va_list_tag_1) callconv(.C) void {
-                _ = va_list;
-                const logLevel: LogLevels = @enumFromInt(c_logLevel);
-                const text = std.mem.span(c_text);
+            inline fn bufferSize(c_text: [*c]const u8, va_list: ?*anyopaque) usize {
+                const size = stdio.vsnprintf(null, 0, c_text, va_list);
+                return @as(usize, @intCast(size)) + 1; // safe byte for \0
+            }
 
-                std.debug.print("{?s}: {s}\n", .{ std.enums.tagName(LogLevels, logLevel), text });
+            inline fn sprintf(c_text: [*c]const u8, va_list: ?*anyopaque) [*]u8 {
+                // const size = stdio.vsprintf(null, c_text, va_list);
+                // _ = size; // autofix
+                //var buf = std.ArrayList(u8).init(Common.GetAllocator()).
+                _ = bufferSize(c_text, va_list);
+                var buf: [MAX_MESSAGE_LENGTH]u8 = undefined;
+                _ = stdio.vsprintf(&buf, c_text, va_list);
+                return &buf;
+            }
+
+            fn TraceLogDesktop(c_logLevel: c_int, c_text: [*c]const u8, va_list: ?*raylib.struct___va_list_tag_1) callconv(.C) void {
+                const logLevel: LogLevels = @enumFromInt(c_logLevel);
+
+                std.debug.print("{?s}: {s}\n", .{ std.enums.tagName(LogLevels, logLevel), sprintf(c_text, va_list) });
             }
             fn TraceLogWeb(c_logLevel: c_int, c_text: [*c]const u8, va_list: ?*anyopaque) callconv(.C) void {
-                _ = va_list;
                 const logLevel: LogLevels = @enumFromInt(c_logLevel);
                 const tagNamePtr = std.enums.tagName(LogLevels, logLevel).?.ptr;
 
                 switch (logLevel) {
                     .DEBUG => {
-                        emscripten.emscripten_log(emscripten.EM_LOG_DEBUG, "%s: %s", tagNamePtr, c_text);
+                        emscripten.emscripten_log(emscripten.EM_LOG_DEBUG, "%s: %s", tagNamePtr, sprintf(c_text, va_list));
                     },
                     .WARNING => {
-                        emscripten.emscripten_log(emscripten.EM_LOG_WARN, "%s: %s", tagNamePtr, c_text);
+                        emscripten.emscripten_log(emscripten.EM_LOG_WARN, "%s: %s", tagNamePtr, sprintf(c_text, va_list));
                     },
                     .ERROR => {
-                        emscripten.emscripten_log(emscripten.EM_LOG_ERROR, "%s: %s", tagNamePtr, c_text);
+                        emscripten.emscripten_log(emscripten.EM_LOG_ERROR, "%s: %s", tagNamePtr, sprintf(c_text, va_list));
                     },
                     else => {
-                        emscripten.emscripten_log(emscripten.EM_LOG_INFO, "%s: %s", tagNamePtr, c_text);
+                        emscripten.emscripten_log(emscripten.EM_LOG_INFO, "%s: %s", tagNamePtr, sprintf(c_text, va_list));
                     },
                 }
             }
