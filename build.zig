@@ -2,6 +2,7 @@ const std = @import("std");
 const builtin = @import("builtin");
 const raylib_config = @import("./raylib_config.zig");
 const build_assets = @import("./build-assets.zig");
+const build_viewlocator = @import("./build-viewlocator.zig");
 
 const name = "dylanlangston.com";
 
@@ -75,17 +76,18 @@ fn configure(b: *std.Build, t: std.Build.ResolvedTarget, o: std.builtin.Optimize
     );
 
     // Views
-    // try build_assets.importViews(
-    //     "View",
-    //     "Views",
-    //     &[_][]const u8{
-    //         ".zig",
-    //     },
-    //     b,
-    //     t,
-    //     o,
-    //     c,
-    // );
+    try build_viewlocator.importViews(
+        "View",
+        "ViewModel",
+        "ViewLocator",
+        &[_][]const u8{
+            ".zig",
+        },
+        b,
+        t,
+        o,
+        c,
+    );
 
     c.addIncludePath(.{ .path = "raylib/src" });
     c.addIncludePath(.{ .path = "./emsdk/upstream/emscripten/cache/sysroot/include/" });

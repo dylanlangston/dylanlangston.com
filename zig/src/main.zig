@@ -1,6 +1,6 @@
 const std = @import("std");
 const builtin = @import("builtin");
-const Common = @import("Common.zig").Common;
+pub const Common = @import("Common.zig").Common;
 const raylib = Common.raylib;
 const emscripten = Common.emscripten;
 
@@ -32,27 +32,11 @@ fn UpdateFrame() callconv(.C) void {
     // raylib.BeginShaderMode(shader);
     // defer raylib.EndShaderMode();
 
+    const helloWorld = Common.ViewLocator.get(.HelloWorldView);
+    _ = helloWorld.draw();
+
     if (builtin.mode == .Debug) {
         raylib.DrawFPS(10, 430);
-    }
-
-    raylib.ClearBackground(raylib.Color{ .r = 0, .g = 0, .b = 0, .a = 0 });
-    raylib.DrawText("Hello OpenGL World", 190, 200, 20, raylib.LIGHTGRAY);
-
-    var buf: [64:0]u8 = undefined;
-    if (std.fmt.bufPrintZ(&buf, "Mouse X: {}, Mouse Y: {}, Click: {}", .{ raylib.GetMouseX(), raylib.GetMouseY(), raylib.IsMouseButtonDown(raylib.MOUSE_BUTTON_LEFT) })) |_| {
-        raylib.DrawText(&buf, 190, 225, 20, raylib.LIGHTGRAY);
-    } else |_| {
-        raylib.DrawText("Failed to get mouse position!", 190, 225, 20, raylib.LIGHTGRAY);
-    }
-
-    const music = Common.Music.Get(.Test);
-    if (raylib.IsKeyDown(raylib.KEY_SPACE)) {
-        raylib.DrawText("Space Pressed", 190, 250, 20, raylib.LIGHTGRAY);
-
-        music.Play();
-    } else {
-        music.Pause();
     }
 }
 

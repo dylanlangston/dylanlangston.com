@@ -1,9 +1,9 @@
 const std = @import("std");
-const Common = @import("Common.zig").Common;
+const Common = @import("root").Common;
 const raylib = Common.raylib;
 const Maps = @import("Generics.zig").Maps;
 
-pub const AssetManager = struct {
+pub const AssetLoader = struct {
     pub inline fn init() void {
         const Callbacks = struct {
             fn LoadFileData(fileName: [*c]const u8, bytesRead: [*c]c_int) callconv(.C) [*c]u8 {

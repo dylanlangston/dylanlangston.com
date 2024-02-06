@@ -1,7 +1,7 @@
 const builtin = @import("builtin");
 const std = @import("std");
 const RndGen = std.rand.DefaultPrng;
-const AssetManager = @import("AssetManager.zig").AssetManager;
+const AssetLoader = @import("AssetLoader.zig").AssetLoader;
 const Logger = @import("Logger.zig").Logger;
 
 pub const Common = struct {
@@ -76,9 +76,9 @@ pub const Common = struct {
     pub const Font = struct {
         font: raylib.Font,
 
-        pub fn Get(font: AssetManager.Fonts) Font {
+        pub fn Get(font: AssetLoader.Fonts) Font {
             return Font{
-                .font = AssetManager.GetFont(font),
+                .font = AssetLoader.GetFont(font),
             };
         }
     };
@@ -86,9 +86,9 @@ pub const Common = struct {
     pub const Texture = struct {
         texture: raylib.Texture,
 
-        pub fn Get(texture: AssetManager.Textures) Texture {
+        pub fn Get(texture: AssetLoader.Textures) Texture {
             return Texture{
-                .texture = AssetManager.GetTexture(texture),
+                .texture = AssetLoader.GetTexture(texture),
             };
         }
     };
@@ -96,17 +96,17 @@ pub const Common = struct {
     pub const Shader = struct {
         shader: raylib.Shader,
 
-        pub fn Get(vs: AssetManager.Vertex_Shaders, fs: AssetManager.Fragment_Shaders) Shader {
-            return Shader{ .shader = AssetManager.GetShader(vs, fs) };
+        pub fn Get(vs: AssetLoader.Vertex_Shaders, fs: AssetLoader.Fragment_Shaders) Shader {
+            return Shader{ .shader = AssetLoader.GetShader(vs, fs) };
         }
     };
 
     pub const Sound = struct {
         sound: raylib.Sound,
 
-        pub fn Get(sound: AssetManager.Sounds) Sound {
+        pub fn Get(sound: AssetLoader.Sounds) Sound {
             return Sound{
-                .sound = AssetManager.GetSound(sound),
+                .sound = AssetLoader.GetSound(sound),
             };
         }
 
@@ -130,9 +130,9 @@ pub const Common = struct {
     pub const Music = struct {
         music: raylib.Music,
 
-        pub fn Get(music: AssetManager.Music) Music {
+        pub fn Get(music: AssetLoader.Music) Music {
             return Music{
-                .music = AssetManager.GetMusic(music),
+                .music = AssetLoader.GetMusic(music),
             };
         }
 
@@ -161,10 +161,12 @@ pub const Common = struct {
         }
     };
 
+    pub const ViewLocator = @import("ViewLocator").ViewLocator;
+
     pub inline fn init() void {
         Random.init();
 
-        AssetManager.init();
+        AssetLoader.init();
 
         Logger.init();
 
@@ -181,7 +183,7 @@ pub const Common = struct {
     }
 
     pub inline fn deinit() void {
-        defer AssetManager.deinit();
+        defer AssetLoader.deinit();
         // GeneralPurposeAllocator
         defer (if (!is_emscripten and builtin.mode == .Debug) {
             _ = Alloc.gp.deinit();

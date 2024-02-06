@@ -1,5 +1,5 @@
 const std = @import("std");
-const Common = @import("Common.zig").Common;
+const Common = @import("root").Common;
 const raylib = Common.raylib;
 const emscripten = Common.emscripten;
 

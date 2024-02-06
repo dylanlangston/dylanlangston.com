@@ -1,4 +1,5 @@
 const std = @import("std");
+const Common = @import("root").Common;
 
 pub const ViewModel = struct {
     Init: ?*const fn () void = null,
@@ -30,7 +31,7 @@ pub const ViewModel = struct {
         };
     }
 
-    pub inline fn GetVM(comptime self: ViewModel) type {
+    pub inline fn GetVM(self: ViewModel) type {
         const vm: *const fn () type = @ptrCast(self.Get);
         return vm.*();
     }

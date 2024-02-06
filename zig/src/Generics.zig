@@ -1,5 +1,6 @@
 const builtin = @import("builtin");
 const std = @import("std");
+const Common = @import("root").Common;
 
 pub const Maps = struct {
     // Allows for zero allocations when the length of hashmap is known at comptime
