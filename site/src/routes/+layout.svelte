@@ -11,8 +11,6 @@
 </script>
 
 <svelte:head>
-	<link rel="prefetch" href="dylanlangston.com.wasm" />
-
 	<!-- GTAG Partytown 🕶️ -->
 	<script>
 		// Forward the necessary functions to the web worker layer
