@@ -83,7 +83,11 @@ class CustomEmscriptenModule implements ICustomEmscriptenModule {
 	}
 
 	public locateFile(url: string, scriptDirectory: string): string {
-		const path = new URL(scriptDirectory).pathname;
+		if (Environment.Dev) {
+			return "/" + url;
+		}
+
+		const path = new URL(scriptDirectory).pathname.split("_")[0];
 		const file = path + url;
 		return file;
 	}
