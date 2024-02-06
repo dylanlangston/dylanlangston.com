@@ -216,7 +216,8 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
         .path = emccOutputDir ++ name ++ ".wasm",
     }, b.pathJoin(&[_][]const u8{
         "site",
-        "static",
+        "src",
+        "import",
         name ++ ".wasm",
     }));
     if (debugging_wasm) {
@@ -224,7 +225,8 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
             .path = emccOutputDir ++ name ++ ".wasm.map",
         }, b.pathJoin(&[_][]const u8{
             "site",
-            "static",
+            "src",
+            "import",
             name ++ ".wasm.map",
         }));
         _ = writeFiles.addCopyFileToSource(std.Build.LazyPath{

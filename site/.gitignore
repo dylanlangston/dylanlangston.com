@@ -9,5 +9,3 @@ node_modules
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 src/import/
-static/dylanlangston.com.wasm
-static/dylanlangston.com.wasm.map
