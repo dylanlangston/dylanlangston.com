@@ -33,6 +33,7 @@ interface EmscriptenModule {
 	logReadFiles: boolean;
 	filePackagePrefixURL: string;
 	wasmBinary: ArrayBuffer;
+	wasmBinaryFile:() => string;
 
 	forcedAspectRatio: number;
 	elementPointerLock: boolean;
@@ -80,6 +81,18 @@ interface EmscriptenModule {
 
 	_malloc(size: number): number;
 	_free(ptr: number): void;
+
+	WasmOffsetConverter?: WasmOffsetConverter;
+	setWasmOffsetConverter: (wasmOffsetConverter: WasmOffsetConverter) => void;
+	loadSymbols: () => void;
+}
+
+interface WasmOffsetConverter {
+	new (wasmBytes: Uint8Array, wasmModule: WebAssembly.Module);
+	convert(funcidx: number, offset: number): number;
+	getIndex(offset: number): number;
+	isSameFunc(offset1: number, offset2: number): boolean;
+	getName(offset: number): string;
 }
 
 /**

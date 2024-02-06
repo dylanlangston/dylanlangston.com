@@ -17,6 +17,8 @@ interface ICustomEmscriptenModule {
 	requestFullscreen?: (lockPointer: boolean, resizeCanvas: boolean) => void;
 	onFullScreen?: (fullscreen: boolean) => void;
 
+	onAbort: { (what: any): void };
+
 	// forcedAspectRatio: number;
 	elementPointerLock: boolean;
 	statusMessage: string;
@@ -29,13 +31,42 @@ interface ICustomEmscriptenModule {
 
 	locateFile(url: string, scriptDirectory: string): string;
 
-	// instantiateWasm(
-	// 	imports: WebAssembly.Imports,
-	// 	successCallback: (module: WebAssembly.Instance) => void
-	// ): WebAssembly.Exports;
+	instantiateWasm(
+		imports: WebAssembly.Imports,
+		successCallback: (module: WebAssembly.Instance) => void
+	): WebAssembly.Exports;
 }
 
 class CustomEmscriptenModule implements ICustomEmscriptenModule {
+	public instantiateWasm(
+		imports: WebAssembly.Imports,
+		successCallback: (module: WebAssembly.Instance) => void
+	): WebAssembly.Exports {
+		fetch((<EmscriptenModule>(<any>this)).wasmBinaryFile(), { credentials: 'same-origin', cache: 'default' }).then((response) => {
+			var result = WebAssembly.instantiateStreaming(response, imports);
+			var clonedResponsePromise = response.clone().arrayBuffer();
+
+			// Override CWD
+			imports.env.__syscall_getcwd = (buf: any, size: any) => {
+				return "/";
+			};
+
+			return result.then((instantiationResult) => {
+				const module: EmscriptenModule = <any>this;
+
+				clonedResponsePromise.then((arrayBufferResult) => {
+					if (module.WasmOffsetConverter) {
+						module.setWasmOffsetConverter = new module.WasmOffsetConverter(new Uint8Array(arrayBufferResult), instantiationResult.module);
+						module.loadSymbols();
+					}
+					successCallback(instantiationResult.instance);
+				}, (err) => this.printErr(`failed to initialize offset-converter: ${err}`));
+			}, (err) => this.printErr(`wasm streaming compile failed: ${err}`));
+		});
+
+		return {};
+	}
+
 	requestFullscreen?: (lockPointer: boolean, resizeCanvas: boolean) => void;
 
 	elementPointerLock: boolean = false;
@@ -43,6 +74,9 @@ class CustomEmscriptenModule implements ICustomEmscriptenModule {
 	public canvas: HTMLCanvasElement | OffscreenCanvas;
 	constructor(canvas: HTMLCanvasElement | OffscreenCanvas) {
 		this.canvas = canvas;
+	}
+	public onAbort(what: any): void {
+		//throw(new WebAssembly.RuntimeError(what));
 	}
 
 	public onRuntimeInitialized(): void {

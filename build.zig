@@ -141,7 +141,11 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
         "-sUSE_GLFW=3",
         "-sEXIT_RUNTIME=1",
         "-sFILESYSTEM=0",
+        //"-sBUILD_AS_WORKER=1",
+        "-sABORT_ON_WASM_EXCEPTIONS=0",
         //"-sASYNCIFY",
+        "-sGL_SUPPORT_EXPLICIT_SWAP_CONTROL=1",
+        "-sGL_POOL_TEMP_BUFFERS=0",
 
         // Debug behavior
         if (debugging_wasm) "--emit-symbol-map" else "",
@@ -153,21 +157,33 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
         "-sWEBAUDIO_DEBUG=" ++ (if (debugging_wasm) "1" else "0"),
         if (debugging_wasm) "-gsource-map" else "",
         if (debugging_wasm) "-sLOAD_SOURCE_MAP=1" else "",
-        //if (debugging_wasm) "" else "-fno-exceptions",
+        if (debugging_wasm) "-sGL_TRACK_ERRORS=1" else "-sGL_TRACK_ERRORS=0",
+        if (debugging_wasm) "" else "-fno-exceptions",
+        if (debugging_wasm) "-sRUNTIME_DEBUG=1" else "",
 
         // Export as a ES6 Module for use in svelte
         "-sMODULARIZE",
         "-sEXPORT_ES6",
+        // "-SUSE_ES6_IMPORT_META=1",
+        "-sTRUSTED_TYPES=1",
         "-sEXPORT_NAME=emscriptenModuleFactory",
         "-sHTML5_SUPPORT_DEFERRING_USER_SENSITIVE_REQUESTS=0",
         "-sWASM=1",
         "-DPLATFORM_WEB",
         "-sENVIRONMENT=worker",
-        "-sMINIMAL_RUNTIME_STREAMING_WASM_INSTANTIATION=1",
+        "-sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE=[]",
         "-sEXPORTED_FUNCTIONS=['_malloc','_free','_main']",
-        "-sEXPORTED_RUNTIME_METHODS=allocateUTF8,UTF8ToString",
-        "-sINCOMING_MODULE_JS_API=['setStatus','printErr','print','instantiateWasm','locateFile','onRuntimeInitialized','canvas','elementPointerLock','requestFullscreen']",
+        if (debugging_wasm)
+            "-sEXPORTED_RUNTIME_METHODS=allocateUTF8,UTF8ToString,WasmOffsetConverter"
+        else
+            "-sEXPORTED_RUNTIME_METHODS=allocateUTF8,UTF8ToString",
+        "-sINCOMING_MODULE_JS_API=['setStatus','printErr','print','onAbort','instantiateWasm','locateFile','onRuntimeInitialized','canvas','elementPointerLock','requestFullscreen']",
+        "-sDYNAMIC_EXECUTION=0",
+        "-sWASM_BIGINT=1",
+        "-sHTML5_SUPPORT_DEFERRING_USER_SENSITIVE_REQUESTS=0",
         // "--js-library=src/Zig-JS_Bridge.js",
+        "--pre-js=site/emscripten_pre.js",
+        "--post-js=site/emscripten_post.js",
 
         // Configure memory
         if (debugging_wasm or optimize == .ReleaseSafe) "-sUSE_OFFSET_CONVERTER" else "",
@@ -183,6 +199,7 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
         //"-pthread",
         //"-sPTHREAD_POOL_SIZE=4",
     });
+
     emcc_command.step.dependOn(&lib.step);
 
     // Copy output to the svelte import folder
