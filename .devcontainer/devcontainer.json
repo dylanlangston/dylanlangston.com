@@ -21,13 +21,18 @@
 				"github.vscode-github-actions",
 				"GitHub.codespaces",
 				"bierner.markdown-preview-github-styles",
-				"bierner.markdown-mermaid"
+				"bierner.markdown-mermaid",
+				"dtoplak.vscode-glsllint"
 			],
 			"settings": {
 				"zig.path": "",
 				"zig.zls.path": "",
 				"zig.initialSetupDone": true,
-				"svelte.enable-ts-plugin": true
+				"svelte.enable-ts-plugin": true,
+				"glsllint.additionalStageAssociations": {
+					".fs": "frag",
+					".vs": "vert"
+				}
 			}
 		}
 	}
