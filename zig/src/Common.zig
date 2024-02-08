@@ -8,6 +8,9 @@ const Inputs = @import("Inputs.zig").Inputs;
 pub const Common = struct {
     pub const raylib = @cImport({
         @cInclude("raylib.h");
+        @cInclude("raygui.h");
+        @cInclude("raymath.h");
+        @cInclude("rlgl.h");
     });
     pub const is_emscripten: bool = builtin.os.tag == .emscripten;
     pub const emscripten = if (is_emscripten) @cImport({

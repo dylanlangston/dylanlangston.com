@@ -87,6 +87,7 @@ fn configure(b: *std.Build, t: std.Build.ResolvedTarget, o: std.builtin.Optimize
     );
 
     c.addIncludePath(.{ .path = "raylib/src" });
+    c.addIncludePath(.{ .path = "raygui/src" });
     c.addIncludePath(.{ .path = "./emsdk/upstream/emscripten/cache/sysroot/include/" });
 
     c.linkLibrary(raylib_artifact);
