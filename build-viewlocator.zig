@@ -54,16 +54,23 @@ pub inline fn importViews(
                 if (viewModelFile != null) {
                     viewModelFile.?.close();
                     try viewModelNames.append(viewModelFileName);
-                    try viewModels.append(try std.fmt.allocPrint(b.allocator, "@import(\"{s}\").{s}ViewModel", .{
+                    try viewModels.append(try std.fmt.allocPrint(b.allocator, "{s}: @import(\"{s}\").{s}ViewModel,", .{
+                        enumName,
                         viewModelFileName,
                         enumName,
                     }));
                 } else {
-                    try viewModels.append("undefined");
+                    try viewModels.append(try std.fmt.allocPrint(b.allocator, "{s}: void,", .{
+                        enumName,
+                    }));
                 }
 
                 try viewNames.append(name);
-                try views.append(try std.fmt.allocPrint(b.allocator, "@constCast(&@import(\"{s}\").{s}View.draw)", .{
+                try views.append(try std.fmt.allocPrint(b.allocator, "View{{ .draw = &@import(\"{s}\").{s}View.draw, .init = &@import(\"{s}\").{s}View.init, .deinit = &@import(\"{s}\").{s}View.deinit }}", .{
+                    name,
+                    enumName,
+                    name,
+                    enumName,
                     name,
                     enumName,
                 }));
@@ -73,40 +80,70 @@ pub inline fn importViews(
 
     const file_name = module_name ++ ".zig";
     const format =
+        \\const std = @import("std");
         \\pub const {s} = struct {{
         \\  pub const createView = @import("ViewImport").Create;
         \\  pub const createViewModel = @import("ViewModelImport").Create;
         \\
+        \\  var initializedViews: std.EnumSet(Views) = std.EnumSet(Views).initEmpty();
+        \\
+        \\  const View = struct {{
+        \\      draw: *const fn () Views,
+        \\      init: *const fn () void,
+        \\      deinit: *const fn () void,
+        \\  }};
+        \\
         \\  pub const Views = enum {{
         \\    {s}{s}
         \\
-        \\    pub const drawFunctionTable = [@typeInfo(@This()).Enum.fields.len] *fn () Views {{
-        \\      {s}
-        \\    }};
-        \\    pub const viewModelTable = [@typeInfo(@This()).Enum.fields.len] type {{
+        \\    const drawFunctionTable = [@typeInfo(@This()).Enum.fields.len] View {{
         \\      {s}
         \\    }};
         \\
-        \\    pub inline fn foo(self: Views) void {{
-        \\      
-        \\    }};
+        \\    pub inline fn draw(self: Views) Views {{
+        \\      return drawFunctionTable[@intFromEnum(self)].draw();
+        \\    }}
+        \\
+        \\    pub inline fn init(self: Views) void {{
+        \\        if (!initializedViews.contains(self)) {{
+        \\            drawFunctionTable[@intFromEnum(self)].init();
+        \\            initializedViews.insert(self);
+        \\        }}
+        \\    }}
+        \\
+        \\    pub inline fn deinit(self: Views) void {{
+        \\        if (initializedViews.contains(self)) {{
+        \\            drawFunctionTable[@intFromEnum(self)].deinit();
+        \\            initializedViews.remove(self);
+        \\        }}
+        \\    }}
+        \\
+        \\    pub inline fn update(self: Views) Views {{
+        \\      const next_view = self.draw();
+        \\      if (self != next_view) {{
+        \\          self.deinit();
+        \\          next_view.init();
+        \\      }}
+        \\      return next_view;
+        \\    }}
         \\  }};
         \\
-        \\  pub inline fn getDrawFunction(self: Views) *fn () Views {{
-        \\    return Views.drawFunctionTable[@intFromEnum(self)];
-        \\  }}
-        \\  pub inline fn getViewModel(comptime self: Views) type {{
-        \\    return Views.viewModelTable[@intFromEnum(self)];
+        \\  const ViewModels = union(Views) {{
+        \\    {s}
+        \\  }};
+        \\
+        \\  pub inline fn getViewModel(view: Views) type {{
+        \\      return std.meta.TagPayload(ViewModels, view);
         \\  }}
         \\}};
     ;
 
     const string = try std.fmt.allocPrint(b.allocator, format, .{
         module_name,
-        try std.mem.join(b.allocator, ", ", enumNames.items),
+        try std.mem.join(b.allocator, ",\n    ", enumNames.items),
         if (viewNames.items.len == 0) "" else ",",
-        try std.mem.join(b.allocator, ", ", views.items),
-        try std.mem.join(b.allocator, ", ", viewModels.items),
+        try std.mem.join(b.allocator, ",\n      ", views.items),
+        try std.mem.join(b.allocator, "\n    ", viewModels.items),
     });
 
     const files_step = b.addWriteFiles();

@@ -9,6 +9,8 @@ pub fn main() !void {
     defer Common.deinit();
 
     Common.Log.Trace("Raylib Started");
+    current_view.init();
+    defer current_view.deinit();
 
     if (Common.is_emscripten) {
         emscripten.emscripten_set_main_loop(
@@ -28,16 +30,7 @@ fn UpdateFrame() callconv(.C) void {
     raylib.BeginDrawing();
     defer raylib.EndDrawing();
 
-    // _ = Common.Shader.Get(.base, .base);
-    // const shader = Common.Shader.Get(.base, .scanlines);
-    // raylib.BeginShaderMode(shader);
-    // defer raylib.EndShaderMode();
-
-    //const viewModel = Common.ViewLocator.Views.viewModelTable[0];
-    //const view = Common.ViewLocator.getView(current_view);
-    const viewModel = Common.ViewLocator.getViewModel(.HelloWorld);
-    if (viewModel.init != null) viewModel.init.?();
-    current_view = Common.ViewLocator.getDrawFunction(current_view)();
+    current_view = current_view.update();
 
     if (builtin.mode == .Debug) {
         raylib.DrawFPS(10, 430);
