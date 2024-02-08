@@ -79,25 +79,29 @@ pub inline fn importViews(
     const file_name = module_name ++ ".zig";
     const format =
         \\pub const {s} = struct {{
-        \\  pub const View = @import("ViewImport").View;
-        \\  pub const ViewModel = @import("ViewModelImport").ViewModel;
+        \\  pub const createView = @import("ViewImport").Create;
+        \\  pub const createViewModel = @import("ViewModelImport").Create;
         \\
         \\  pub const Views = enum {{
-        \\      {s}{s}
+        \\    {s}{s}
         \\
-        \\      const viewTable = [@typeInfo(@This()).Enum.fields.len] View {{
-        \\          {s}
-        \\      }};
-        \\      const viewModelTable = [@typeInfo(@This()).Enum.fields.len] ViewModel {{
-        \\          {s}
-        \\      }};
+        \\    pub const viewTable = [@typeInfo(@This()).Enum.fields.len] type {{
+        \\      {s}
+        \\    }};
+        \\    pub const viewModelTable = [@typeInfo(@This()).Enum.fields.len] type {{
+        \\      {s}
+        \\    }};
         \\  }};
         \\
-        \\  pub inline fn get(self: Views) View {{
-        \\      var v = Views.viewTable[@intFromEnum(self)];
-        \\      const vm = Views.viewModelTable[@intFromEnum(self)];
-        \\      v.VM = &vm;
-        \\      return v;
+        \\  pub inline fn getView(comptime self: Views) type {{
+        \\    comptime {{
+        \\      return Views.viewTable[@intFromEnum(self)];
+        \\    }}
+        \\  }}
+        \\  pub inline fn getViewModel(comptime self: Views) type {{
+        \\    comptime {{
+        \\      return Views.viewModelTable[@intFromEnum(self)];
+        \\    }}
         \\  }}
         \\}};
     ;

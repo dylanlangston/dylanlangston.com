@@ -1,32 +1,21 @@
 const std = @import("std");
 const Common = @import("root").Common;
 
-pub const View = struct {
-    DrawRoutine: *const fn (self: View) Common.ViewLocator.Views,
-    VM: *const Common.ViewLocator.ViewModel = undefined,
+pub inline fn Create(comptime view: type) type {
+    ensureDrawRoutine(view);
+    return struct {
+        pub usingnamespace view;
+    };
+}
 
-    var initializedViews: std.EnumSet(Common.ViewLocator.Views) = std.EnumSet(Common.ViewLocator.Views).initEmpty();
-
-    pub inline fn draw(self: View) Common.ViewLocator.Views {
-        return self.DrawRoutine(self);
-    }
-    pub inline fn init(self: View) void {
-        if (!initializedViews.contains(self.Key)) {
-            if ((@intFromPtr(self.VM) != 0) and self.VM.*.Init != null) {
-                self.VM.*.Init.?();
-            }
-            initializedViews.insert(self.Key);
+inline fn ensureDrawRoutine(comptime T: type) void {
+    comptime {
+        if (!@hasDecl(T, "draw")) @compileError("View must have decl Draw: fn() Common.ViewLocator.Views");
+        if (@TypeOf(T.draw) != fn () Common.ViewLocator.Views) {
+            @compileLog(@TypeOf(T.Draw));
+            @compileError(
+                "View.Draw must be a fn() Common.ViewLocator.Views",
+            );
         }
     }
-    pub inline fn deinit(self: View) void {
-        if (initializedViews.contains(self.Key)) {
-            if ((@intFromPtr(self.VM) != 0) and self.VM.*.DeInit != null) {
-                self.VM.*.DeInit.?();
-            }
-            initializedViews.remove(self.Key);
-        }
-    }
-    pub inline fn shouldBypassDeinit(self: View) bool {
-        return (@intFromPtr(self.VM) != 0 and self.VM.*.BypassDeinit.*);
-    }
-};
+}

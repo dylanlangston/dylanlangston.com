@@ -3,6 +3,7 @@ const std = @import("std");
 const RndGen = std.rand.DefaultPrng;
 const AssetLoader = @import("AssetLoader.zig").AssetLoader;
 const Logger = @import("Logger.zig").Logger;
+const Inputs = @import("Inputs.zig").Inputs;
 
 pub const Common = struct {
     pub const raylib = @cImport({
@@ -51,6 +52,8 @@ pub const Common = struct {
     }
 
     pub const Log = Logger;
+
+    pub const Input = Inputs;
 
     pub const Time = struct {
         pub inline fn getTimestamp() i64 {
