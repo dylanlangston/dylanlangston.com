@@ -80,9 +80,6 @@ fn configure(b: *std.Build, t: std.Build.ResolvedTarget, o: std.builtin.Optimize
         "View",
         "ViewModel",
         "ViewLocator",
-        &[_][]const u8{
-            ".zig",
-        },
         b,
         t,
         o,

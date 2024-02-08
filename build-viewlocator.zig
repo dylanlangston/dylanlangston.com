@@ -5,7 +5,6 @@ pub inline fn importViews(
     comptime viewPath: [:0]const u8,
     comptime viewModelPath: [:0]const u8,
     comptime module_name: [:0]const u8,
-    comptime allowed_exts: []const []const u8,
     b: *std.Build,
     t: std.Build.ResolvedTarget,
     o: std.builtin.OptimizeMode,
@@ -32,13 +31,9 @@ pub inline fn importViews(
         while (try walker.next()) |entry| {
             if (std.mem.eql(u8, entry.basename, "View.zig")) continue;
             const ext = std.fs.path.extension(entry.basename);
-            const include_file = for (allowed_exts) |e| {
-                if (std.mem.eql(u8, ext, e))
-                    break true;
-            } else false;
+            const include_file = std.mem.eql(u8, ext, ".zig");
             if (include_file) {
-                const extension = std.fs.path.extension(entry.basename);
-                const enumName = b.dupe(entry.basename[0 .. entry.basename.len - extension.len]);
+                const enumName = b.dupe(entry.basename[0 .. entry.basename.len - 8]);
                 std.mem.replaceScalar(
                     u8,
                     enumName,
@@ -51,7 +46,7 @@ pub inline fn importViews(
                     "./zig", "src", viewPath, entry.path,
                 });
 
-                const viewModelFileName = try std.fmt.allocPrint(b.allocator, "./zig/src/{s}/{s}Model.zig", .{
+                const viewModelFileName = try std.fmt.allocPrint(b.allocator, "./zig/src/{s}/{s}ViewModel.zig", .{
                     viewModelPath,
                     enumName,
                 });
@@ -59,7 +54,7 @@ pub inline fn importViews(
                 if (viewModelFile != null) {
                     viewModelFile.?.close();
                     try viewModelNames.append(viewModelFileName);
-                    try viewModels.append(try std.fmt.allocPrint(b.allocator, "@import(\"{s}\").{s}Model", .{
+                    try viewModels.append(try std.fmt.allocPrint(b.allocator, "@import(\"{s}\").{s}ViewModel", .{
                         viewModelFileName,
                         enumName,
                     }));
@@ -68,7 +63,7 @@ pub inline fn importViews(
                 }
 
                 try viewNames.append(name);
-                try views.append(try std.fmt.allocPrint(b.allocator, "@import(\"{s}\").{s}", .{
+                try views.append(try std.fmt.allocPrint(b.allocator, "@constCast(&@import(\"{s}\").{s}View.draw)", .{
                     name,
                     enumName,
                 }));
@@ -85,7 +80,7 @@ pub inline fn importViews(
         \\  pub const Views = enum {{
         \\    {s}{s}
         \\
-        \\    pub const viewTable = [@typeInfo(@This()).Enum.fields.len] type {{
+        \\    pub const drawFunctionTable = [@typeInfo(@This()).Enum.fields.len] *fn () Views {{
         \\      {s}
         \\    }};
         \\    pub const viewModelTable = [@typeInfo(@This()).Enum.fields.len] type {{
@@ -93,15 +88,11 @@ pub inline fn importViews(
         \\    }};
         \\  }};
         \\
-        \\  pub inline fn getView(comptime self: Views) type {{
-        \\    comptime {{
-        \\      return Views.viewTable[@intFromEnum(self)];
-        \\    }}
+        \\  pub inline fn getDrawFunction(self: Views) *fn () Views {{
+        \\    return Views.drawFunctionTable[@intFromEnum(self)];
         \\  }}
         \\  pub inline fn getViewModel(comptime self: Views) type {{
-        \\    comptime {{
-        \\      return Views.viewModelTable[@intFromEnum(self)];
-        \\    }}
+        \\    return Views.viewModelTable[@intFromEnum(self)];
         \\  }}
         \\}};
     ;

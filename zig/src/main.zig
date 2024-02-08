@@ -23,7 +23,7 @@ pub fn main() !void {
     }
 }
 
-const current_view: Common.ViewLocator.Views = .HelloWorldView;
+var current_view: Common.ViewLocator.Views = .Test;
 fn UpdateFrame() callconv(.C) void {
     raylib.BeginDrawing();
     defer raylib.EndDrawing();
@@ -33,26 +33,11 @@ fn UpdateFrame() callconv(.C) void {
     // raylib.BeginShaderMode(shader);
     // defer raylib.EndShaderMode();
 
-    const foo = struct {
-        fn bar(cV: Common.ViewLocator.Views) type {
-            comptime {
-                for (std.enums.values(Common.ViewLocator.Views)) |view| {
-                    if (view == cV) {
-                        return Common.ViewLocator.getView(view);
-                    }
-                }
-            }
-            return struct {};
-        }
-    };
-
-    const view = foo.bar(current_view);
-
     //const viewModel = Common.ViewLocator.Views.viewModelTable[0];
     //const view = Common.ViewLocator.getView(current_view);
-    const viewModel = Common.ViewLocator.getViewModel(.HelloWorldView);
+    const viewModel = Common.ViewLocator.getViewModel(.HelloWorld);
     if (viewModel.init != null) viewModel.init.?();
-    _ = view.draw();
+    current_view = Common.ViewLocator.getDrawFunction(current_view)();
 
     if (builtin.mode == .Debug) {
         raylib.DrawFPS(10, 430);

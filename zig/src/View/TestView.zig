@@ -10,9 +10,9 @@ pub const TestView = Common.ViewLocator.createView(struct {
         raylib.DrawText("Testing", 190, 200, 20, raylib.LIGHTGRAY);
 
         if (Common.Input.A_Held()) {
-            return .HelloWorldView;
+            return .HelloWorld;
         }
 
-        return .TestView;
+        return .Test;
     }
 });
