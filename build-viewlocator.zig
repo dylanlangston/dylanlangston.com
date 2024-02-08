@@ -86,6 +86,10 @@ pub inline fn importViews(
         \\    pub const viewModelTable = [@typeInfo(@This()).Enum.fields.len] type {{
         \\      {s}
         \\    }};
+        \\
+        \\    pub inline fn foo(self: Views) void {{
+        \\      
+        \\    }};
         \\  }};
         \\
         \\  pub inline fn getDrawFunction(self: Views) *fn () Views {{
