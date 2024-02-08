@@ -29,3 +29,17 @@ pub const Maps = struct {
         };
     }
 };
+
+pub fn Iterator(t: type) type {
+    return struct {
+        i: usize = 0,
+        items: []const t,
+
+        pub inline fn next(self: *@This()) ?t {
+            if (self.i >= self.items.len) return null;
+            const item = self.items[self.i];
+            self.i += 1;
+            return item;
+        }
+    };
+}

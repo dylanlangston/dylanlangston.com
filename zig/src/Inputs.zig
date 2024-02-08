@@ -2,78 +2,75 @@ const std = @import("std");
 const Common = @import("root").Common;
 const raylib = Common.raylib;
 const emscripten = Common.emscripten;
+const KeyIterator = @import("Generics.zig").Iterator(raylib.KeyboardKey);
 
 pub const Inputs = struct {
-    pub inline fn Up_Held() bool {
-        if (raylib.IsKeyDown(raylib.KEY_W)) return true;
-        if (raylib.IsKeyDown(raylib.KEY_UP)) return true;
+    const Keys = enum { Up, Down, Left, Right, A, Start };
 
+    inline fn GetRaylibKeys(keys: Keys) KeyIterator {
+        switch (keys) {
+            .Up => {
+                return KeyIterator{
+                    .items = &[_:0]raylib.KeyboardKey{
+                        raylib.KEY_W,
+                        raylib.KEY_UP,
+                    },
+                };
+            },
+            .Down => {
+                return KeyIterator{
+                    .items = &[_:0]raylib.KeyboardKey{
+                        raylib.KEY_S,
+                        raylib.KEY_DOWN,
+                    },
+                };
+            },
+            .Left => {
+                return KeyIterator{
+                    .items = &[_:0]raylib.KeyboardKey{
+                        raylib.KEY_A,
+                        raylib.KEY_UP,
+                    },
+                };
+            },
+            .Right => {
+                return KeyIterator{
+                    .items = &[_:0]raylib.KeyboardKey{
+                        raylib.KEY_D,
+                        raylib.KEY_UP,
+                    },
+                };
+            },
+            .A => {
+                return KeyIterator{
+                    .items = &[_:0]c_uint{
+                        raylib.KEY_SPACE,
+                        raylib.KEY_ENTER,
+                    },
+                };
+            },
+            .Start => {
+                return KeyIterator{
+                    .items = &[_:0]raylib.KeyboardKey{
+                        raylib.KEY_ESCAPE,
+                    },
+                };
+            },
+        }
+    }
+
+    pub inline fn Held(key: Keys) bool {
+        var iterator = GetRaylibKeys(key);
+        while (iterator.next()) |k| {
+            if (raylib.IsKeyDown(@intCast(k))) return true;
+        }
         return false;
     }
-    pub inline fn Down_Held() bool {
-        if (raylib.IsKeyDown(raylib.KEY_S)) return true;
-        if (raylib.IsKeyDown(raylib.KEY_DOWN)) return true;
-
-        return false;
-    }
-    pub inline fn Left_Held() bool {
-        if (raylib.IsKeyDown(raylib.KEY_A)) return true;
-        if (raylib.IsKeyDown(raylib.KEY_LEFT)) return true;
-
-        return false;
-    }
-    pub inline fn Right_Held() bool {
-        if (raylib.IsKeyDown(raylib.KEY_D)) return true;
-        if (raylib.IsKeyDown(raylib.KEY_RIGHT)) return true;
-
-        return false;
-    }
-    pub inline fn A_Held() bool {
-        if (raylib.IsKeyDown(raylib.KEY_SPACE)) return true;
-        if (raylib.IsKeyDown(raylib.KEY_ENTER)) return true;
-
-        return false;
-    }
-
-    pub inline fn Start_Held() bool {
-        if (raylib.IsKeyDown(raylib.KEY_ESCAPE)) return true;
-
-        return false;
-    }
-
-    pub inline fn Up_Pressed() bool {
-        if (raylib.IsKeyPressed(raylib.KEY_W)) return true;
-        if (raylib.IsKeyPressed(raylib.KEY_UP)) return true;
-
-        return false;
-    }
-    pub inline fn Down_Pressed() bool {
-        if (raylib.IsKeyPressed(raylib.KEY_S)) return true;
-        if (raylib.IsKeyPressed(raylib.KEY_DOWN)) return true;
-
-        return false;
-    }
-    pub inline fn Left_Pressed() bool {
-        if (raylib.IsKeyPressed(raylib.KEY_A)) return true;
-        if (raylib.IsKeyPressed(raylib.KEY_LEFT)) return true;
-
-        return false;
-    }
-    pub inline fn Right_Pressed() bool {
-        if (raylib.IsKeyPressed(raylib.KEY_D)) return true;
-        if (raylib.IsKeyPressed(raylib.KEY_RIGHT)) return true;
-
-        return false;
-    }
-    pub inline fn A_Pressed() bool {
-        if (raylib.IsKeyPressed(raylib.KEY_ENTER)) return true;
-        if (raylib.IsKeyPressed(raylib.KEY_SPACE)) return true;
-
-        return false;
-    }
-    pub inline fn Start_Pressed() bool {
-        if (raylib.IsKeyPressed(raylib.KEY_ESCAPE)) return true;
-
+    pub inline fn Pressed(key: Keys) bool {
+        var iterator = GetRaylibKeys(key);
+        while (iterator.next()) |k| {
+            if (raylib.IsKeyPressed(@intCast(k))) return true;
+        }
         return false;
     }
 };

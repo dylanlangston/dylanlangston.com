@@ -20,7 +20,7 @@ pub const HelloWorldView = Common.ViewLocator.createView(
             }
 
             const music = HelloWorldViewModel.music;
-            if (Common.Input.A_Held()) {
+            if (Common.Input.Held(.A)) {
                 raylib.DrawText("Space Pressed", 190, 250, 20, raylib.LIGHTGRAY);
 
                 music.Play();
