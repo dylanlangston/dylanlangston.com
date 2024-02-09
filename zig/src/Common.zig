@@ -184,7 +184,7 @@ pub const Common = struct {
 
         raylib.SetConfigFlags(raylib.FLAG_VSYNC_HINT | raylib.FLAG_MSAA_4X_HINT);
 
-        raylib.InitWindow(800, 450, "dylanlangston.com");
+        raylib.InitWindow(1600, 900, "dylanlangston.com");
         raylib.InitAudioDevice();
     }
 

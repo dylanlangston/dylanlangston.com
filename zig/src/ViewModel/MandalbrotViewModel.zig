@@ -14,8 +14,6 @@ pub const MandalbrotViewModel = Common.ViewLocator.createViewModel(
             .{ -0.70176, -0.3842 },
         };
 
-        pub const screenWidth: i32 = 800;
-        pub const screenHeight: i32 = 450;
         pub const zoomSpeed: f32 = 1.01;
         pub const offsetSpeedMul: f32 = 2.0;
 

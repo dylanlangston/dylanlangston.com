@@ -1,6 +1,6 @@
 #version 100
 
-precision mediump float;
+precision highp float;
 
 // Input vertex attributes (from vertex shader)
 varying vec2 fragTexCoord;
@@ -12,8 +12,8 @@ uniform float zoom;             // Zoom of the scale.
 
 // NOTE: Maximum number of shader for-loop iterations depend on GPU,
 // for example, on RasperryPi for this examply only supports up to 60
-const int maxIterations = 48;     // Max iterations to do.
-const float colorCycles = 1.0;   // Number of times the color palette repeats.
+const int maxIterations = 256;     // Max iterations to do.
+const float colorCycles = 2.0;   // Number of times the color palette repeats.
 
 // Square a complex number
 vec2 ComplexSquare(vec2 z)
@@ -60,7 +60,7 @@ void main()
     z.y += offset.y;
 
     int iter = 0;
-    for (int iterations = 0; iterations < 120; iterations++)
+    for (int iterations = 0; iterations < maxIterations; iterations++)
     {
         z = ComplexSquare(z) + c;  // Iterate function
         if (dot(z, z) > 4.0) break;

@@ -83,8 +83,8 @@ pub const MandalbrotView = Common.ViewLocator.createView(
                 // Find the velocity at which to change the camera. Take the distance of the mouse
                 // from the center of the screen as the direction, and adjust magnitude based on
                 // the current zoom.
-                offsetVelocity.x = (mousePos.x / MandalbrotViewModel.screenWidth - 0.5) * MandalbrotViewModel.offsetSpeedMul / MandalbrotViewModel.zoom;
-                offsetVelocity.y = (mousePos.y / MandalbrotViewModel.screenHeight - 0.5) * MandalbrotViewModel.offsetSpeedMul / MandalbrotViewModel.zoom;
+                offsetVelocity.x = (mousePos.x / @as(f32, @floatFromInt(raylib.GetScreenWidth())) - 0.5) * MandalbrotViewModel.offsetSpeedMul / MandalbrotViewModel.zoom;
+                offsetVelocity.y = (mousePos.y / @as(f32, @floatFromInt(raylib.GetScreenHeight())) - 0.5) * MandalbrotViewModel.offsetSpeedMul / MandalbrotViewModel.zoom;
 
                 // Apply move velocity to camera
                 MandalbrotViewModel.offset[0] += raylib.GetFrameTime() * offsetVelocity.x;
@@ -121,23 +121,23 @@ pub const MandalbrotView = Common.ViewLocator.createView(
             //----------------------------------------------------------------------------------
             // Using a render texture to draw Julia set
             raylib.BeginTextureMode(MandalbrotViewModel.target); // Enable drawing to texture
-            raylib.ClearBackground(raylib.BLACK); // Clear the render texture
+            raylib.ClearBackground(raylib.BLANK); // Clear the render texture
 
             // Draw a rectangle in shader mode to be used as shader canvas
             // NOTE: Rectangle uses font white character texture coordinates,
             // so shader can not be applied here directly because input vertexTexCoord
             // do not represent full screen coordinates (space where want to apply shader)
-            raylib.DrawRectangle(0, 0, raylib.GetScreenWidth(), raylib.GetScreenHeight(), raylib.BLACK);
+            raylib.DrawRectangle(0, 0, raylib.GetScreenWidth(), raylib.GetScreenHeight(), raylib.BLANK);
             raylib.EndTextureMode();
 
-            raylib.ClearBackground(raylib.BLACK); // Clear screen background
+            raylib.ClearBackground(raylib.BLANK); // Clear screen background
 
             // Draw the saved texture and rendered julia set with shader
             // NOTE: We do not invert texture on Y, already considered inside shader
             raylib.BeginShaderMode(MandalbrotViewModel.shader.shader);
             // WARNING: If FLAG_WINDOW_HIGHDPI is enabled, HighDPI monitor scaling should be considered
             // when rendering the RenderTexture2D to fit in the HighDPI scaled Window
-            raylib.DrawTextureEx(MandalbrotViewModel.target.texture, raylib.Vector2{ .x = 0.0, .y = 0.0 }, 0.0, 1.0, raylib.WHITE);
+            raylib.DrawTextureEx(MandalbrotViewModel.target.texture, raylib.Vector2{ .x = 0.0, .y = 0.0 }, 0.0, 1.0, raylib.BLANK);
             raylib.EndShaderMode();
 
             if (MandalbrotViewModel.showControls) {
@@ -160,6 +160,7 @@ pub const MandalbrotView = Common.ViewLocator.createView(
 
             MandalbrotViewModel.shader = Common.Shader.Get(null, .julia);
             MandalbrotViewModel.target = raylib.LoadRenderTexture(screenWidth, screenHeight);
+            raylib.SetTextureFilter(MandalbrotViewModel.target.texture, raylib.TEXTURE_FILTER_TRILINEAR);
 
             MandalbrotViewModel.cLoc = raylib.GetShaderLocation(MandalbrotViewModel.shader.shader, "c");
             MandalbrotViewModel.zoomLoc = raylib.GetShaderLocation(MandalbrotViewModel.shader.shader, "zoom");
