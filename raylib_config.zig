@@ -7,7 +7,7 @@ const raylibStandardOptions = .{
     .rshapes = true,
     .rtext = true,
     .rtextures = true,
-    .raygui = true,
+    .raygui = false,
     .platform_drm = false,
     .shared = false,
 };

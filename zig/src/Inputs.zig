@@ -2,10 +2,11 @@ const std = @import("std");
 const Common = @import("root").Common;
 const raylib = Common.raylib;
 const emscripten = Common.emscripten;
-const KeyIterator = @import("Generics.zig").Iterator(raylib.KeyboardKey);
+const KeyIterator = Common.Generic.Iterator(raylib.KeyboardKey);
 
 pub const Inputs = struct {
     const Keys = enum { Up, Down, Left, Right, A, Start };
+    const Direction = enum { Up, Down, Left, Right };
 
     inline fn GetRaylibKeys(keys: Keys) KeyIterator {
         switch (keys) {
@@ -72,5 +73,40 @@ pub const Inputs = struct {
             if (raylib.IsKeyPressed(@intCast(k))) return true;
         }
         return false;
+    }
+
+    pub inline fn PointerPosition() raylib.Vector2 {
+        return raylib.GetMousePosition();
+    }
+
+    pub inline fn Pointing(pointer: raylib.Vector2, screen: raylib.Vector2, direction: Direction) bool {
+        if (!raylib.IsMouseButtonDown(raylib.MOUSE_BUTTON_LEFT)) return false;
+
+        switch (direction) {
+            .Up => {
+                if (pointer.y < (screen.y / 2)) {
+                    return true;
+                }
+                return false;
+            },
+            .Down => {
+                if (pointer.y > (screen.y / 2)) {
+                    return true;
+                }
+                return false;
+            },
+            .Left => {
+                if (pointer.x < (screen.x / 2)) {
+                    return true;
+                }
+                return false;
+            },
+            .Right => {
+                if (pointer.x > (screen.x / 2)) {
+                    return true;
+                }
+                return false;
+            },
+        }
     }
 };

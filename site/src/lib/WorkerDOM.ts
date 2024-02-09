@@ -8,17 +8,19 @@ export namespace WorkerDOM {
     export function SetSampleRate(r: number) {
         rate = r;
     }
+    let width: number = 1000;
+    let height: number = 500;
+    export function SetSize(w: number, h: number)  {
+        width = w;
+        height = h;
+    }
 
     export class Window {
         public addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void {
-            // Skip resize events
-            if (type == "resize") return;
             const id = IPCProxy.Add(listener);
             postMessage(IPCMessage.AddEventHandler({ id, target: 'Window', type }));
         }
         public removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void {
-            // Skip resize events
-            if (type == "resize") return;
             const id = IPCProxy.Remove(listener);
             postMessage(IPCMessage.RemoveEventHandler({ id, target: 'Window', type }));
         }
@@ -27,6 +29,12 @@ export namespace WorkerDOM {
                 addEventListener: (type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void => { },
                 removeEventListener: (type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void => { },
             };
+        }
+        public get innerWidth(): number {
+            return width;
+        }
+        public get innerHeight(): number {
+            return height;
         }
         public get scrollX(): number {
             return 0;
@@ -60,6 +68,15 @@ export namespace WorkerDOM {
             return <any>this.canvas;
         }
         public getCanvas = () => this.canvas;
+        public body = new Body();
+    }
+    export class Body {
+        public get clientWidth(): number {
+            return width;
+        }
+        public get clientHeight(): number {
+            return height;
+        }
     }
 
     interface IOffscreenCanvasExtended extends OffscreenCanvas {
@@ -93,6 +110,14 @@ export namespace WorkerDOM {
         private canvas: OffscreenCanvas;
         constructor(canvas: OffscreenCanvas) {
             this.canvas = canvas;
+            
+            // Resize handler
+            const id = IPCProxy.Add((ev: any) => {
+                SetSize(ev.currentTarget.width, ev.currentTarget.height);
+                //this.width = ev.currentTarget.width;
+                //this.height = ev.currentTarget.height;
+            });
+            postMessage(IPCMessage.AddEventHandler({ id, target: 'Window', type: "resize" }));
         }
         public get clientWidth(): number {
             return this.canvas.width;
@@ -141,6 +166,7 @@ export namespace WorkerDOM {
             return this.canvas.height;
         }
         public set width(value: number) {
+            if (value == 0) return;
             this.canvas.width = value;
         }
         public get width(): number {

@@ -33,7 +33,7 @@ fn UpdateFrame() callconv(.C) void {
     current_view = current_view.update();
 
     if (builtin.mode == .Debug) {
-        raylib.DrawFPS(10, 430);
+        raylib.DrawFPS(10, raylib.GetScreenHeight() - 30);
     }
 }
 

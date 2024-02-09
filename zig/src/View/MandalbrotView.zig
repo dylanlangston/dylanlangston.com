@@ -7,6 +7,14 @@ const MandalbrotViewModel = Common.ViewLocator.getViewModel(.Mandalbrot);
 pub const MandalbrotView = Common.ViewLocator.createView(
     struct {
         pub fn draw() Common.ViewLocator.Views {
+            const screenSize = Common.Helpers.ScreenSize();
+
+            // New render texture on resize
+            if (@as(f32, @floatFromInt(MandalbrotViewModel.target.texture.width)) != screenSize.x or @as(f32, @floatFromInt(MandalbrotViewModel.target.texture.height)) != screenSize.y) {
+                raylib.UnloadRenderTexture(MandalbrotViewModel.target);
+                MandalbrotViewModel.target = raylib.LoadRenderTexture(@intFromFloat(screenSize.x), @intFromFloat(screenSize.y));
+            }
+
             // Update
             //----------------------------------------------------------------------------------
             // Press [1 - 6] to reset c to a point of interest
@@ -65,7 +73,6 @@ pub const MandalbrotView = Common.ViewLocator.createView(
             }
 
             if (raylib.IsKeyPressed(raylib.KEY_SPACE)) MandalbrotViewModel.incrementSpeed = 0; // Pause animation (c change)
-            if (raylib.IsKeyPressed(raylib.KEY_F1)) MandalbrotViewModel.showControls = !MandalbrotViewModel.showControls; // Toggle whether or not to show controls
 
             if (raylib.IsKeyPressed(raylib.KEY_RIGHT)) {
                 MandalbrotViewModel.incrementSpeed += 1;
@@ -83,8 +90,8 @@ pub const MandalbrotView = Common.ViewLocator.createView(
                 // Find the velocity at which to change the camera. Take the distance of the mouse
                 // from the center of the screen as the direction, and adjust magnitude based on
                 // the current zoom.
-                offsetVelocity.x = (mousePos.x / @as(f32, @floatFromInt(raylib.GetScreenWidth())) - 0.5) * MandalbrotViewModel.offsetSpeedMul / MandalbrotViewModel.zoom;
-                offsetVelocity.y = (mousePos.y / @as(f32, @floatFromInt(raylib.GetScreenHeight())) - 0.5) * MandalbrotViewModel.offsetSpeedMul / MandalbrotViewModel.zoom;
+                offsetVelocity.x = (mousePos.x / screenSize.x - 0.5) * MandalbrotViewModel.offsetSpeedMul / MandalbrotViewModel.zoom;
+                offsetVelocity.y = (mousePos.y / screenSize.y - 0.5) * MandalbrotViewModel.offsetSpeedMul / MandalbrotViewModel.zoom;
 
                 // Apply move velocity to camera
                 MandalbrotViewModel.offset[0] += raylib.GetFrameTime() * offsetVelocity.x;
@@ -140,14 +147,21 @@ pub const MandalbrotView = Common.ViewLocator.createView(
             raylib.DrawTextureEx(MandalbrotViewModel.target.texture, raylib.Vector2{ .x = 0.0, .y = 0.0 }, 0.0, 1.0, raylib.BLANK);
             raylib.EndShaderMode();
 
-            if (MandalbrotViewModel.showControls) {
-                raylib.DrawText("Press Mouse buttons right/left to zoom in/out and move", 10, 15, 10, raylib.RAYWHITE);
-                raylib.DrawText("Press KEY_F1 to toggle these controls", 10, 30, 10, raylib.RAYWHITE);
-                raylib.DrawText("Press KEYS [1 - 6] to change point of interest", 10, 45, 10, raylib.RAYWHITE);
-                raylib.DrawText("Press KEY_LEFT | KEY_RIGHT to change speed", 10, 60, 10, raylib.RAYWHITE);
-                raylib.DrawText("Press KEY_SPACE to stop movement animation", 10, 75, 10, raylib.RAYWHITE);
-                raylib.DrawText("Press KEY_R to recenter the camera", 10, 90, 10, raylib.RAYWHITE);
+            const pointerPosition = raylib.GetMousePosition();
+
+            if (Common.Input.Pointing(pointerPosition, screenSize, .Up)) {
+                _ = Common.Text.DrawTextCentered("Pointing Up", raylib.WHITE, 20, screenSize.x, 200);
             }
+            if (Common.Input.Pointing(pointerPosition, screenSize, .Down)) {
+                _ = Common.Text.DrawTextCentered("Pointing Down", raylib.WHITE, 20, screenSize.x, 230);
+            }
+            if (Common.Input.Pointing(pointerPosition, screenSize, .Left)) {
+                _ = Common.Text.DrawTextCentered("Pointing Left", raylib.WHITE, 20, screenSize.x, 260);
+            }
+            if (Common.Input.Pointing(pointerPosition, screenSize, .Right)) {
+                _ = Common.Text.DrawTextCentered("Pointing Right", raylib.WHITE, 20, screenSize.x, 290);
+            }
+
             //----------------------------------------------------------------------------------
 
             return .Mandalbrot;
@@ -155,12 +169,11 @@ pub const MandalbrotView = Common.ViewLocator.createView(
     },
     struct {
         pub fn init() void {
-            const screenWidth = raylib.GetScreenWidth();
-            const screenHeight = raylib.GetScreenHeight();
+            const screenSize = Common.Helpers.ScreenSize();
 
             MandalbrotViewModel.shader = Common.Shader.Get(null, .julia);
-            MandalbrotViewModel.target = raylib.LoadRenderTexture(screenWidth, screenHeight);
-            raylib.SetTextureFilter(MandalbrotViewModel.target.texture, raylib.TEXTURE_FILTER_TRILINEAR);
+            MandalbrotViewModel.target = raylib.LoadRenderTexture(@intFromFloat(screenSize.x), @intFromFloat(screenSize.y));
+            //raylib.SetTextureFilter(MandalbrotViewModel.target.texture, raylib.TEXTURE_FILTER_ANISOTROPIC_8X);
 
             MandalbrotViewModel.cLoc = raylib.GetShaderLocation(MandalbrotViewModel.shader.shader, "c");
             MandalbrotViewModel.zoomLoc = raylib.GetShaderLocation(MandalbrotViewModel.shader.shader, "zoom");

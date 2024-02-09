@@ -4,17 +4,22 @@ const RndGen = std.rand.DefaultPrng;
 const AssetLoader = @import("AssetLoader.zig").AssetLoader;
 const Logger = @import("Logger.zig").Logger;
 const Inputs = @import("Inputs.zig").Inputs;
+const MiscellaneousHelpers = @import("MiscellaneousHelpers.zig").MiscellaneousHelpers;
+const Generics = @import("Generics.zig");
 
 pub const Common = struct {
     pub const raylib = @cImport({
         @cInclude("raylib.h");
-        @cInclude("raygui.h");
         @cInclude("raymath.h");
         @cInclude("rlgl.h");
+    });
+    pub const raygui = @cImport({
+        @cInclude("raygui.h");
     });
     pub const is_emscripten: bool = builtin.os.tag == .emscripten;
     pub const emscripten = if (is_emscripten) @cImport({
         @cInclude("emscripten.h");
+        @cInclude("emscripten/html5.h");
     }) else null;
 
     const Alloc = struct {
@@ -58,6 +63,10 @@ pub const Common = struct {
 
     pub const Input = Inputs;
 
+    pub const Helpers = MiscellaneousHelpers;
+
+    pub const Generic = Generics;
+
     pub const Time = struct {
         pub inline fn getTimestamp() i64 {
             if (is_emscripten) {
@@ -76,6 +85,95 @@ pub const Common = struct {
         }
         pub inline fn Get() std.rand.Random {
             return random;
+        }
+    };
+
+    pub const Text = struct {
+        pub inline fn DrawTextWithFontCentered(
+            text: [:0]const u8,
+            color: raylib.Color,
+            font: Font,
+            fontSize: f32,
+            screenWidth: f32,
+            positionY: f32,
+        ) raylib.Vector2 {
+            const TitleTextSize = raylib.MeasureTextEx(
+                font.font,
+                text,
+                fontSize,
+                @floatFromInt(font.glyphPadding),
+            );
+            raylib.DrawTextEx(
+                font.font,
+                text,
+                raylib.Vector2{
+                    (screenWidth - TitleTextSize.x) / 2,
+                    positionY,
+                },
+                TitleTextSize.y,
+                @floatFromInt(font.glyphPadding),
+                color,
+            );
+            return TitleTextSize;
+        }
+        pub inline fn DrawTextCentered(
+            text: [:0]const u8,
+            color: raylib.Color,
+            fontSize: f32,
+            screenWidth: f32,
+            positionY: f32,
+        ) i32 {
+            const TitleTextSize = raylib.MeasureText(text, @intFromFloat(fontSize));
+            raylib.DrawText(
+                text,
+                @divFloor((@as(i32, @intFromFloat(screenWidth)) - TitleTextSize), 2),
+                @intFromFloat(positionY),
+                @intFromFloat(fontSize),
+                color,
+            );
+            return TitleTextSize;
+        }
+        pub inline fn DrawTextWithFontRightAligned(
+            text: [:0]const u8,
+            color: raylib.Color,
+            font: Font,
+            fontSize: f32,
+            screenWidth: f32,
+            positionY: f32,
+        ) void {
+            const TitleTextSize = raylib.MeasureTextEx(
+                font.font,
+                text,
+                fontSize,
+                @floatFromInt(font.glyphPadding),
+            );
+            raylib.DrawTextEx(
+                font.font,
+                text,
+                raylib.Vector2{
+                    screenWidth - TitleTextSize.x,
+                    positionY,
+                },
+                TitleTextSize.y,
+                @floatFromInt(font.glyphPadding),
+                color,
+            );
+        }
+        pub inline fn DrawTextRightAligned(
+            text: [:0]const u8,
+            color: raylib.Color,
+            fontSize: f32,
+            screenWidth: f32,
+            positionY: f32,
+        ) void {
+            const TitleTextSize = raylib.MeasureText(text, @intFromFloat(fontSize));
+            raylib.DrawText(
+                text,
+                @as(i32, @intFromFloat(screenWidth)) - TitleTextSize,
+                @intFromFloat(positionY),
+                @intFromFloat(fontSize),
+                color,
+            );
         }
     };
 
@@ -181,8 +279,23 @@ pub const Common = struct {
         } else raylib.SetTraceLogLevel(raylib.LOG_NONE);
 
         raylib.SetTargetFPS(0);
+        raylib.SetConfigFlags(raylib.FLAG_VSYNC_HINT | raylib.FLAG_MSAA_4X_HINT | raylib.FLAG_WINDOW_RESIZABLE);
 
-        raylib.SetConfigFlags(raylib.FLAG_VSYNC_HINT | raylib.FLAG_MSAA_4X_HINT);
+        if (is_emscripten) {
+            // Handle Resize
+            _ = emscripten.emscripten_set_resize_callback(2, null, 1, &struct {
+                fn resize(t: c_int, data: [*c]const emscripten.struct_EmscriptenUiEvent, callback: ?*anyopaque) callconv(.C) c_int {
+                    _ = t;
+                    _ = callback;
+                    raylib.SetWindowSize(
+                        data.*.windowInnerWidth,
+                        data.*.windowInnerHeight,
+                    );
+                    Log.Info_Formatted("Resized: {}", .{data.*});
+                    return 0;
+                }
+            }.resize);
+        }
 
         raylib.InitWindow(1600, 900, "dylanlangston.com");
         raylib.InitAudioDevice();

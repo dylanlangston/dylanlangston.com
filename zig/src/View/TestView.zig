@@ -11,7 +11,7 @@ pub const TestView = Common.ViewLocator.createView(
             raylib.DrawText("Testing", 190, 200, 20, raylib.LIGHTGRAY);
 
             if (Common.Input.Held(.A)) {
-                return .HelloWorld;
+                return .Mandalbrot;
             }
 
             return .Test;

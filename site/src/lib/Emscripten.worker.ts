@@ -10,8 +10,6 @@ let eventHandlers: { [type: number]: (message: IPCMessageDataType) => void; } = 
 // On Initialized
 eventHandlers[IPCMessageType.Initialize] = (message: IPCMessageDataType) => {
     // This needs to match the width of the canvas
-    const width = 800;
-    const height = 450;
     const eventDetails: {
         canvas: OffscreenCanvas,
         audioSampleRate: number
@@ -35,8 +33,13 @@ eventHandlers[IPCMessageType.EventHandlerCallback] = (message) => {
         eventHandler.event.changedTouches = Array.from(eventHandler.event.changedTouches);
     }
     eventHandler.event.preventDefault = () => { };
-    eventHandler.event.target = self.document.getCanvas();
-    if (Environment.Dev) console.debug(eventHandler);
+    if (eventHandler.type == "resize") {
+        eventHandler.event.target = self.window;
+    } else {
+        eventHandler.event.target = self.document.getCanvas();
+    }
+    
+    //if (Environment.Dev) console.debug(eventHandler);
     const func = IPCProxy.Get(eventHandler.id);
     if (func) {
         func(eventHandler.event);
@@ -95,6 +98,12 @@ interface IEmscriptenWorker extends DedicatedWorkerGlobalScope {
     window: WorkerDOM.Window;
     document: WorkerDOM.Document;
     miniaudio: WorkerDOM.MiniAudio;
+    innerWidth: number,
+    innerHeight: number,
+    outerWidth: number,
+    outerHeight: number,
+    pageXOffset: number,
+    pageYOffset: number,
 }
 declare let self: IEmscriptenWorker;
 
@@ -105,4 +114,22 @@ self.onmessage = (ev: MessageEvent<IPCMessage>) => {
         WorkerMessageEventHandler.Handler.OnMessage(ev.data.type, ev.data.message);
     }
 };
+Object.defineProperty(self, "innerWidth", {
+    get: () => self.window.innerWidth,
+});
+Object.defineProperty(self, "innerHeight", {
+    get: () => self.window.innerHeight,
+});
+Object.defineProperty(self, "outerWidth", {
+    get: () => self.window.innerWidth,
+});
+Object.defineProperty(self, "outerHeight", {
+    get: () => self.window.innerHeight,
+});
+Object.defineProperty(self, "pageXOffset", {
+    get: () => self.window.scrollX,
+});
+Object.defineProperty(self, "pageYOffset", {
+    get: () => self.window.scrollY,
+});
 export { };

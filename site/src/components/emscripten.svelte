@@ -4,7 +4,7 @@
 	import { fade, blur, fly, slide, scale, crossfade } from 'svelte/transition';
 	import emscriptenWorker from '$lib/Emscripten.worker?worker';
 	import { AudioEventType, IPCMessage, IPCMessageType } from '$lib/IPCMessage';
-	import { sanitizeEvent } from '$lib/Common';
+	import { Environment, sanitizeEvent } from '$lib/Common';
 
 	function initWorker(canvasElement: HTMLCanvasElement) {
 		const audioContext = new AudioContext();
@@ -51,12 +51,11 @@
 		}
 
 		let processorNode: ScriptProcessorNode;
-		let audioNode: AudioNode;
 		let audioOutput: [[]] = [[]];
 		function HandleAudio(audioEvent: { type: AudioEventType; details?: any }) {
 			switch (audioEvent.type) {
 				case AudioEventType.Connect:
-					audioNode = processorNode.connect(<AudioNode>audioContext.destination);
+					const audioNode = processorNode.connect(<AudioNode>audioContext.destination);
 					break;
 				case AudioEventType.CreateScriptProcessor:
 					processorNode = audioContext.createScriptProcessor(
@@ -110,6 +109,7 @@
 			switch (ev.data.type) {
 				case IPCMessageType.Initialized:
 					canvas = canvasElement;
+					window.dispatchEvent(new Event('resize'));
 					break;
 				case IPCMessageType.AddEventHandler:
 					HandleEvent(true, <any>ev.data.message);
@@ -127,6 +127,7 @@
 		worker.onerror = (er) => {
 			worker?.terminate();
 			canvas = undefined;
+			if (Environment.Dev) debugger;
 			throw er;
 		};
 	}
@@ -134,6 +135,7 @@
 	function initFallback(canvasElement: HTMLCanvasElement) {
 		EmscriptenInitialize(canvasElement).then((emscripten) => {
 			canvas = canvasElement;
+			window.dispatchEvent(new Event('resize'));
 		});
 	}
 
@@ -159,11 +161,9 @@
 		}
 	});
 
-	onDestroy(() => {});
-
-	function onError(e: Event): void {
+	onDestroy(() => {
 		canvas = undefined;
-	}
+	});
 
 	function setCanvas(self: HTMLDivElement): void {
 		if (canvas !== undefined) self.appendChild(canvas);

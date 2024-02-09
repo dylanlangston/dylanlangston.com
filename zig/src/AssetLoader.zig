@@ -1,7 +1,7 @@
 const std = @import("std");
 const Common = @import("root").Common;
 const raylib = Common.raylib;
-const Maps = @import("Generics.zig").Maps;
+const Maps = Common.Generic.Maps;
 
 pub const AssetLoader = struct {
     pub inline fn init() void {

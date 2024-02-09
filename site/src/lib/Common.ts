@@ -23,7 +23,13 @@ export const sanitizeEvent = <T>(e: any, n: number = 0): T => {
         if (n > 6) continue;
 
         if (e[k] instanceof Node) continue;
-        if (e[k] instanceof Window) continue;
+        if (e[k] instanceof Window) {
+            obj[k] = {
+                width: e[k].innerWidth,
+                height: e[k].innerHeight,
+            };
+            continue;
+        }
         if (e[k] instanceof Function) continue;
 
         switch (typeof e[k]) {

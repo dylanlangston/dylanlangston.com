@@ -38,6 +38,5 @@ pub const MandalbrotViewModel = Common.ViewLocator.createViewModel(
         pub var offsetLoc: i32 = undefined;
 
         pub var incrementSpeed: f32 = 3.0; // Multiplier of speed to change c value
-        pub var showControls: bool = false; // Show controls
     },
 );
