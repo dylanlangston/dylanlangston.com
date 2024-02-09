@@ -131,14 +131,14 @@ pub const AssetLoader = struct {
     }
 
     const ShaderPair = struct {
-        Vertext: Vertex_Shaders,
-        Fragment: Fragment_Shaders,
+        Vertext: ?Vertex_Shaders,
+        Fragment: ?Fragment_Shaders,
     };
     pub fn ShaderPairMap() type {
         return Maps.FixedLengthHashMap(ShaderPair, raylib.Shader, struct {
             pub const length: usize = Fragment_Shaders.count * Vertex_Shaders.count;
             pub fn hash(s: ShaderPair) u64 {
-                return s.Fragment.hash() ^ s.Vertext.hash();
+                return (if (s.Fragment) |f| f.hash() else 0) ^ (if (s.Vertext) |v| v.hash() else 0);
             }
         });
     }
@@ -148,10 +148,10 @@ pub const AssetLoader = struct {
     var LoadedShaders: ShaderPairMap() = ShaderPairMap(){};
 
     fn LoadShader(shaderPair: ShaderPair) raylib.Shader {
-        const s = raylib.LoadShaderFromMemory(shaderPair.Vertext.data(), shaderPair.Fragment.data());
+        const s = raylib.LoadShaderFromMemory(if (shaderPair.Vertext) |v| v.data() else null, if (shaderPair.Fragment) |f| f.data() else null);
         return s;
     }
-    pub inline fn GetShader(vs: Vertex_Shaders, fs: Fragment_Shaders) raylib.Shader {
+    pub inline fn GetShader(vs: ?Vertex_Shaders, fs: ?Fragment_Shaders) raylib.Shader {
         const key = ShaderPair{
             .Vertext = vs,
             .Fragment = fs,
