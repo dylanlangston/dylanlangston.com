@@ -106,18 +106,12 @@ pub const Logger = struct {
     }
 
     inline fn log_formatted(level: raylib.TraceLogLevel, comptime format: []const u8, args: anytype) void {
-        const aloc = Common.GetAllocator();
-        const text = std.fmt.allocPrint(aloc, format, args) catch {
+        var buf: [MAX_MESSAGE_LENGTH]u8 = undefined;
+        const text = std.fmt.bufPrintZ(&buf, format, args) catch {
             std.debug.print("DEBUG FALLBACK LOGGER:" ++ format ++ "\n", args);
             return;
         };
-        defer aloc.free(text);
-        const raylib_text = aloc.dupeZ(u8, text) catch {
-            std.debug.print("DEBUG FALLBACK LOGGER:" ++ format ++ "\n", args);
-            return;
-        };
-        defer aloc.free(raylib_text);
 
-        log(level, raylib_text);
+        log(level, text);
     }
 };
