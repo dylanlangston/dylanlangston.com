@@ -146,6 +146,7 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
         //"-sASYNCIFY",
         "-sGL_SUPPORT_EXPLICIT_SWAP_CONTROL=1",
         "-sGL_POOL_TEMP_BUFFERS=0",
+        if (debugging_wasm) "" else "-flto", // Link-time optimization
 
         // Debug behavior
         if (debugging_wasm) "--emit-symbol-map" else "",
