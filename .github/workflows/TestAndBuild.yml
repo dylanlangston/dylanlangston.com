@@ -58,7 +58,7 @@ jobs:
           name: dylanlangston.com-v${{ inputs.version }}
           path: '${{ github.workspace }}/site/build'
       - name: Build Debug using Docker
-        if: ${{ success() || (steps.upload.conclusion == 'skipped' && steps.cache.conclusion == 'success') }}
+        if: ${{ success() || (steps.upload.conclusion == 'success') }}
         id: build_debug
         run: |
           cp -r ./site/build/ ./site/release

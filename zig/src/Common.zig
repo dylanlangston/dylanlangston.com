@@ -16,7 +16,7 @@ pub const Common = struct {
     pub const raygui = @cImport({
         @cInclude("raygui.h");
     });
-    pub const is_emscripten: bool = builtin.os.tag == .emscripten;
+    pub const is_emscripten: bool = builtin.os.tag == .emscripten or builtin.os.tag == .wasi;
     pub const emscripten = if (is_emscripten) @cImport({
         @cInclude("emscripten.h");
         @cInclude("emscripten/html5.h");
