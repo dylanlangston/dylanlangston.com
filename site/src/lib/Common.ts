@@ -8,8 +8,13 @@ export class Environment {
     }
 
     private static detector = new BrowserDetector();
+
+    private static _mobile?: boolean = undefined;
     public static get isMobile(): boolean {
-        return this.detector.parseUserAgent().isMobile;
+        if (this._mobile === undefined) {
+            this._mobile = this.detector.parseUserAgent().isMobile;
+        }
+        return this._mobile;
     }
 }
 
@@ -24,9 +29,12 @@ export const sanitizeEvent = <T>(e: any, n: number = 0): T => {
 
         if (e[k] instanceof Node) continue;
         if (e[k] instanceof Window) {
-            obj[k] = {
-                width: e[k].innerWidth,
-                height: e[k].innerHeight,
+            obj[k] = Environment.isMobile ? {
+                width: window.screen.width,
+                height: window.screen.height,
+            } : {
+                width: window.innerWidth,
+                height: window.innerHeight,
             };
             continue;
         }

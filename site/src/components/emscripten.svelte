@@ -143,7 +143,7 @@
 	onMount(async () => {
 		const canvasElement = document.createElement('canvas');
 		canvasElement.classList.add(
-			'absolute',
+			'fixed',
 			'top-0',
 			'bottom-0',
 			'left-0',

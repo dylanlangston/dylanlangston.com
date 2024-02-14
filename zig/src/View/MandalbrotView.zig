@@ -76,8 +76,8 @@ pub const MandalbrotView = Common.ViewLocator.createView(
             mousePosition = currentPosition;
             raylib.DrawCircleV(
                 raylib.Vector2{
-                    .x = (screenSize.x - mousePosition.x) + 50,
-                    .y = mousePosition.y,
+                    .x = mousePosition.x,
+                    .y = screenSize.y - mousePosition.y,
                 },
                 @max(screenSize.x, screenSize.y) * 1.25,
                 raylib.BLANK,
