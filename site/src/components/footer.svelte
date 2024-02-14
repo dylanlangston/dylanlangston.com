@@ -6,7 +6,7 @@
 	<div class="container mx-auto md:space-y-12">
 		<div class="grid justify-center lg:justify-between">
 			<div class="flex flex-col self-center text-sm text-center md:block lg:col-start-1 md:space-x-6">
-				<span>©{new Date().getFullYear()} All rights reserved Dylan Langston</span>
+				<span>Dylan Langston ©{new Date().getFullYear()} All rights reserved</span>
 			</div>
 			<div class="flex justify-center pt-4 space-x-4 lg:pt-0 lg:col-end-13">
 				<a rel="noopener noreferrer" href="/contact" title="Email" class="flex items-center justify-center w-10 h-10 rounded-full">
