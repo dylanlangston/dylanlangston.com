@@ -16,7 +16,8 @@ pub const MandalbrotViewModel = Common.ViewLocator.createViewModel(
         // wave shader set
         pub var waveShader: Common.Shader = undefined;
         // RenderTexture2D to be used for render to texture
-        pub var target: raylib.RenderTexture2D = undefined;
+        pub var juliaTarget: raylib.RenderTexture2D = undefined;
+        pub var waveTarget: raylib.RenderTexture2D = undefined;
 
         pub const startingC: [2]f32 = .{ -0.35, 0.607167 };
 
@@ -31,7 +32,7 @@ pub const MandalbrotViewModel = Common.ViewLocator.createViewModel(
         pub var cLoc: i32 = undefined;
         pub var zoomLoc: i32 = undefined;
         pub var offsetLoc: i32 = undefined;
-        
+
         pub var waveScreenSizeLoc: i32 = undefined;
         pub var waveTimeLoc: i32 = undefined;
 
