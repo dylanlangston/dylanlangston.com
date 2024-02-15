@@ -162,7 +162,7 @@ fn define_macros(raylib_module: *std.Build.Module) void {
     //------------------------------------------------------------------------------------
     // Default font is loaded on window initialization to be available for the user to render simple text
     // NOTE: If enabled, uses external module functions to load default raylib font
-    raylib_module.addCMacro("SUPPORT_DEFAULT_FONT", "1");
+    if (builtin.mode == .Debug) raylib_module.addCMacro("SUPPORT_DEFAULT_FONT", "1");
     // Selected desired font fileformats to be supported for loading
     //raylib_module.addCMacro("SUPPORT_FILEFORMAT_FNT", "1");
     //raylib_module.addCMacro("SUPPORT_FILEFORMAT_TTF", "1");

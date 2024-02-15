@@ -9,5 +9,5 @@ onMount(() => loaded = true);
 </script>
 
 {#if loaded}
-<h1 in:fade={{ duration: 300 }} class="text-center text-2xl lg:text-6xl font-bold">Hello {Environment.isMobile ? "Mobile" : "Desktop"} HTML World</h1>
+<h1 class="text-center text-2xl lg:text-6xl font-bold">Hello {Environment.isMobile ? "Mobile" : "Desktop"} HTML World</h1>
 {/if}

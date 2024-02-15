@@ -72,7 +72,70 @@ export const hash = (str: string, seed: number = 0): number => {
     return 4294967296 * (2097151 & h2) + (h1 >>> 0);
 };
 
-globalThis.saveFileFromMEMFSToDisk = (memoryFSname: string, localFSname: string) => {
+export class RateLimiter {
+    allowedRequests = 0;
+    timeFrameSize = 0;
+    queue: Array<number> = [];
+    constructor(allowedRequests: number, timeFrameSize: number) {
+        this.allowedRequests = allowedRequests;
+        this.timeFrameSize = timeFrameSize;
+    }
+    shouldAllow(timestamp: number = Date.now()): boolean {
+        const diff = timestamp - this.timeFrameSize;
+        while (this.queue[this.queue.length - 1] <= diff ) { 
+            this.queue.pop();
+        }
+        if(this.queue.length < this.allowedRequests){
+            this.queue.unshift(timestamp);
+            return true;
+        }else{
+            return false
+        }
+    }
+}
+
+export interface IHashMap<Type> { [indexer: number] : Type }
+
+export class HashMapQueue<Type> {
+    hashFunction: (t: Type) => number;
+    internalStore: IHashMap<Type | undefined> = {};
+    hashes: Array<number> = [];
+    constructor(hashFunction: (t: Type) => number, initial: Array<Type> = []) {
+        for (let item of initial) {
+            const hash = hashFunction(item);
+            this.internalStore[hash] = item;
+            this.hashes.push(hash)
+        }
+        this.hashFunction = hashFunction;
+    }
+    public get count(): number {
+        return this.hashes.length;
+    }
+    add(item: Type): boolean {
+        const hash = this.hashFunction(item);
+        if (this.internalStore[hash] === undefined) {
+            this.internalStore[hash] = item;
+            this.hashes.push(hash);
+            return true;
+        }
+        else {
+            // if item with the same hash is already set then we update it 
+            this.internalStore[hash] = item;
+            return false;
+        }
+
+    }
+    remove(): Type | undefined {
+        const hash = this.hashes.pop();
+        if (hash === undefined) return undefined;
+        const item = this.internalStore[hash];
+        this.internalStore[hash] = undefined;
+
+        return item;
+    }
+}
+
+(<any>globalThis).saveFileFromMEMFSToDisk = (memoryFSname: string, localFSname: string) => {
 	const data = FS.readFile(memoryFSname);
 	const blob = new Blob([data.buffer], { type: 'application/octet-binary' });
 

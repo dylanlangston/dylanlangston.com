@@ -4,12 +4,17 @@
 	import { fade, blur, fly, slide, scale, crossfade } from 'svelte/transition';
 	import emscriptenWorker from '$lib/Emscripten.worker?worker';
 	import { AudioEventType, IPCMessage, IPCMessageType } from '$lib/IPCMessage';
-	import { Environment, sanitizeEvent } from '$lib/Common';
+	import { Environment, HashMapQueue, RateLimiter, hash, sanitizeEvent } from '$lib/Common';
 
 	function initWorker(canvasElement: HTMLCanvasElement) {
 		const audioContext = new AudioContext();
 
-		let listeners: ((e: Event) => void)[] = [];
+		// Limit messages sent to worker to once every 20 milliseconds.
+		const messagePostInterval = 50;
+		const workerMessageRateLimiter = new RateLimiter(5, messagePostInterval);
+		const messageQueue = new HashMapQueue<IPCMessage>((e) => e.hash());
+
+		const listeners: ((e: Event) => void)[] = [];
 		function HandleEvent(
 			add: boolean,
 			eventHandler: {
@@ -32,8 +37,20 @@
 			}
 
 			if (add) {
-				const listener = (e: Event) => {
-					worker?.postMessage(
+				const postMessage = (m: IPCMessage) => {
+					if (workerMessageRateLimiter.shouldAllow()) {
+						worker?.postMessage(m);
+					} else {
+						if (messageQueue.add(m)) {
+							setTimeout(() => {
+								const message = messageQueue.remove();
+								if (message != undefined) postMessage(message);
+							}, messagePostInterval);
+						}
+					}
+				};
+				const listener = (e: Event) =>
+					postMessage(
 						IPCMessage.EventHandlerCallback({
 							id: eventHandler.id,
 							target: eventHandler.target,
@@ -41,7 +58,6 @@
 							event: sanitizeEvent(e)
 						})
 					);
-				};
 				listeners[eventHandler.id] = listener;
 				target.addEventListener(eventHandler.type, listener);
 			} else {
@@ -149,8 +165,7 @@
 			'left-0',
 			'right-0',
 			'w-screen',
-			'h-screen',
-			'-z-50'
+			'h-screen'
 		);
 
 		const UseWorker: boolean = typeof Worker !== 'undefined';
@@ -171,5 +186,5 @@
 </script>
 
 {#if canvas !== undefined}
-	<div in:fade={{ duration: 150 }} class="" use:setCanvas />
+	<object title="Background Canvas" class="-z-50" in:fade={{ duration: 500, }} use:setCanvas />
 {/if}

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import Header from '../components/header.svelte';
 	import Footer from '../components/footer.svelte';
 
@@ -8,6 +8,13 @@
 
 	import { page } from '$app/stores';
 	import StatusContainer from '../components/status-container.svelte';
+
+	import { onMount } from 'svelte';
+	import { fade, blur, fly, slide, scale, crossfade } from 'svelte/transition';
+
+	let loaded: boolean = false;
+
+	onMount(() => (loaded = true));
 </script>
 
 <svelte:head>
@@ -35,30 +42,30 @@
 	</script>
 </svelte:head>
 
-<Header />
-
-<Emscripten />
-
-{#if $page.error}
-	<main>
-		<slot />
-	</main>
+{#if loaded}
+	<div class="flex flex-col h-screen" in:scale={{ duration: $page.error ? 0 : 750 }}>
+		<Header />
+		<Emscripten />
+		{#key $page.url.pathname + loaded + $page.error}
+			<main
+				class="flex-1 {loaded ? '' : 'opacity-0'}"
+				in:blur={{ duration: 250, delay: 50 }}
+			>
+				<slot />
+			</main>
+		{/key}
+		<Footer />
+	</div>
 {:else}
-	<noscript>
-		<style>
-			.jsonly {
-				display: none;
-			}
-		</style>
-		<StatusContainer>
-			<svelte:fragment slot="status-slot">
-				<h1>Please enable Javascript.</h1>
-			</svelte:fragment>
-		</StatusContainer>
+	<noscript class="flex flex-col h-screen">
+		<Header />
+		<main class="flex-1">
+			<StatusContainer>
+				<svelte:fragment slot="status-slot">
+					<h1>Please enable Javascript.</h1>
+				</svelte:fragment>
+			</StatusContainer>
+		</main>
+		<Footer />
 	</noscript>
-	<main class="jsonly">
-		<slot />
-	</main>
 {/if}
-
-<Footer />

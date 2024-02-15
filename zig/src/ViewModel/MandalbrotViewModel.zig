@@ -37,5 +37,11 @@ pub const MandalbrotViewModel = Common.ViewLocator.createViewModel(
         pub var waveTimeLoc: i32 = undefined;
 
         pub var incrementSpeed: f32 = 3.0; // Multiplier of speed to change c value
+
+        pub var frame: f32 = 0;
+
+        pub var incrementX: bool = true;
+        pub var incrementY: bool = true;
+        pub var position: raylib.Vector2 = raylib.Vector2{ .x = 0, .y = 0 };
     },
 );

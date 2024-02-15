@@ -10,21 +10,63 @@ a {
 	-webkit-tap-highlight-color: transparent;
 }
 
+@property --Rainbow_R {
+  syntax: '<number>';
+  initial-value: 50;
+  inherits: true;
+}
+@property --Rainbow_G {
+  syntax: '<number>';
+  initial-value: 200;
+  inherits: true;
+}
+@property --Rainbow_B {
+  syntax: '<number>';
+  initial-value: 50;
+  inherits: true;
+}
+
+@keyframes RotateR {
+  to {
+    --Rainbow_R: 200;
+  }
+}
+
+@keyframes RotateG {
+  to {
+    --Rainbow_G: 200;
+  }
+}
+
+@keyframes RotateB {
+  to {
+    --Rainbow_B: 200;
+  }
+}
+
+:root {
+	--Rainbow_R: 100;
+	--Rainbow_G: 200;
+	--Rainbow_B: 100;
+	--Rainbow: rgb(var(--Rainbow_R), var(--Rainbow_G), var(--Rainbow_B));
+
+  animation: RotateR 15s linear infinite alternate, RotateG 30s linear infinite alternate, RotateB 37s linear infinite alternate;
+}
+
+* {
+  scrollbar-color: black transparent;
+}
+
+@keyframes BgColor {
+  to {
+    background-color: var(--Rainbow); 
+  }
+}
+
 html {
-	/* background-color: theme(colors.blue-dark); */
-	background-repeat: repeat;
-	height: 100%;
-	box-sizing: border-box;
-}
-
-body {
-	min-height: 100vh;
-  	display: flex;
-  	flex-direction: column;
-}
-
-main {
-  flex: 1;
+  background-color: var(--Rainbow); 
+  transition: background-color 500ms linear;
+  transition-delay: 250ms;
 }
 
 /* 

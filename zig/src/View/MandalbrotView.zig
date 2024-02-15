@@ -6,31 +6,24 @@ const MandalbrotViewModel = Common.ViewLocator.getViewModel(.Mandalbrot);
 
 pub const MandalbrotView = Common.ViewLocator.createView(
     struct {
-        var frame: f32 = 0;
-        var mousePosition: raylib.Vector2 = undefined;
-
         pub fn draw() Common.ViewLocator.Views {
             const screenSize = Common.Helpers.ScreenSize();
-            const currentPosition = Common.Input.PointerPosition();
 
-            if (mousePosition.x != currentPosition.x or mousePosition.y != currentPosition.y) {
-                frame += raylib.GetFrameTime();
-            } else {
-                frame += raylib.GetFrameTime() / 3;
-            }
+            MandalbrotViewModel.frame += raylib.GetFrameTime() / 3;
 
             raylib.SetShaderValue(
                 MandalbrotViewModel.waveShader.shader,
                 MandalbrotViewModel.waveTimeLoc,
-                &frame,
+                &MandalbrotViewModel.frame,
                 raylib.SHADER_UNIFORM_FLOAT,
             );
 
             // New render texture on resize
-            if (@as(f32, @floatFromInt(MandalbrotViewModel.juliaTarget.texture.width - 100)) != screenSize.x or @as(f32, @floatFromInt(MandalbrotViewModel.juliaTarget.texture.height - 100)) != screenSize.y) {
+            if (raylib.IsWindowResized()) {
                 raylib.UnloadRenderTexture(MandalbrotViewModel.juliaTarget);
-                raylib.UnloadRenderTexture(MandalbrotViewModel.waveTarget);
                 MandalbrotViewModel.juliaTarget = raylib.LoadRenderTexture(@intFromFloat(screenSize.x + 100), @intFromFloat(screenSize.y + 100));
+
+                raylib.UnloadRenderTexture(MandalbrotViewModel.waveTarget);
                 MandalbrotViewModel.waveTarget = raylib.LoadRenderTexture(@intFromFloat(screenSize.x + 100), @intFromFloat(screenSize.y + 100));
 
                 raylib.SetShaderValue(
@@ -42,9 +35,40 @@ pub const MandalbrotView = Common.ViewLocator.createView(
                     },
                     raylib.SHADER_UNIFORM_VEC2,
                 );
-
-                raylib.SetMousePosition(@intFromFloat(screenSize.x / 2), @intFromFloat(screenSize.y / 2));
             }
+
+            if (MandalbrotViewModel.position.x < 0) {
+                MandalbrotViewModel.incrementX = true;
+                MandalbrotViewModel.position = raylib.Vector2{
+                    .x = 0,
+                    .y = MandalbrotViewModel.position.y,
+                };
+            } else if (MandalbrotViewModel.position.x > screenSize.x) {
+                MandalbrotViewModel.incrementX = false;
+                MandalbrotViewModel.position = raylib.Vector2{
+                    .x = screenSize.x,
+                    .y = MandalbrotViewModel.position.y,
+                };
+            }
+            if (MandalbrotViewModel.position.y < 0) {
+                MandalbrotViewModel.incrementY = true;
+                MandalbrotViewModel.position = raylib.Vector2{
+                    .x = MandalbrotViewModel.position.x,
+                    .y = 0,
+                };
+            } else if (MandalbrotViewModel.position.y > screenSize.y) {
+                MandalbrotViewModel.incrementY = false;
+                MandalbrotViewModel.position = raylib.Vector2{
+                    .x = MandalbrotViewModel.position.x,
+                    .y = screenSize.y,
+                };
+            }
+
+            const movMod = 0.5;
+            MandalbrotViewModel.position = raylib.Vector2{
+                .x = if (MandalbrotViewModel.incrementX) MandalbrotViewModel.position.x + movMod else MandalbrotViewModel.position.x - movMod,
+                .y = if (MandalbrotViewModel.incrementY) MandalbrotViewModel.position.y + movMod else MandalbrotViewModel.position.y - movMod,
+            };
 
             // Increment/decrement c value with time
             const dc = raylib.GetFrameTime() * MandalbrotViewModel.incrementSpeed * 0.0005;
@@ -73,14 +97,10 @@ pub const MandalbrotView = Common.ViewLocator.createView(
 
             raylib.BeginTextureMode(MandalbrotViewModel.juliaTarget);
             raylib.BeginShaderMode(MandalbrotViewModel.juliaShader.shader);
-            mousePosition = currentPosition;
             raylib.DrawCircleV(
-                raylib.Vector2{
-                    .x = mousePosition.x,
-                    .y = screenSize.y - mousePosition.y,
-                },
+                MandalbrotViewModel.position,
                 @max(screenSize.x, screenSize.y) * 1.25,
-                raylib.BLANK,
+                raylib.WHITE,
             );
             raylib.EndShaderMode();
             raylib.EndTextureMode();
@@ -119,8 +139,6 @@ pub const MandalbrotView = Common.ViewLocator.createView(
         pub fn init() void {
             const screenSize = Common.Helpers.ScreenSize();
 
-            raylib.SetMousePosition(@intFromFloat(screenSize.x / 2), @intFromFloat(screenSize.y / 2));
-
             MandalbrotViewModel.juliaShader = Common.Shader.Get(null, .julia);
             MandalbrotViewModel.waveShader = Common.Shader.Get(null, .wave);
             MandalbrotViewModel.juliaTarget = raylib.LoadRenderTexture(@intFromFloat(screenSize.x + 200), @intFromFloat(screenSize.y + 100));
@@ -134,6 +152,12 @@ pub const MandalbrotView = Common.ViewLocator.createView(
             MandalbrotViewModel.c[0] -= randomMod;
             MandalbrotViewModel.c[1] -= randomMod;
             MandalbrotViewModel.increment = random.boolean();
+            MandalbrotViewModel.position = raylib.Vector2{
+                .x = screenSize.x * random.float(f32),
+                .y = screenSize.y * random.float(f32),
+            };
+            MandalbrotViewModel.incrementX = random.boolean();
+            MandalbrotViewModel.incrementY = random.boolean();
 
             MandalbrotViewModel.cLoc = raylib.GetShaderLocation(MandalbrotViewModel.juliaShader.shader, "c");
             MandalbrotViewModel.zoomLoc = raylib.GetShaderLocation(MandalbrotViewModel.juliaShader.shader, "zoom");
