@@ -5,7 +5,6 @@
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
-    "postbuild": "cp build/index.html build/404.html",
     "preview": "vite preview",
     "test-bun": "bun --bun run --cwd ./ test:integration && bun --bun run --cwd ./ test:unit",
     "test": "npm run test:integration && npm run test:unit",
