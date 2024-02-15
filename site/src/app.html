@@ -12,13 +12,7 @@
 <body data-sveltekit-preload-data="hover">
 	%sveltekit.body%
 	<script>
-		document.querySelector(":root").style.setProperty('--Rainbow_R', (Math.random() * 150) + 50);
-		document.querySelector(":root").style.setProperty('--Rainbow_G', (Math.random() * 150) + 50);
-		document.querySelector(":root").style.setProperty('--Rainbow_B', (Math.random() * 150) + 50);
-		document.querySelector(":root").style.animation = 
-			`RotateR ${(Math.random() * 15) + 15}s linear infinite alternate, ` +
-			`RotateG ${(Math.random() * 15) + 15}s linear infinite alternate, ` + 
-			`RotateB ${(Math.random() * 15) + 15}s linear infinite alternate`;
+		document.documentElement.style.setProperty('--Rainbow', "hsla(" + (Math.floor(Math.random()*360)).toString(10) + ",30%,50%,1.0)");
 	</script>
 </body>
 </html>

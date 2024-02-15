@@ -40,6 +40,8 @@ pub const MandalbrotViewModel = Common.ViewLocator.createViewModel(
 
         pub var frame: f32 = 0;
 
+        pub var currentPosition: raylib.Vector2 = undefined;
+
         pub var incrementX: bool = true;
         pub var incrementY: bool = true;
         pub var position: raylib.Vector2 = raylib.Vector2{ .x = 0, .y = 0 };

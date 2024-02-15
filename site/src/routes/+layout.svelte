@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Header from '../components/header.svelte';
 	import Footer from '../components/footer.svelte';
+	import Loader from '../components/loader.svelte';
 
 	import Emscripten from '../components/emscripten.svelte';
 
@@ -58,6 +59,11 @@
 	</div>
 {:else}
 	<noscript class="flex flex-col h-screen">
+		<style>
+			.jsonly {
+				display: none;
+			}
+		</style>
 		<Header />
 		<main class="flex-1">
 			<StatusContainer>
@@ -68,4 +74,7 @@
 		</main>
 		<Footer />
 	</noscript>
+	<div class="jsonly absolute top-1/2 left-1/2">
+		<Loader />
+	</div>
 {/if}

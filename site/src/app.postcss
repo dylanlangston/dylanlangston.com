@@ -10,47 +10,16 @@ a {
 	-webkit-tap-highlight-color: transparent;
 }
 
-@property --Rainbow_R {
-  syntax: '<number>';
-  initial-value: 50;
-  inherits: true;
-}
-@property --Rainbow_G {
-  syntax: '<number>';
-  initial-value: 200;
-  inherits: true;
-}
-@property --Rainbow_B {
-  syntax: '<number>';
-  initial-value: 50;
-  inherits: true;
-}
-
-@keyframes RotateR {
+@keyframes background-animation {
   to {
-    --Rainbow_R: 200;
-  }
-}
-
-@keyframes RotateG {
-  to {
-    --Rainbow_G: 200;
-  }
-}
-
-@keyframes RotateB {
-  to {
-    --Rainbow_B: 200;
+    filter: hue-rotate(360deg);
   }
 }
 
 :root {
-	--Rainbow_R: 100;
-	--Rainbow_G: 200;
-	--Rainbow_B: 100;
-	--Rainbow: rgb(var(--Rainbow_R), var(--Rainbow_G), var(--Rainbow_B));
+	--Rainbow: rgb(100,200,100);
 
-  animation: RotateR 15s linear infinite alternate, RotateG 30s linear infinite alternate, RotateB 37s linear infinite alternate;
+  animation: background-animation 10s linear infinite alternate;
 }
 
 * {

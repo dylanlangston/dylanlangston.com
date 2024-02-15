@@ -8,8 +8,14 @@ pub const MandalbrotView = Common.ViewLocator.createView(
     struct {
         pub fn draw() Common.ViewLocator.Views {
             const screenSize = Common.Helpers.ScreenSize();
+            const mousePosition = Common.Input.PointerPosition();
 
-            MandalbrotViewModel.frame += raylib.GetFrameTime() / 3;
+            if (mousePosition.x != MandalbrotViewModel.currentPosition.x or mousePosition.y != MandalbrotViewModel.currentPosition.y) {
+                MandalbrotViewModel.currentPosition = mousePosition;
+                MandalbrotViewModel.frame += raylib.GetFrameTime();
+            } else {
+                MandalbrotViewModel.frame += raylib.GetFrameTime() / 5;
+            }
 
             raylib.SetShaderValue(
                 MandalbrotViewModel.waveShader.shader,
