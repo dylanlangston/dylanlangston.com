@@ -111,6 +111,7 @@ ifeq ($(PRECOMPRESS_RELEASE),1)
 else
 	@npm run build --prefix ./site
 endif
+	@npm run postbuild --prefix ./site
 else
 ifeq ($(OPTIMIZE),Debug)
 else
@@ -121,6 +122,7 @@ ifeq ($(PRECOMPRESS_RELEASE),1)
 else
 	@bun -b run --cwd ./site build
 endif
+	@bun -b run --cwd ./site postbuild
 endif
 	
 develop-docker-start: setup-docker develop-docker-stop ## Launch a docker container. Control-C to quit.
