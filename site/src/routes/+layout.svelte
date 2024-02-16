@@ -15,11 +15,42 @@
 	import { quintOut, bounceInOut, backOut, elasticOut } from 'svelte/easing';
 	import { Environment } from '$lib/Common';
 
-	const key = "main";
+	const key = 'main';
 	const [send, receive] = crossfade({
 		duration: 750,
-		easing: backOut
+		easing: backOut,
 	});
+	const animateIn = (node: any, params: { key: string }) => preventOverFlowOnAnimation(send, node, params)
+	const animateOut = (node: any, params: { key: string }) => preventOverFlowOnAnimation(receive, node, params)
+	function preventOverFlowOnAnimation(originalAnimation: (node: any, params: { key: string }) => () => {
+		delay?: number,
+		duration?: number,
+		easing?: any,
+		css?: (t: number, u: number) => string,
+	}, node: any, params: { key: string }) {
+		const config = originalAnimation(node, params);
+		return () => {
+			const animation = config();
+			return {
+				delay: animation?.delay,
+				duration: animation?.duration,
+				easing: animation?.easing,
+				css: (t: number, u: number) => {
+					// Set body overflow to hidden when animating
+					if (u == 0) {
+						const initialOverflow = document.body.style.overflow;
+						document.body.style.overflow = "hidden";
+						setTimeout(() => {
+							document.body.style.overflow = initialOverflow;
+						}, animation?.duration ?? 0);
+					}
+					
+					return (animation?.css ?? (() => ""))(t, u);
+				}
+			};
+		};
+	}
+
 
 	let loaded: boolean = false;
 
@@ -56,17 +87,16 @@
 	</script>
 </svelte:head>
 
+<div class="background-overlay"></div>
+
 {#if loaded}
-	<div class="flex flex-col h-screen" in:send={{ key }}>
+	<div class="flex flex-col h-screen" in:animateIn={{ key }}>
 		<Header />
 		<div class="motion-reduce:invisible -z-50">
 			<Emscripten />
 		</div>
 		{#key $page.url.pathname + loaded + $page.error}
-			<main
-				class="flex-1 {loaded ? '' : 'opacity-0'}"
-				in:blur={{ duration: 250, delay: 50 }}
-			>
+			<main class="flex-1" in:blur|local={{ duration: 250, delay: 50, opacity: 0.25 }}>
 				<slot />
 			</main>
 		{/key}
@@ -79,7 +109,6 @@
 				display: none;
 			}
 		</style>
-		<Header />
 		<main class="flex-1">
 			<StatusContainer>
 				<svelte:fragment slot="status-slot">
@@ -87,9 +116,18 @@
 				</svelte:fragment>
 			</StatusContainer>
 		</main>
-		<Footer />
 	</noscript>
-	<div class="jsonly absolute top-1/2 left-1/2" out:receive={{ key }}>
+	<div class="jsonly absolute top-1/2 left-1/2" out:animateOut={{ key }}>
 		<Loader />
 	</div>
 {/if}
+
+<style>
+	.background-overlay {
+		box-shadow: inset 0 0 1rem black;
+		position: fixed;
+		width: 100%;
+		height: 100%;
+		pointer-events: none;
+	}
+</style>

@@ -38,10 +38,9 @@
 
 			if (add) {
 				const postMessage = (type: string, m: IPCMessage) => {
-					if (type == "resize" && workerResizeMessageRateLimiter.shouldAllow()) {
+					if (type == 'resize' && workerResizeMessageRateLimiter.shouldAllow()) {
 						worker?.postMessage(m);
-					}
-					else if (type != "resize" && workerMessageRateLimiter.shouldAllow()) {
+					} else if (type != 'resize' && workerMessageRateLimiter.shouldAllow()) {
 						worker?.postMessage(m);
 					} else {
 						if (messageQueue.add(m)) {
@@ -149,6 +148,9 @@
 			if (Environment.Dev) debugger;
 			throw er;
 		};
+		exitCallback = () => {
+			worker?.terminate();
+		};
 	}
 
 	function initFallback(canvasElement: HTMLCanvasElement) {
@@ -157,6 +159,7 @@
 		});
 	}
 
+	let exitCallback: () => void | undefined;
 	let canvas: HTMLCanvasElement | undefined = undefined;
 	onMount(async () => {
 		const canvasElement = document.createElement('canvas');
@@ -181,6 +184,9 @@
 	});
 
 	onDestroy(() => {
+		if (exitCallback != undefined) {
+			exitCallback();
+		}
 		canvas = undefined;
 	});
 
