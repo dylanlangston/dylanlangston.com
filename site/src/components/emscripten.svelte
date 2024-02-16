@@ -10,9 +10,8 @@
 		const audioContext = new AudioContext();
 
 		const messagePostInterval = 20;
-		const refreshRateMod = 10;
 		const workerMessageRateLimiter = new RateLimiter(10, messagePostInterval);
-		const workerResizeMessageRateLimiter = new RateLimiter(1, messagePostInterval * refreshRateMod);
+		const workerResizeMessageRateLimiter = new RateLimiter(1, messagePostInterval);
 		const messageQueue = new HashMapQueue<IPCMessage>((e) => e.hash());
 
 		const listeners: ((e: Event) => void)[] = [];
@@ -49,7 +48,7 @@
 							setTimeout(() => {
 								const message = messageQueue.remove();
 								if (message != undefined) postMessage(type, message);
-							}, type == "resize" ? messagePostInterval * refreshRateMod : messagePostInterval);
+							}, messagePostInterval);
 						}
 					}
 				};
@@ -130,7 +129,6 @@
 			switch (ev.data.type) {
 				case IPCMessageType.Initialized:
 					canvas = canvasElement;
-					window.dispatchEvent(new Event('resize'));
 					break;
 				case IPCMessageType.AddEventHandler:
 					HandleEvent(true, <any>ev.data.message);
@@ -156,7 +154,6 @@
 	function initFallback(canvasElement: HTMLCanvasElement) {
 		EmscriptenInitialize(canvasElement).then((emscripten) => {
 			canvas = canvasElement;
-			window.dispatchEvent(new Event('resize'));
 		});
 	}
 
