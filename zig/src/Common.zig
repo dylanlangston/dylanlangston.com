@@ -291,6 +291,7 @@ pub const Common = struct {
                         data.*.windowInnerWidth,
                         data.*.windowInnerHeight,
                     );
+                    Log.Info_Formatted("Resized: {}", .{data.*.windowInnerWidth});
 
                     // Update frame on resize so there isn't a flicker
                     @import("root").UpdateFrame();

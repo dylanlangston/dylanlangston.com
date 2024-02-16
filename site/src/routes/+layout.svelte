@@ -1,7 +1,6 @@
 <script lang="ts">
 	import Header from '../components/header.svelte';
 	import Footer from '../components/footer.svelte';
-	import Loader from '../components/loader.svelte';
 
 	import Emscripten from '../components/emscripten.svelte';
 
@@ -114,6 +113,6 @@
 		</main>
 	</noscript>
 	<div class="jsonly absolute top-1/2 left-1/2" out:animateOut={{ key }}>
-		<Loader />
+		<div class="loader"></div>
 	</div>
 {/if}

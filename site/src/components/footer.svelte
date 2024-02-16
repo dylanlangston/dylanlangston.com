@@ -9,6 +9,9 @@
 				<a rel="noopener noreferrer" href="/contact" title="Email" class="flex items-center justify-center w-10 h-10 rounded-full">
 					<MailIcon size="24" />
 				</a>
+				<a rel="noopener noreferrer" href="/test" title="Email" class="flex items-center justify-center w-10 h-10 rounded-full">
+					<MailIcon size="24" />
+				</a>
 				<a rel="noopener noreferrer" href="https://www.linkedin.com/in/dylan-langston/" target="_blank" title="LinkedIn" class="flex items-center justify-center w-10 h-10 rounded-full">
 					<LinkedinIcon size="24" />
 				</a>

@@ -49,8 +49,6 @@
 					const postMessage = (type: string, m: IPCMessage) => {
 						if (type == 'resize' && workerResizeMessageRateLimiter.shouldAllow()) {
 							worker?.postMessage(m);
-						} else if (type != 'resize' && workerMessageRateLimiter.shouldAllow()) {
-							worker?.postMessage(m);
 						} else {
 							if (messageQueue.add(m)) {
 								setTimeout(() => {
@@ -166,6 +164,7 @@
 			'h-full',
 			'-z-50'
 		);
+
 		canvasElement.width = window.innerWidth;
 		canvasElement.height = window.innerHeight;
 
@@ -205,10 +204,10 @@
 
 {#if !$reducedMotion}
 	{#await loadFn() then canvas}
-		<div class="content" in:fade={{ duration: 500 }} use:setCanvas={{ canvas }} />
+		<div class="content -z-50" in:fade={{ duration: 500 }} use:setCanvas={{ canvas }} />
 	{:catch error}
 		<!-- Todo Dialog with Error Message -->
-		<div class="fixed top-0 left-0 bottom-0 right-0 z-1" style="background: var(--Rainbow);">
+		<div class="fixed top-0 left-0 bottom-0 right-0 z-1 bg-rainbow">
 			<StatusContainer>
 				<svelte:fragment slot="status-slot">
 					<h1>¯\_(ツ)_/¯<br />An error has occurred, sorry!</h1>
