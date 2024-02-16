@@ -10,33 +10,27 @@ a {
 	-webkit-tap-highlight-color: transparent;
 }
 
-@keyframes background-animation {
+@keyframes BackgroundAnimation {
   to {
     filter: hue-rotate(360deg);
   }
-}
-
-:root {
-	--Rainbow: rgb(100,200,100);
-
-  animation: background-animation 10s linear infinite alternate;
 }
 
 * {
   scrollbar-color: black transparent;
 }
 
-@keyframes BgColor {
-  to {
-    background-color: var(--Rainbow); 
-  }
+:root {
+  --Rainbow: hsl(50, 30%, 50%);
+
+  animation: BackgroundAnimation 17s linear infinite;
 }
 
 html {
   background-color: var(--Rainbow); 
-  transition: background-color 500ms linear;
-  transition-delay: 250ms;
 }
+
+
 
 /* 
 * {

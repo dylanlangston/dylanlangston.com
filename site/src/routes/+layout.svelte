@@ -12,6 +12,14 @@
 
 	import { onMount } from 'svelte';
 	import { fade, blur, fly, slide, scale, crossfade } from 'svelte/transition';
+	import { quintOut, bounceInOut, backOut, elasticOut } from 'svelte/easing';
+	import { Environment } from '$lib/Common';
+
+	const key = "main";
+	const [send, receive] = crossfade({
+		duration: 750,
+		easing: backOut
+	});
 
 	let loaded: boolean = false;
 
@@ -19,6 +27,11 @@
 </script>
 
 <svelte:head>
+	{#if Environment.Dev}
+		<link rel="preload" href="dylanlangston.com.wasm.map" as="fetch" />
+	{/if}
+	<link rel="preload" href="dylanlangston.com.wasm" as="fetch" />
+
 	<!-- GTAG Partytown 🕶️ -->
 	<script>
 		// Forward the necessary functions to the web worker layer
@@ -44,9 +57,11 @@
 </svelte:head>
 
 {#if loaded}
-	<div class="flex flex-col h-screen" in:scale={{ duration: $page.error ? 0 : 750 }}>
+	<div class="flex flex-col h-screen" in:send={{ key }}>
 		<Header />
-		<Emscripten />
+		<div class="motion-reduce:invisible -z-50">
+			<Emscripten />
+		</div>
 		{#key $page.url.pathname + loaded + $page.error}
 			<main
 				class="flex-1 {loaded ? '' : 'opacity-0'}"
@@ -74,7 +89,7 @@
 		</main>
 		<Footer />
 	</noscript>
-	<div class="jsonly absolute top-1/2 left-1/2">
+	<div class="jsonly absolute top-1/2 left-1/2" out:receive={{ key }}>
 		<Loader />
 	</div>
 {/if}

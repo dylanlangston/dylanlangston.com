@@ -29,12 +29,9 @@ export const sanitizeEvent = <T>(e: any, n: number = 0): T => {
 
         if (e[k] instanceof Node) continue;
         if (e[k] instanceof Window) {
-            obj[k] = Environment.isMobile ? {
+            obj[k] = {
                 width: window.screen.width,
                 height: window.screen.height,
-            } : {
-                width: window.innerWidth,
-                height: window.innerHeight,
             };
             continue;
         }
@@ -49,7 +46,12 @@ export const sanitizeEvent = <T>(e: any, n: number = 0): T => {
                 obj[k] = e[k];
                 break;
             case 'object':
-                obj[k] = sanitizeEvent(e[k], n + 1);
+                try {
+                    obj[k] = sanitizeEvent(e[k], n + 1);
+                }
+                catch {
+                    continue;
+                }
                 break;
         }
     }

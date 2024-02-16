@@ -86,12 +86,28 @@ pub const MandalbrotView = Common.ViewLocator.createView(
                     MandalbrotViewModel.c[0] += dc;
                     MandalbrotViewModel.c[1] += dc;
                 }
+
+                // Ensure we're always inside our desired range
+                if (MandalbrotViewModel.c[0] < -0.35) {
+                    const randomMod = Common.Random.Get().float(f32) * (MandalbrotViewModel.startingC[0] + 0.3);
+                    MandalbrotViewModel.c = MandalbrotViewModel.startingC;
+                    MandalbrotViewModel.c[0] -= randomMod;
+                    MandalbrotViewModel.c[1] -= randomMod;
+                }
             } else {
                 if (MandalbrotViewModel.c[0] < -0.35) {
                     MandalbrotViewModel.increment = true;
                 } else {
                     MandalbrotViewModel.c[0] -= dc;
                     MandalbrotViewModel.c[1] -= dc;
+                }
+
+                // Ensure we're always inside our desired range
+                if (MandalbrotViewModel.c[0] > -0.3) {
+                    const randomMod = Common.Random.Get().float(f32) * (MandalbrotViewModel.startingC[0] + 0.3);
+                    MandalbrotViewModel.c = MandalbrotViewModel.startingC;
+                    MandalbrotViewModel.c[0] -= randomMod;
+                    MandalbrotViewModel.c[1] -= randomMod;
                 }
             }
             raylib.SetShaderValue(

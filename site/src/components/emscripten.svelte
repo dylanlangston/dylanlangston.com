@@ -9,9 +9,10 @@
 	function initWorker(canvasElement: HTMLCanvasElement) {
 		const audioContext = new AudioContext();
 
-		// Limit messages sent to worker to once every 20 milliseconds.
-		const messagePostInterval = 50;
-		const workerMessageRateLimiter = new RateLimiter(5, messagePostInterval);
+		const messagePostInterval = 20;
+		const refreshRateMod = 10;
+		const workerMessageRateLimiter = new RateLimiter(10, messagePostInterval);
+		const workerResizeMessageRateLimiter = new RateLimiter(1, messagePostInterval * refreshRateMod);
 		const messageQueue = new HashMapQueue<IPCMessage>((e) => e.hash());
 
 		const listeners: ((e: Event) => void)[] = [];
@@ -37,20 +38,24 @@
 			}
 
 			if (add) {
-				const postMessage = (m: IPCMessage) => {
-					if (workerMessageRateLimiter.shouldAllow()) {
+				const postMessage = (type: string, m: IPCMessage) => {
+					if (type == "resize" && workerResizeMessageRateLimiter.shouldAllow()) {
+						worker?.postMessage(m);
+					}
+					else if (type != "resize" && workerMessageRateLimiter.shouldAllow()) {
 						worker?.postMessage(m);
 					} else {
 						if (messageQueue.add(m)) {
 							setTimeout(() => {
 								const message = messageQueue.remove();
-								if (message != undefined) postMessage(message);
-							}, messagePostInterval);
+								if (message != undefined) postMessage(type, message);
+							}, type == "resize" ? messagePostInterval * refreshRateMod : messagePostInterval);
 						}
 					}
 				};
 				const listener = (e: Event) =>
 					postMessage(
+						eventHandler.type,
 						IPCMessage.EventHandlerCallback({
 							id: eventHandler.id,
 							target: eventHandler.target,
@@ -167,6 +172,8 @@
 			'w-screen',
 			'h-screen'
 		);
+		canvasElement.width = window.screen.width;
+		canvasElement.height = window.screen.height;
 
 		const UseWorker: boolean = typeof Worker !== 'undefined';
 		if (UseWorker) {
@@ -186,5 +193,5 @@
 </script>
 
 {#if canvas !== undefined}
-	<object title="Background Canvas" class="-z-50" in:fade={{ duration: 500, }} use:setCanvas />
+	<object title="Background Canvas" class="-z-50" in:fade={{ duration: 500 }} use:setCanvas />
 {/if}

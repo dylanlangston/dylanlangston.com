@@ -10,9 +10,10 @@
 </head>
 
 <body data-sveltekit-preload-data="hover">
-	%sveltekit.body%
-	<script>
-		document.documentElement.style.setProperty('--Rainbow', "hsla(" + (Math.floor(Math.random()*360)).toString(10) + ",30%,50%,1.0)");
-	</script>
+	<div style="display: contents">%sveltekit.body%</div>
 </body>
+<script>
+	document.documentElement.style.setProperty('--Rainbow', "hsla(" + (Math.floor(Math.random() * 360)).toString(10) + ",30%,50%,1.0)");
+</script>
+
 </html>
