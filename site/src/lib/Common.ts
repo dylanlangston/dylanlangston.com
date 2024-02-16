@@ -1,4 +1,6 @@
 import { BrowserDetector } from 'browser-dtector';
+import { readable, writable, get } from 'svelte/store';
+
 
 export class Environment {
     private constructor() {}
@@ -135,6 +137,17 @@ export class HashMapQueue<Type> {
 
         return item;
     }
+}
+
+export const useMediaQuery = (mediaQueryString: string)=>{
+      const matches = readable(false, (set: (value: boolean) => void) => {
+          const m=window.matchMedia(mediaQueryString);
+          set(m.matches);
+          const el = (e: MediaQueryListEvent) => set(e.matches);
+          m.addEventListener("change", el);
+          return () => {m.removeEventListener("change", el)};
+      });
+      return matches;
 }
 
 (<any>globalThis).saveFileFromMEMFSToDisk = (memoryFSname: string, localFSname: string) => {

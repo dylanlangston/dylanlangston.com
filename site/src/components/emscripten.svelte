@@ -4,7 +4,14 @@
 	import { fade, blur, fly, slide, scale, crossfade } from 'svelte/transition';
 	import emscriptenWorker from '$lib/Emscripten.worker?worker';
 	import { AudioEventType, IPCMessage, IPCMessageType } from '$lib/IPCMessage';
-	import { Environment, HashMapQueue, RateLimiter, hash, sanitizeEvent } from '$lib/Common';
+	import {
+		Environment,
+		HashMapQueue,
+		RateLimiter,
+		hash,
+		sanitizeEvent,
+		useMediaQuery
+	} from '$lib/Common';
 	import StatusContainer from '../components/status-container.svelte';
 
 	const initWorker = async (canvasElement: HTMLCanvasElement) =>
@@ -147,7 +154,7 @@
 			worker.onerror = (er) => reject(er);
 		});
 
-	const load = async () => {
+	const loadFn: () => Promise<HTMLCanvasElement> = async () => {
 		const canvasElement = document.createElement('canvas');
 		canvasElement.classList.add(
 			'fixed',
@@ -155,8 +162,8 @@
 			'bottom-0',
 			'left-0',
 			'right-0',
-			'w-screen',
-			'h-screen',
+			'w-full',
+			'h-full',
 			'-z-50'
 		);
 		canvasElement.width = window.innerWidth;
@@ -167,18 +174,22 @@
 			const worker = await initWorker(canvasElement);
 			unload = () => {
 				worker.terminate();
-				throw "Canceled";
 			};
 		} else {
 			const emscripten = await EmscriptenInitialize(canvasElement);
 			unload = () => {
-				emscripten.abort("Canceled");
+				try {
+					emscripten.abort('Canceled');
+				} catch {}
 			};
 		}
 		return canvasElement;
 	};
+
 	var unload: () => void | undefined;
-	onDestroy(() => { if (unload) unload(); });
+	onDestroy(() => {
+		if (unload) unload();
+	});
 
 	function setCanvas(self: HTMLDivElement, options: { canvas: HTMLCanvasElement }) {
 		self.appendChild(options.canvas);
@@ -188,26 +199,25 @@
 			}
 		};
 	}
+
+	const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
 </script>
 
-{#await load() then canvas}
-	<div
-		title="Background"
-		class="motion-reduce:invisible"
-		in:fade={{ duration: 500 }}
-		use:setCanvas={{ canvas }}
-	/>
-{:catch error}
-	<!-- Todo Dialog with Error Message -->
-	<div class="fixed top-0 left-0 bottom-0 right-0 z-1" style="background: var(--Rainbow);">
-		<StatusContainer>
-			<svelte:fragment slot="status-slot">
-				<h1>¯\_(ツ)_/¯<br />An error has occurred, sorry!</h1>
-				<hr class="h-0.5 lg:h-1 bg-black rounded-lg" />
-				<div class="text-xl lg:text-3xl font-normal text-left px-4 pt-2">
-					<p><i class="italic">Error Message:</i> {error}</p>
-				</div>
-			</svelte:fragment>
-		</StatusContainer>
-	</div>
-{/await}
+{#if !$reducedMotion}
+	{#await loadFn() then canvas}
+		<div class="content" in:fade={{ duration: 500 }} use:setCanvas={{ canvas }} />
+	{:catch error}
+		<!-- Todo Dialog with Error Message -->
+		<div class="fixed top-0 left-0 bottom-0 right-0 z-1" style="background: var(--Rainbow);">
+			<StatusContainer>
+				<svelte:fragment slot="status-slot">
+					<h1>¯\_(ツ)_/¯<br />An error has occurred, sorry!</h1>
+					<hr class="h-0.5 lg:h-1 bg-black rounded-lg" />
+					<div class="text-xl lg:text-3xl font-normal text-left px-4 pt-2">
+						<p><i class="italic">Error Message:</i> {error}</p>
+					</div>
+				</svelte:fragment>
+			</StatusContainer>
+		</div>
+	{/await}
+{/if}

@@ -88,7 +88,7 @@
 </svelte:head>
 
 {#if loaded}
-	<div class="flex flex-col h-screen" in:animateIn={{ key }}>
+	<div class="flex flex-col h-full" in:animateIn={{ key }}>
 		<Header />
 		<Emscripten />
 		{#key $page.url.pathname + loaded + $page.error}
@@ -99,7 +99,7 @@
 		<Footer />
 	</div>
 {:else}
-	<noscript class="flex flex-col h-screen">
+	<noscript class="flex flex-col h-full">
 		<style>
 			.jsonly {
 				display: none;
