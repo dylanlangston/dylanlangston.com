@@ -1,167 +1,153 @@
 <script lang="ts">
-	import { EmscriptenInitialize } from '$lib/Emscripten';
+	import { EmscriptenInitialize, type IEmscripten } from '$lib/Emscripten';
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { fade, blur, fly, slide, scale, crossfade } from 'svelte/transition';
 	import emscriptenWorker from '$lib/Emscripten.worker?worker';
 	import { AudioEventType, IPCMessage, IPCMessageType } from '$lib/IPCMessage';
 	import { Environment, HashMapQueue, RateLimiter, hash, sanitizeEvent } from '$lib/Common';
+	import StatusContainer from '../components/status-container.svelte';
 
-	function initWorker(canvasElement: HTMLCanvasElement) {
-		const audioContext = new AudioContext();
+	const initWorker = async (canvasElement: HTMLCanvasElement) =>
+		new Promise<Worker>((resolve, reject) => {
+			const audioContext = new AudioContext();
 
-		const messagePostInterval = 20;
-		const workerMessageRateLimiter = new RateLimiter(10, messagePostInterval);
-		const workerResizeMessageRateLimiter = new RateLimiter(1, messagePostInterval);
-		const messageQueue = new HashMapQueue<IPCMessage>((e) => e.hash());
+			const messagePostInterval = 20;
+			const workerMessageRateLimiter = new RateLimiter(10, messagePostInterval);
+			const workerResizeMessageRateLimiter = new RateLimiter(1, messagePostInterval);
+			const messageQueue = new HashMapQueue<IPCMessage>((e) => e.hash());
 
-		const listeners: ((e: Event) => void)[] = [];
-		function HandleEvent(
-			add: boolean,
-			eventHandler: {
-				id: number;
-				target: string;
-				type: string;
-			}
-		) {
-			let target: EventTarget;
+			const listeners: ((e: Event) => void)[] = [];
+			function HandleEvent(
+				add: boolean,
+				eventHandler: {
+					id: number;
+					target: string;
+					type: string;
+				}
+			) {
+				let target: EventTarget;
 
-			switch (eventHandler.target) {
-				case 'Window':
-				case 'Canvas':
-				default:
-					target = window;
-					break;
-				case 'Document':
-					target = document;
-					break;
-			}
+				switch (eventHandler.target) {
+					case 'Window':
+					case 'Canvas':
+					default:
+						target = window;
+						break;
+					case 'Document':
+						target = document;
+						break;
+				}
 
-			if (add) {
-				const postMessage = (type: string, m: IPCMessage) => {
-					if (type == 'resize' && workerResizeMessageRateLimiter.shouldAllow()) {
-						worker?.postMessage(m);
-					} else if (type != 'resize' && workerMessageRateLimiter.shouldAllow()) {
-						worker?.postMessage(m);
-					} else {
-						if (messageQueue.add(m)) {
-							setTimeout(() => {
-								const message = messageQueue.remove();
-								if (message != undefined) postMessage(type, message);
-							}, messagePostInterval);
-						}
-					}
-				};
-				const listener = (e: Event) =>
-					postMessage(
-						eventHandler.type,
-						IPCMessage.EventHandlerCallback({
-							id: eventHandler.id,
-							target: eventHandler.target,
-							type: eventHandler.type,
-							event: sanitizeEvent(e)
-						})
-					);
-				listeners[eventHandler.id] = listener;
-				target.addEventListener(eventHandler.type, listener);
-			} else {
-				const listener = listeners[eventHandler.id];
-				target.removeEventListener(eventHandler.type, listener);
-			}
-		}
-
-		let processorNode: ScriptProcessorNode;
-		let audioOutput: [[]] = [[]];
-		function HandleAudio(audioEvent: { type: AudioEventType; details?: any }) {
-			switch (audioEvent.type) {
-				case AudioEventType.Connect:
-					const audioNode = processorNode.connect(<AudioNode>audioContext.destination);
-					break;
-				case AudioEventType.CreateScriptProcessor:
-					processorNode = audioContext.createScriptProcessor(
-						audioEvent.details.bufferSize,
-						audioEvent.details.numberOfInputChannels,
-						audioEvent.details.numberofOutputChannels
-					);
-					break;
-				case AudioEventType.Resume:
-					audioContext.resume();
-					break;
-				case AudioEventType.Suspend:
-					audioContext.suspend();
-					break;
-				case AudioEventType.StartProcessAudio:
-					processorNode.onaudioprocess = (ev) => {
-						worker?.postMessage(
-							IPCMessage.AudioEvent(AudioEventType.ProcessAudio, {
-								funcProxy: audioEvent.details,
-								data: sanitizeEvent(ev)
-							})
-						);
-						for (var i = 0; i < audioOutput.length; i++) {
-							ev.outputBuffer.getChannelData(i).set(audioOutput[i]);
+				if (add) {
+					const postMessage = (type: string, m: IPCMessage) => {
+						if (type == 'resize' && workerResizeMessageRateLimiter.shouldAllow()) {
+							worker?.postMessage(m);
+						} else if (type != 'resize' && workerMessageRateLimiter.shouldAllow()) {
+							worker?.postMessage(m);
+						} else {
+							if (messageQueue.add(m)) {
+								setTimeout(() => {
+									const message = messageQueue.remove();
+									if (message != undefined) postMessage(type, message);
+								}, messagePostInterval);
+							}
 						}
 					};
-					break;
-				case AudioEventType.AudioOutput:
-					audioOutput = audioEvent.details.data;
-					break;
+					const listener = (e: Event) =>
+						postMessage(
+							eventHandler.type,
+							IPCMessage.EventHandlerCallback({
+								id: eventHandler.id,
+								target: eventHandler.target,
+								type: eventHandler.type,
+								event: sanitizeEvent(e)
+							})
+						);
+					listeners[eventHandler.id] = listener;
+					target.addEventListener(eventHandler.type, listener);
+				} else {
+					const listener = listeners[eventHandler.id];
+					target.removeEventListener(eventHandler.type, listener);
+				}
 			}
-		}
 
-		// Start audio on input event
-		const eventTypes = ['click', 'touchend', 'mousedown', 'keydown'];
-		const listener = () => {
-			audioContext.resume().then(() => {
-				eventTypes.forEach((et) => document.body.removeEventListener(et, listener));
-			});
-		};
-		eventTypes.forEach((e) => document.body.addEventListener(e, listener, { once: true }));
-		listener();
-
-		// Create Worker
-		const worker = new emscriptenWorker();
-		const offscreenCanvas = canvasElement.transferControlToOffscreen();
-		worker.postMessage(IPCMessage.Initialize(offscreenCanvas, audioContext.sampleRate), [
-			offscreenCanvas
-		]);
-		worker.onmessage = (ev: MessageEvent<IPCMessage>) => {
-			switch (ev.data.type) {
-				case IPCMessageType.Initialized:
-					canvas = canvasElement;
-					break;
-				case IPCMessageType.AddEventHandler:
-					HandleEvent(true, <any>ev.data.message);
-					break;
-				case IPCMessageType.RemoveEventHandler:
-					HandleEvent(false, <any>ev.data.message);
-					break;
-				case IPCMessageType.AudioEvent:
-					HandleAudio(<any>ev.data.message);
-					break;
-				default:
-					throw 'Not Implemented';
+			let processorNode: ScriptProcessorNode;
+			let audioOutput: [[]] = [[]];
+			function HandleAudio(audioEvent: { type: AudioEventType; details?: any }) {
+				switch (audioEvent.type) {
+					case AudioEventType.Connect:
+						const audioNode = processorNode.connect(<AudioNode>audioContext.destination);
+						break;
+					case AudioEventType.CreateScriptProcessor:
+						processorNode = audioContext.createScriptProcessor(
+							audioEvent.details.bufferSize,
+							audioEvent.details.numberOfInputChannels,
+							audioEvent.details.numberofOutputChannels
+						);
+						break;
+					case AudioEventType.Resume:
+						audioContext.resume();
+						break;
+					case AudioEventType.Suspend:
+						audioContext.suspend();
+						break;
+					case AudioEventType.StartProcessAudio:
+						processorNode.onaudioprocess = (ev) => {
+							worker?.postMessage(
+								IPCMessage.AudioEvent(AudioEventType.ProcessAudio, {
+									funcProxy: audioEvent.details,
+									data: sanitizeEvent(ev)
+								})
+							);
+							for (var i = 0; i < audioOutput.length; i++) {
+								ev.outputBuffer.getChannelData(i).set(audioOutput[i]);
+							}
+						};
+						break;
+					case AudioEventType.AudioOutput:
+						audioOutput = audioEvent.details.data;
+						break;
+				}
 			}
-		};
-		worker.onerror = (er) => {
-			worker?.terminate();
-			canvas = undefined;
-			if (Environment.Dev) debugger;
-			throw er;
-		};
-		exitCallback = () => {
-			worker?.terminate();
-		};
-	}
 
-	function initFallback(canvasElement: HTMLCanvasElement) {
-		EmscriptenInitialize(canvasElement).then((emscripten) => {
-			canvas = canvasElement;
+			// Start audio on input event
+			const eventTypes = ['click', 'touchend', 'mousedown', 'keydown'];
+			const listener = () => {
+				audioContext.resume().then(() => {
+					eventTypes.forEach((et) => document.body.removeEventListener(et, listener));
+				});
+			};
+			eventTypes.forEach((e) => document.body.addEventListener(e, listener, { once: true }));
+			listener();
+
+			// Create Worker
+			const worker = new emscriptenWorker();
+			const offscreenCanvas = canvasElement.transferControlToOffscreen();
+			worker.postMessage(IPCMessage.Initialize(offscreenCanvas, audioContext.sampleRate), [
+				offscreenCanvas
+			]);
+			worker.onmessage = (ev: MessageEvent<IPCMessage>) => {
+				switch (ev.data.type) {
+					case IPCMessageType.Initialized:
+						resolve(worker);
+						break;
+					case IPCMessageType.AddEventHandler:
+						HandleEvent(true, <any>ev.data.message);
+						break;
+					case IPCMessageType.RemoveEventHandler:
+						HandleEvent(false, <any>ev.data.message);
+						break;
+					case IPCMessageType.AudioEvent:
+						HandleAudio(<any>ev.data.message);
+						break;
+					default:
+						throw 'Not Implemented';
+				}
+			};
+			worker.onerror = (er) => reject(er);
 		});
-	}
 
-	let exitCallback: () => void | undefined;
-	let canvas: HTMLCanvasElement | undefined = undefined;
-	onMount(async () => {
+	const load = async () => {
 		const canvasElement = document.createElement('canvas');
 		canvasElement.classList.add(
 			'fixed',
@@ -170,31 +156,58 @@
 			'left-0',
 			'right-0',
 			'w-screen',
-			'h-screen'
+			'h-screen',
+			'-z-50'
 		);
-		canvasElement.width = window.screen.width;
-		canvasElement.height = window.screen.height;
+		canvasElement.width = window.innerWidth;
+		canvasElement.height = window.innerHeight;
 
 		const UseWorker: boolean = typeof Worker !== 'undefined';
 		if (UseWorker) {
-			initWorker(canvasElement);
+			const worker = await initWorker(canvasElement);
+			unload = () => {
+				worker.terminate();
+				throw "Canceled";
+			};
 		} else {
-			initFallback(canvasElement);
+			const emscripten = await EmscriptenInitialize(canvasElement);
+			unload = () => {
+				emscripten.abort("Canceled");
+			};
 		}
-	});
+		return canvasElement;
+	};
+	var unload: () => void | undefined;
+	onDestroy(() => { if (unload) unload(); });
 
-	onDestroy(() => {
-		if (exitCallback != undefined) {
-			exitCallback();
-		}
-		canvas = undefined;
-	});
-
-	function setCanvas(self: HTMLDivElement): void {
-		if (canvas !== undefined) self.appendChild(canvas);
+	function setCanvas(self: HTMLDivElement, options: { canvas: HTMLCanvasElement }) {
+		self.appendChild(options.canvas);
+		return {
+			destroy() {
+				self.removeChild(options.canvas);
+			}
+		};
 	}
 </script>
 
-{#if canvas !== undefined}
-	<object title="Background Canvas" class="-z-50" in:fade={{ duration: 500 }} use:setCanvas />
-{/if}
+{#await load() then canvas}
+	<div
+		title="Background"
+		class="motion-reduce:invisible"
+		in:fade={{ duration: 500 }}
+		use:setCanvas={{ canvas }}
+	/>
+{:catch error}
+	<!-- Todo Dialog with Error Message -->
+	<div class="fixed top-0 left-0 bottom-0 right-0 z-1" style="background: var(--Rainbow);">
+		<StatusContainer>
+			<svelte:fragment slot="status-slot">
+				<h1>¯\_(ツ)_/¯<br />An error has occurred, sorry!</h1>
+				<hr class="h-0.5 lg:h-1 bg-black rounded-lg" />
+				<div class="text-xl lg:text-3xl font-normal text-left px-4 pt-2">
+					<p><i class="italic">Error Message:</i> {error}</p>
+				</div>
+			</svelte:fragment>
+		</StatusContainer>
+	</div>
+{/await}

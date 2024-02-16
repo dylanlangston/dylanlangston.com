@@ -85,6 +85,8 @@ interface EmscriptenModule {
 	WasmOffsetConverter?: WasmOffsetConverter;
 	setWasmOffsetConverter: (wasmOffsetConverter: WasmOffsetConverter) => void;
 	loadSymbols: () => void;
+
+	abort: (msg: string) => void;
 }
 
 interface WasmOffsetConverter {

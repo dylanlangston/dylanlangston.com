@@ -30,8 +30,8 @@ export const sanitizeEvent = <T>(e: any, n: number = 0): T => {
         if (e[k] instanceof Node) continue;
         if (e[k] instanceof Window) {
             obj[k] = {
-                width: window.screen.width,
-                height: window.screen.height,
+                width: window.innerWidth,
+                height: window.innerHeight,
             };
             continue;
         }

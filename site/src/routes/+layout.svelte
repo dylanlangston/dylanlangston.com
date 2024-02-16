@@ -87,14 +87,10 @@
 	</script>
 </svelte:head>
 
-<div class="background-overlay"></div>
-
 {#if loaded}
 	<div class="flex flex-col h-screen" in:animateIn={{ key }}>
 		<Header />
-		<div class="motion-reduce:invisible -z-50">
-			<Emscripten />
-		</div>
+		<Emscripten />
 		{#key $page.url.pathname + loaded + $page.error}
 			<main class="flex-1" in:blur|local={{ duration: 250, delay: 50, opacity: 0.25 }}>
 				<slot />
@@ -121,13 +117,3 @@
 		<Loader />
 	</div>
 {/if}
-
-<style>
-	.background-overlay {
-		box-shadow: inset 0 0 1rem black;
-		position: fixed;
-		width: 100%;
-		height: 100%;
-		pointer-events: none;
-	}
-</style>
