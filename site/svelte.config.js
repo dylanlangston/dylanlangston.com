@@ -32,6 +32,10 @@ const config = {
 			strict: true
 		})
 	},
+
+	prerender: {
+		default: true,
+	},
 };
 
 export default config;

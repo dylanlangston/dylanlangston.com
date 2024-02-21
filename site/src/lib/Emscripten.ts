@@ -101,7 +101,6 @@ class CustomEmscriptenModule implements ICustomEmscriptenModule {
 		globalThis.console.error(text);
 	}
 
-
 	public get statusMessage(): string {
 		return get(CustomEmscriptenModule.statusMessage);
 	}
@@ -111,10 +110,9 @@ class CustomEmscriptenModule implements ICustomEmscriptenModule {
 
 	public static readonly statusMessage = writable('⏳');
 	public static setStatus(e: string): void {
-		if (e == 'Running...' || e == '') {
-			return;
-		}
+		if (e == '') return;
 		CustomEmscriptenModule.statusMessage.set(e);
+		
 		console.log(e);
 	}
 }

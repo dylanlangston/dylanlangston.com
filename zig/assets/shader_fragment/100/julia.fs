@@ -12,8 +12,8 @@ uniform float zoom;             // Zoom of the scale.
 
 // NOTE: Maximum number of shader for-loop iterations depend on GPU,
 // for example, on RasperryPi for this examply only supports up to 60
-const int maxIterations = 256;     // Max iterations to do.
-const float colorCycles = 2.0;   // Number of times the color palette repeats.
+const int maxIterations = 128;     // Max iterations to do.
+const float colorCycles = 3.0;   // Number of times the color palette repeats.
 
 // Square a complex number
 vec2 ComplexSquare(vec2 z)
@@ -25,10 +25,10 @@ vec2 ComplexSquare(vec2 z)
 }
 
 // Convert Hue Saturation Value (HSV) color into RGB
-vec3 Hsv2rgb(vec3 c)
+vec3 Hsv2rgb(vec3 c, float mod)
 {
     vec4 K = vec4(1.0, 2.0/3.0, 1.0/3.0, 3.0);
-    vec3 p = abs(fract(c.xxx + K.xyz)*6.0 - K.www);
+    vec3 p = abs(fract(c.xxx  + K.xyz - (2.0 * mod)) * 6.0 - K.www);
     return c.z*mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }
 
@@ -80,6 +80,6 @@ void main()
     float norm = smoothVal/float(maxIterations);
 
     // If in set, color black. 0.999 allows for some float accuracy error.
-    if (norm > 0.999) gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
-    else gl_FragColor = vec4(Hsv2rgb(vec3(norm*colorCycles, 1.0, 1.0)), 1.0);
+    if (norm > 0.999) gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+    else gl_FragColor = vec4(Hsv2rgb(vec3(norm*colorCycles, 1.0, 1.0), c.x), 0.80);
 }

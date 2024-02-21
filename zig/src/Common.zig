@@ -16,7 +16,7 @@ pub const Common = struct {
     pub const raygui = @cImport({
         @cInclude("raygui.h");
     });
-    pub const is_emscripten: bool = builtin.os.tag == .emscripten;
+    pub const is_emscripten: bool = builtin.os.tag == .emscripten or builtin.os.tag == .wasi;
     pub const emscripten = if (is_emscripten) @cImport({
         @cInclude("emscripten.h");
         @cInclude("emscripten/html5.h");
@@ -279,7 +279,7 @@ pub const Common = struct {
         } else raylib.SetTraceLogLevel(raylib.LOG_NONE);
 
         raylib.SetTargetFPS(0);
-        raylib.SetConfigFlags(raylib.FLAG_VSYNC_HINT | raylib.FLAG_MSAA_4X_HINT | raylib.FLAG_WINDOW_RESIZABLE);
+        raylib.SetConfigFlags(raylib.FLAG_VSYNC_HINT | raylib.FLAG_MSAA_4X_HINT);
 
         if (is_emscripten) {
             // Handle Resize
@@ -287,17 +287,28 @@ pub const Common = struct {
                 fn resize(t: c_int, data: [*c]const emscripten.struct_EmscriptenUiEvent, callback: ?*anyopaque) callconv(.C) c_int {
                     _ = t;
                     _ = callback;
-                    raylib.SetWindowSize(
+                    emscripten.emscripten_set_canvas_size(
                         data.*.windowInnerWidth,
                         data.*.windowInnerHeight,
                     );
-                    Log.Info_Formatted("Resized: {}", .{data.*});
-                    return 0;
+                    Log.Info_Formatted("Resized: {}", .{data.*.windowInnerWidth});
+
+                    // Update frame on resize so there isn't a flicker
+                    @import("root").UpdateFrame();
+                    return 1;
                 }
             }.resize);
+
+            // Set initial Window Size
+            var width: c_int = undefined;
+            var height: c_int = undefined;
+            var fullscreen: c_int = undefined;
+            emscripten.emscripten_get_canvas_size(&width, &height, &fullscreen);
+            raylib.InitWindow(width, height, null);
+        } else {
+            raylib.InitWindow(1600, 900, "dylanlangston.com");
         }
 
-        raylib.InitWindow(1600, 900, "dylanlangston.com");
         raylib.InitAudioDevice();
     }
 

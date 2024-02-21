@@ -26,7 +26,7 @@ pub fn main() !void {
 }
 
 var current_view: Common.ViewLocator.Views = .Mandalbrot;
-fn UpdateFrame() callconv(.C) void {
+pub fn UpdateFrame() callconv(.C) void {
     raylib.BeginDrawing();
     defer raylib.EndDrawing();
 

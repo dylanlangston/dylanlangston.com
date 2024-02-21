@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import Header from '../components/header.svelte';
 	import Footer from '../components/footer.svelte';
 
@@ -8,9 +8,60 @@
 
 	import { page } from '$app/stores';
 	import StatusContainer from '../components/status-container.svelte';
+
+	import { onMount } from 'svelte';
+	import { fade, blur, fly, slide, scale, crossfade } from 'svelte/transition';
+	import { quintOut, bounceInOut, backOut, elasticOut } from 'svelte/easing';
+	import { Environment } from '$lib/Common';
+
+	const key = 'main';
+	const [send, receive] = crossfade({
+		duration: 750,
+		easing: backOut,
+	});
+	const animateIn = (node: any, params: { key: string }) => preventOverFlowOnAnimation(send, node, params)
+	const animateOut = (node: any, params: { key: string }) => preventOverFlowOnAnimation(receive, node, params)
+	function preventOverFlowOnAnimation(originalAnimation: (node: any, params: { key: string }) => () => {
+		delay?: number,
+		duration?: number,
+		easing?: any,
+		css?: (t: number, u: number) => string,
+	}, node: any, params: { key: string }) {
+		const config = originalAnimation(node, params);
+		return () => {
+			const animation = config();
+			return {
+				delay: animation?.delay,
+				duration: animation?.duration,
+				easing: animation?.easing,
+				css: (t: number, u: number) => {
+					// Set body overflow to hidden when animating
+					if (u == 0) {
+						const initialOverflow = document.body.style.overflow;
+						document.body.style.overflow = "hidden";
+						setTimeout(() => {
+							document.body.style.overflow = initialOverflow;
+						}, animation?.duration ?? 0);
+					}
+					
+					return (animation?.css ?? (() => ""))(t, u);
+				}
+			};
+		};
+	}
+
+
+	let loaded: boolean = false;
+
+	onMount(() => (loaded = true));
 </script>
 
 <svelte:head>
+	{#if Environment.Dev}
+		<link rel="preload" href="dylanlangston.com.wasm.map" as="fetch" />
+	{/if}
+	<link rel="preload" href="dylanlangston.com.wasm" as="fetch" />
+
 	<!-- GTAG Partytown 🕶️ -->
 	<script>
 		// Forward the necessary functions to the web worker layer
@@ -35,30 +86,33 @@
 	</script>
 </svelte:head>
 
-<Header />
-
-<Emscripten />
-
-{#if $page.error}
-	<main>
-		<slot />
-	</main>
+{#if loaded}
+	<div class="flex flex-col h-full" in:animateIn={{ key }}>
+		<Header />
+		<Emscripten />
+		{#key $page.url.pathname + loaded + $page.error}
+			<main class="flex-1" in:blur|local={{ duration: 250, delay: 50, opacity: 0.25 }}>
+				<slot />
+			</main>
+		{/key}
+		<Footer />
+	</div>
 {:else}
-	<noscript>
+	<noscript class="flex flex-col h-full">
 		<style>
 			.jsonly {
 				display: none;
 			}
 		</style>
-		<StatusContainer>
-			<svelte:fragment slot="status-slot">
-				<h1>Please enable Javascript.</h1>
-			</svelte:fragment>
-		</StatusContainer>
+		<main class="flex-1">
+			<StatusContainer>
+				<svelte:fragment slot="status-slot">
+					<h1>Please enable Javascript.</h1>
+				</svelte:fragment>
+			</StatusContainer>
+		</main>
 	</noscript>
-	<main class="jsonly">
-		<slot />
-	</main>
+	<div class="jsonly absolute top-1/2 left-1/2" out:animateOut={{ key }}>
+		<div class="loader"></div>
+	</div>
 {/if}
-
-<Footer />

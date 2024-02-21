@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="w-full h-full bg-rainbow animate-background">
 
 <head>
 	<meta charset="utf-8" />
@@ -9,7 +9,12 @@
 	%sveltekit.head%
 </head>
 
-<body data-sveltekit-preload-data="hover">
-	%sveltekit.body%
+<body class="h-full w-full absolute" data-sveltekit-preload-data="hover">
+	<div class="contents h-full z-1">%sveltekit.body%</div>
+	<div class="background-overlay"></div>
 </body>
+<script>
+	document.documentElement.style.setProperty('--Rainbow', "hsl(" + (Math.floor(Math.random() * 360)).toString(10) + ",30%,50%)");
+</script>
+
 </html>

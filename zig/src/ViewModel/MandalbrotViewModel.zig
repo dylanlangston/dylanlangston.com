@@ -4,32 +4,28 @@ const raylib = Common.raylib;
 
 pub const MandalbrotViewModel = Common.ViewLocator.createViewModel(
     struct {
-        // A few good julia sets
-        pub const pointsOfInterest: [6][2]f32 = .{
-            .{ -0.348827, 0.607167 },
-            .{ -0.786268, 0.169728 },
-            .{ -0.8, 0.156 },
-            .{ 0.285, 0.0 },
-            .{ -0.835, -0.2321 },
-            .{ -0.70176, -0.3842 },
-        };
-
         pub const zoomSpeed: f32 = 1.01;
         pub const offsetSpeedMul: f32 = 2.0;
 
         pub const startingZoom: f32 = 0.75;
 
-        // julia set shader
-        pub var shader: Common.Shader = undefined;
+        pub var increment: bool = false;
+
+        // julia shader set
+        pub var juliaShader: Common.Shader = undefined;
+        // wave shader set
+        pub var waveShader: Common.Shader = undefined;
         // RenderTexture2D to be used for render to texture
-        pub var target: raylib.RenderTexture2D = undefined;
+        pub var juliaTarget: raylib.RenderTexture2D = undefined;
+        pub var waveTarget: raylib.RenderTexture2D = undefined;
+
+        pub const startingC: [2]f32 = .{ -0.35, 0.607167 };
 
         // c constant to use in z^2 + c
-        pub var c: [2]f32 = .{ pointsOfInterest[0][0], pointsOfInterest[0][1] };
+        pub var c: [2]f32 = startingC;
 
         // Offset and zoom to draw the julia set at. (centered on screen and default size)
         pub var offset: [2]f32 = undefined;
-        pub var zoom: f32 = startingZoom;
 
         // Get variable (uniform) locations on the shader to connect with the program
         // NOTE: If uniform variable could not be found in the shader, function returns -1
@@ -37,6 +33,17 @@ pub const MandalbrotViewModel = Common.ViewLocator.createViewModel(
         pub var zoomLoc: i32 = undefined;
         pub var offsetLoc: i32 = undefined;
 
+        pub var waveScreenSizeLoc: i32 = undefined;
+        pub var waveTimeLoc: i32 = undefined;
+
         pub var incrementSpeed: f32 = 3.0; // Multiplier of speed to change c value
+
+        pub var frame: f32 = 0;
+
+        pub var currentPosition: raylib.Vector2 = undefined;
+
+        pub var incrementX: bool = true;
+        pub var incrementY: bool = true;
+        pub var position: raylib.Vector2 = raylib.Vector2{ .x = 0, .y = 0 };
     },
 );

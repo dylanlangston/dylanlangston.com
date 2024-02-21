@@ -10,25 +10,10 @@ a {
 	-webkit-tap-highlight-color: transparent;
 }
 
-html {
-	/* background-color: theme(colors.blue-dark); */
-	background-repeat: repeat;
-	height: 100%;
-	box-sizing: border-box;
-}
-
-body {
-	min-height: 100%;
-  	display: flex;
-  	flex-direction: column;
-}
-
-main {
-  flex: 1;
-}
-
-/* 
 * {
-	@apply text-black-mid;
+  scrollbar-color: black transparent;
 }
-*/
+
+.loader {
+  @apply animate-loader w-1 rounded-full aspect-square text-rainbow;
+}

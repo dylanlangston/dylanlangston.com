@@ -8,8 +8,8 @@ export namespace WorkerDOM {
     export function SetSampleRate(r: number) {
         rate = r;
     }
-    let width: number = 1000;
-    let height: number = 500;
+    let width: number = 1;
+    let height: number = 1;
     export function SetSize(w: number, h: number)  {
         width = w;
         height = h;
@@ -114,6 +114,9 @@ export namespace WorkerDOM {
             // Resize handler
             const id = IPCProxy.Add((ev: any) => {
                 SetSize(ev.currentTarget.width, ev.currentTarget.height);
+                this.canvas.width = ev.currentTarget.width;
+                this.canvas.height = ev.currentTarget.height;
+                this.canvas.dispatchEvent(new Event("resize"));
                 //this.width = ev.currentTarget.width;
                 //this.height = ev.currentTarget.height;
             });
@@ -166,7 +169,6 @@ export namespace WorkerDOM {
             return this.canvas.height;
         }
         public set width(value: number) {
-            if (value == 0) return;
             this.canvas.width = value;
         }
         public get width(): number {

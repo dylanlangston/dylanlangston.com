@@ -1,4 +1,4 @@
-<div class="max-w-screen-xl mx-auto px-4 md:px-8">
+<div class="max-w-screen-xl mx-auto px-4 md:px-8 py-8">
 	<div class="max-w-lg mx-auto space-y-3 sm:text-center">
 		<p class="text-3xl font-semibold sm:text-4xl">Get in touch</p>
 	</div>
