@@ -47,7 +47,9 @@
 
 				if (add) {
 					const postMessage = (type: string, m: IPCMessage) => {
-						if (type == 'resize' && workerResizeMessageRateLimiter.shouldAllow()) {
+						if (type != 'resize' && workerMessageRateLimiter.shouldAllow()) {
+							worker?.postMessage(m);
+						} else if (type == 'resize' && workerResizeMessageRateLimiter.shouldAllow()) {
 							worker?.postMessage(m);
 						} else {
 							if (messageQueue.add(m)) {

@@ -114,11 +114,6 @@ export namespace WorkerDOM {
             // Resize handler
             const id = IPCProxy.Add((ev: any) => {
                 SetSize(ev.currentTarget.width, ev.currentTarget.height);
-                this.canvas.width = ev.currentTarget.width;
-                this.canvas.height = ev.currentTarget.height;
-                this.canvas.dispatchEvent(new Event("resize"));
-                //this.width = ev.currentTarget.width;
-                //this.height = ev.currentTarget.height;
             });
             postMessage(IPCMessage.AddEventHandler({ id, target: 'Window', type: "resize" }));
         }

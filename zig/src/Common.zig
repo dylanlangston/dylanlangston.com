@@ -282,6 +282,13 @@ pub const Common = struct {
         raylib.SetConfigFlags(raylib.FLAG_VSYNC_HINT | raylib.FLAG_MSAA_4X_HINT);
 
         if (is_emscripten) {
+            // Set initial Window Size
+            var width: c_int = undefined;
+            var height: c_int = undefined;
+            var fullscreen: c_int = undefined;
+            emscripten.emscripten_get_canvas_size(&width, &height, &fullscreen);
+            raylib.InitWindow(width, height, null);
+
             // Handle Resize
             _ = emscripten.emscripten_set_resize_callback(2, null, 1, &struct {
                 fn resize(t: c_int, data: [*c]const emscripten.struct_EmscriptenUiEvent, callback: ?*anyopaque) callconv(.C) c_int {
@@ -291,20 +298,12 @@ pub const Common = struct {
                         data.*.windowInnerWidth,
                         data.*.windowInnerHeight,
                     );
-                    Log.Info_Formatted("Resized: {}", .{data.*.windowInnerWidth});
 
                     // Update frame on resize so there isn't a flicker
                     @import("root").UpdateFrame();
                     return 1;
                 }
             }.resize);
-
-            // Set initial Window Size
-            var width: c_int = undefined;
-            var height: c_int = undefined;
-            var fullscreen: c_int = undefined;
-            emscripten.emscripten_get_canvas_size(&width, &height, &fullscreen);
-            raylib.InitWindow(width, height, null);
         } else {
             raylib.InitWindow(1600, 900, "dylanlangston.com");
         }
