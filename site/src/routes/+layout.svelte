@@ -46,10 +46,6 @@
 						}, animation?.duration ?? 0);
 					}
 					const style = (animation?.css ?? (() => ""))(t, u);
-					console.log(style);
-					console.log(JSON.stringify(getComputedStyle(document.querySelector("header")).transitionDuration));
-					//debugger;
-					
 					return style;
 				}
 			};

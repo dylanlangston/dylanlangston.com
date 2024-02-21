@@ -101,14 +101,14 @@ export default {
 				'blur-in': {
 					'to': { 
 						'filter': 'blur(0)', 
-						'backdrop-filter': 'blur(16px)' 
+						'backdrop-filter': 'blur(16px) saturate(150%)' 
 					},
 				}
 			},
 			animation: {
 				loader: 'loader 1s infinite linear alternate, loader-rotate 2s infinite ease, loader-shadow 9s infinite alternate, fade-in 2s',
 				background: 'background-hue-rotate 17s linear infinite alternate',
-				'blur-in': 'blur-in 150ms 250ms linear forwards',
+				glass: 'blur-in 200ms 250ms linear forwards',
 			}
 		},
 		fontFamily: {

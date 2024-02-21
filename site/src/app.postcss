@@ -11,7 +11,7 @@ a {
 }
 
 * {
-  scrollbar-color: black transparent;
+  scrollbar-color: black color-mix(in srgb, color-mix(in hsl increasing hue, var(--Rainbow) 80%, white) 75%, transparent);
 }
 
 .background-overlay {
@@ -24,6 +24,14 @@ a {
 
 .glass {
   filter: blur(6px);
-  backdrop-filter: blur(0px);
-  @apply shadow-lg shadow-black/[.5] outline outline-1 outline-black/[0.15] animate-blur-in;
+  backdrop-filter: blur(0px) saturate(150%);
+  background: linear-gradient(
+    130deg, 
+    color-mix(in srgb, var(--Rainbow) 25%, transparent), 
+    color-mix(in srgb, color-mix(in hsl increasing hue, var(--Rainbow) 80%, white) 75%, transparent)
+    , 
+    70%, 
+    color-mix(in srgb, var(--Rainbow) 25%, transparent)
+    );
+  @apply shadow-lg shadow-black/[.5] outline outline-1 outline-black/[0.15] animate-glass;
 }
