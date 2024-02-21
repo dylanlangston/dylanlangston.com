@@ -26,8 +26,42 @@ pub const MandalbrotView = Common.ViewLocator.createView(
 
             // New render texture on resize
             if (raylib.IsWindowResized()) {
+                const newJuliaTarget = raylib.LoadRenderTexture(@intFromFloat(screenSize.x + 100), @intFromFloat(screenSize.y + 100));
+
+                const widthScale: f32 = @as(f32, @floatFromInt(newJuliaTarget.texture.width)) / @as(f32, @floatFromInt(MandalbrotViewModel.juliaTarget.texture.width));
+                const heightScale: f32 = @as(f32, @floatFromInt(newJuliaTarget.texture.height)) / @as(f32, @floatFromInt(MandalbrotViewModel.juliaTarget.texture.height));
+                MandalbrotViewModel.position = raylib.Vector2{
+                    .x = MandalbrotViewModel.position.x * widthScale,
+                    .y = MandalbrotViewModel.position.y * heightScale,
+                };
+                Common.Log.Info_Formatted("new x position: {}", .{MandalbrotViewModel.position.x});
+
+                raylib.BeginTextureMode(newJuliaTarget);
+                raylib.DrawTexturePro(
+                    MandalbrotViewModel.juliaTarget.texture,
+                    raylib.Rectangle{
+                        .x = 0,
+                        .y = 0,
+                        .width = @floatFromInt(MandalbrotViewModel.juliaTarget.texture.width),
+                        .height = @floatFromInt(-MandalbrotViewModel.juliaTarget.texture.height),
+                    },
+                    raylib.Rectangle{
+                        .x = 0,
+                        .y = 0,
+                        .width = @floatFromInt(newJuliaTarget.texture.width),
+                        .height = @floatFromInt(newJuliaTarget.texture.height),
+                    },
+                    raylib.Vector2{
+                        .x = 0,
+                        .y = 0,
+                    },
+                    0,
+                    raylib.WHITE,
+                );
+                raylib.EndTextureMode();
+                
                 raylib.UnloadRenderTexture(MandalbrotViewModel.juliaTarget);
-                MandalbrotViewModel.juliaTarget = raylib.LoadRenderTexture(@intFromFloat(screenSize.x + 100), @intFromFloat(screenSize.y + 100));
+                MandalbrotViewModel.juliaTarget = newJuliaTarget;
 
                 raylib.UnloadRenderTexture(MandalbrotViewModel.waveTarget);
                 MandalbrotViewModel.waveTarget = raylib.LoadRenderTexture(@intFromFloat(screenSize.x + 100), @intFromFloat(screenSize.y + 100));
@@ -70,7 +104,7 @@ pub const MandalbrotView = Common.ViewLocator.createView(
                 };
             }
 
-            const movMod = 0.5;
+            const movMod = 0.0;
             MandalbrotViewModel.position = raylib.Vector2{
                 .x = if (MandalbrotViewModel.incrementX) MandalbrotViewModel.position.x + movMod else MandalbrotViewModel.position.x - movMod,
                 .y = if (MandalbrotViewModel.incrementY) MandalbrotViewModel.position.y + movMod else MandalbrotViewModel.position.y - movMod,

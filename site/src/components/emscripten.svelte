@@ -20,7 +20,7 @@
 
 			const messagePostInterval = 20;
 			const workerMessageRateLimiter = new RateLimiter(10, messagePostInterval);
-			const workerResizeMessageRateLimiter = new RateLimiter(1, messagePostInterval);
+			const workerResizeMessageRateLimiter = new RateLimiter(2, messagePostInterval);
 			const messageQueue = new HashMapQueue<IPCMessage>((e) => e.hash());
 
 			const listeners: ((e: Event) => void)[] = [];
