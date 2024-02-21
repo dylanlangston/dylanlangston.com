@@ -14,6 +14,16 @@ a {
   scrollbar-color: black transparent;
 }
 
+.background-overlay {
+  @apply pointer-events-none shadow-inner shadow-black w-full h-full top-0 left-0 fixed animate-[fade-in_1s_linear];
+}
+
 .loader {
   @apply animate-loader w-1 rounded-full aspect-square text-rainbow;
+}
+
+.glass {
+  filter: blur(6px);
+  backdrop-filter: blur(0px);
+  @apply shadow-lg shadow-black/[.5] outline outline-1 outline-black/[0.15] animate-blur-in;
 }

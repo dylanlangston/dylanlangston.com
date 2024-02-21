@@ -9,6 +9,8 @@ export default {
 		colors: {
 			transparent: 'transparent',
 			current: 'currentColor',
+			black: colors.black,
+			white: colors.white,
 			slate: colors.slate,
 			gray: colors.gray,
 			zinc: colors.zinc,
@@ -36,9 +38,30 @@ export default {
 		extend: {
 			keyframes: {
 				'background-hue-rotate': {
-					'to': {
-						filter: 'hue-rotate(360deg)'
-					}
+					to: {
+						'filter': 'hue-rotate(360deg)'
+					},
+					// '0%': {
+					// 	'background-color': 'red'
+					// },
+					// '16.67%': {
+					// 	'background-color': 'orange'
+					// },
+					// '33.34%': {
+					// 	'background-color': 'yellow'
+					// },
+					// '50%': {
+					// 	'background-color': 'green'
+					// },
+					// '66.67%': {
+					// 	'background-color': 'blue'
+					// },
+					// '83.34%': {
+					// 	'background-color': 'purple'
+					// },
+					// '100%': {
+					// 	'background-color': 'red'
+					// },
 				},
 				'loader': {
 					'0%, 20%': { 'box-shadow': '10vw 0 0 2vw, 3.5vw 0 0 2vw, -3.5vw 0 0 2vw, -10vw 0 0 2vw' },
@@ -52,33 +75,40 @@ export default {
 					'0%': {
 						'filter': 'hue-rotate(180deg) drop-shadow(0px 0px 3vh red)'
 					},
-					'14.3%': {
+					'16.67%': {
 						'filter': 'hue-rotate(180deg) drop-shadow(0px 0px 5vh orange)'
 					},
-					'28.6%': {
+					'33.34%': {
 						'filter': 'hue-rotate(180deg) drop-shadow(0px 0px 3vh yellow)'
 					},
-					'42.9%': {
+					'50%': {
 						'filter': 'hue-rotate(180deg) drop-shadow(0px 0px 5vh green)'
 					},
-					'57.2%': {
+					'66.67%': {
 						'filter': 'hue-rotate(180deg) drop-shadow(0px 0px 3vh blue)'
 					},
-					'71.5%': {
+					'83.34%': {
 						'filter': 'hue-rotate(180deg) drop-shadow(0px 0px 5vh purple)'
 					},
-					'85.8%': {
-						'filter': 'hue-rotate(180deg) drop-shadow(0px 0px 3vh black)'
-					}
+					'100%': {
+						'filter': 'hue-rotate(180deg) drop-shadow(0px 0px 3vh red)'
+					},
 				},
 				'fade-in': {
 					'0%, 50%': { opacity: 0 },
 					'100%': { opacity: 1 },
+				},
+				'blur-in': {
+					'to': { 
+						'filter': 'blur(0)', 
+						'backdrop-filter': 'blur(16px)' 
+					},
 				}
 			},
 			animation: {
 				loader: 'loader 1s infinite linear alternate, loader-rotate 2s infinite ease, loader-shadow 9s infinite alternate, fade-in 2s',
-				background: 'background-hue-rotate 17s linear infinite'
+				background: 'background-hue-rotate 17s linear infinite alternate',
+				'blur-in': 'blur-in 150ms 250ms linear forwards',
 			}
 		},
 		fontFamily: {

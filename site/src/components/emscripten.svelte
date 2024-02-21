@@ -201,12 +201,12 @@
 		};
 	}
 
-	const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
+	const accessibilityRequested = useMediaQuery('(prefers-reduced-motion: reduce) or (forced-colors: active)');
 </script>
 
-{#if !$reducedMotion}
+{#if !$accessibilityRequested}
 	{#await loadFn() then canvas}
-		<div class="content -z-50" in:fade={{ duration: 500 }} use:setCanvas={{ canvas }} />
+		<div class="content -z-50" in:fade={{ duration: 500, delay: 500 }} use:setCanvas={{ canvas }} />
 	{:catch error}
 		<!-- Todo Dialog with Error Message -->
 		<div class="fixed top-0 left-0 bottom-0 right-0 z-1 bg-rainbow">

@@ -30,6 +30,8 @@
 		const config = originalAnimation(node, params);
 		return () => {
 			const animation = config();
+			const n = node;
+			const p = params;
 			return {
 				delay: animation?.delay,
 				duration: animation?.duration,
@@ -43,8 +45,12 @@
 							document.body.style.overflow = initialOverflow;
 						}, animation?.duration ?? 0);
 					}
+					const style = (animation?.css ?? (() => ""))(t, u);
+					console.log(style);
+					console.log(JSON.stringify(getComputedStyle(document.querySelector("header")).transitionDuration));
+					//debugger;
 					
-					return (animation?.css ?? (() => ""))(t, u);
+					return style;
 				}
 			};
 		};
@@ -88,14 +94,18 @@
 
 {#if loaded}
 	<div class="flex flex-col h-full" in:animateIn={{ key }}>
-		<Header />
+		<div in:blur|local={{ duration: 500, delay: 250  }}>
+			<Header />
+		</div>
 		<Emscripten />
 		{#key $page.url.pathname + loaded + $page.error}
 			<main class="flex-1" in:blur|local={{ duration: 250, delay: 50, opacity: 0.25 }}>
 				<slot />
 			</main>
 		{/key}
-		<Footer />
+		<div in:blur|local={{ duration: 500, delay: 250 }}>
+			<Footer />
+		</div>
 	</div>
 {:else}
 	<noscript class="flex flex-col h-full">
@@ -112,7 +122,7 @@
 			</StatusContainer>
 		</main>
 	</noscript>
-	<div class="jsonly absolute top-1/2 left-1/2" out:animateOut={{ key }}>
+	<div class="jsonly absolute top-1/2 left-1/2 animate-background" out:animateOut={{ key }}>
 		<div class="loader"></div>
 	</div>
 {/if}

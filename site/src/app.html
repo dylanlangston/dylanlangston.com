@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="w-full h-full bg-rainbow animate-background">
+<html lang="en" class="w-full h-full">
 
 <head>
 	<meta charset="utf-8" />
@@ -9,7 +9,8 @@
 	%sveltekit.head%
 </head>
 
-<body class="h-full w-full absolute" data-sveltekit-preload-data="hover">
+<body class="h-full w-full bg-rainbow" data-sveltekit-preload-data="hover">
+	<div class="-z-50 w-full h-full fixed bg-rainbow animate-background"></div>
 	<div class="contents h-full z-1">%sveltekit.body%</div>
 	<div class="background-overlay"></div>
 </body>

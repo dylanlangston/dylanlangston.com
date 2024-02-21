@@ -2,7 +2,7 @@
   import { MailIcon, LinkedinIcon, GithubIcon, } from 'svelte-feather-icons'
 </script>
 
-<footer class="py-1 border-t bg-gray-800/50">
+<footer class="py-1 glass">
 	<div class="container mx-auto md:space-y-12">
 		<div class="grid justify-center lg:justify-between">
 			<div class="static flex justify-center space-x-4 lg:col-start-1">
