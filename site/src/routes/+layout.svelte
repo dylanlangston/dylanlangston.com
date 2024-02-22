@@ -8,6 +8,7 @@
 
 	import { page } from '$app/stores';
 	import StatusContainer from '../components/status-container.svelte';
+	import MouseCursor from '../components/mouse-cursor.svelte';
 
 	import { onMount } from 'svelte';
 	import { fade, blur, fly, slide, scale, crossfade } from 'svelte/transition';
@@ -76,6 +77,7 @@
 	<link rel="preload" href="dylanlangston.com.wasm" as="fetch" />
 
 	<!-- GTAG Partytown 🕶️ -->
+	<!-- GTAG Partytown 🕶️ -->
 	<script>
 		// Forward the necessary functions to the web worker layer
 		partytown = {
@@ -98,42 +100,51 @@
 		gtag('config', 'G-VXRC4ZZ8Q9');
 	</script>
 </svelte:head>
-
-{#if loaded}
-	<div class="flex flex-col h-full w-full overflow-x-hidden overflow-y-auto" in:animateIn={{ key }} bind:this={main}>
-		<div class="w-screen" in:blur|local={{ duration: 500, delay: 250 }}>
-			<Header />
-		</div>
-		<Emscripten />
-		{#key $page.url.pathname + loaded + $page.error}
-			<main class="flex-1 md:w-screen" in:blur|local={{ duration: 250, delay: 50, opacity: 0.25 }}>
-				<div class="overflow-x-auto h-full">
-					<div class="flex h-full">
-						<slot />
+<div class="w-full h-full {!loaded ? 'cursor-progress' : 'cursor-none'}">
+	{#if loaded}
+		<div
+			class="flex flex-col h-full w-full overflow-x-hidden overflow-y-auto"
+			in:animateIn={{ key }}
+			bind:this={main}
+		>
+			<div class="w-screen" in:blur|local={{ duration: 500, delay: 250 }}>
+				<Header />
+			</div>
+			<Emscripten />
+			{#key $page.url.pathname + loaded + $page.error}
+				<main
+					class="flex-1 md:w-screen"
+					in:blur|local={{ duration: 250, delay: 50, opacity: 0.25 }}
+				>
+					<div class="overflow-x-auto h-full">
+						<div class="flex h-full">
+							<slot />
+						</div>
 					</div>
-				</div>
-			</main>
-		{/key}
-		<div class="w-screen" in:blur|local={{ duration: 500, delay: 250 }}>
-			<Footer />
+				</main>
+			{/key}
+			<div class="w-screen" in:blur|local={{ duration: 500, delay: 250 }}>
+				<Footer />
+			</div>
 		</div>
-	</div>
-{:else}
-	<noscript class="flex flex-col h-full">
-		<style>
-			.jsonly {
-				display: none;
-			}
-		</style>
-		<main class="flex-1">
-			<StatusContainer>
-				<svelte:fragment slot="status-slot">
-					<h1>This site requires JavaScript.<br/>Please enable to continue.</h1>
-				</svelte:fragment>
-			</StatusContainer>
-		</main>
-	</noscript>
-	<div class="jsonly absolute top-1/2 left-1/2 animate-background" out:animateOut={{ key }}>
-		<div class="loader"></div>
-	</div>
-{/if}
+		<MouseCursor />
+	{:else}
+		<noscript class="flex flex-col h-full">
+			<style>
+				.jsonly {
+					display: none;
+				}
+			</style>
+			<main class="flex-1">
+				<StatusContainer>
+					<svelte:fragment slot="status-slot">
+						<h1>This site requires JavaScript.<br />Please enable to continue.</h1>
+					</svelte:fragment>
+				</StatusContainer>
+			</main>
+		</noscript>
+		<div class="jsonly absolute top-1/2 left-1/2 animate-background" out:animateOut={{ key }}>
+			<div class="loader"></div>
+		</div>
+	{/if}
+</div>
