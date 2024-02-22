@@ -101,7 +101,7 @@ export default {
 				'blur-in': {
 					'to': { 
 						'filter': 'blur(0)', 
-						'backdrop-filter': 'blur(16px) saturate(150%)' 
+						'backdrop-filter': 'blur(16px)' 
 					},
 				}
 			},

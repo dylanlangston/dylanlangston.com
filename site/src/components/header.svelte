@@ -2,7 +2,7 @@
 	import { MenuIcon, } from 'svelte-feather-icons'
 </script>
 
-<header class="p-1 glass">
+<header class="p-1 glass px-4 md:px-8">
     <div class="container flex justify-between h-16 mx-auto">
 		<a rel="noopener noreferrer" href="/" aria-label="Back to homepage" class="flex items-center">
             DylanLangston.com

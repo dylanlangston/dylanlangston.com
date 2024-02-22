@@ -17,16 +17,25 @@
 	const key = 'main';
 	const [send, receive] = crossfade({
 		duration: 750,
-		easing: backOut,
+		easing: backOut
 	});
-	const animateIn = (node: any, params: { key: string }) => preventOverFlowOnAnimation(send, node, params)
-	const animateOut = (node: any, params: { key: string }) => preventOverFlowOnAnimation(receive, node, params)
-	function preventOverFlowOnAnimation(originalAnimation: (node: any, params: { key: string }) => () => {
-		delay?: number,
-		duration?: number,
-		easing?: any,
-		css?: (t: number, u: number) => string,
-	}, node: any, params: { key: string }) {
+	const animateIn = (node: any, params: { key: string }) =>
+		preventOverFlowOnAnimation(send, node, params);
+	const animateOut = (node: any, params: { key: string }) =>
+		preventOverFlowOnAnimation(receive, node, params);
+	function preventOverFlowOnAnimation(
+		originalAnimation: (
+			node: any,
+			params: { key: string }
+		) => () => {
+			delay?: number;
+			duration?: number;
+			easing?: any;
+			css?: (t: number, u: number) => string;
+		},
+		node: any,
+		params: { key: string }
+	) {
 		const config = originalAnimation(node, params);
 		return () => {
 			const animation = config();
@@ -39,21 +48,23 @@
 				css: (t: number, u: number) => {
 					// Set body overflow to hidden when animating
 					if (u == 0) {
-						const initialOverflow = document.body.style.overflow;
-						document.body.style.overflow = "hidden";
+						const initialOverflowMain = main!.style.overflow;
+						const initialOverflowBody = document.body.style.overflow;
+						main!.style.overflow = 'hidden';
+						document.body.style.overflow = 'hidden';
 						setTimeout(() => {
-							document.body.style.overflow = initialOverflow;
+							main!.style.overflow = initialOverflowMain;
+							document.body.style.overflow = initialOverflowBody;
 						}, animation?.duration ?? 0);
 					}
-					const style = (animation?.css ?? (() => ""))(t, u);
-					return style;
+					return (animation?.css ?? (() => ''))(t, u);
 				}
 			};
 		};
 	}
 
-
 	let loaded: boolean = false;
+	let main: HTMLDivElement | undefined = undefined;
 
 	onMount(() => (loaded = true));
 </script>
@@ -89,17 +100,21 @@
 </svelte:head>
 
 {#if loaded}
-	<div class="flex flex-col h-full" in:animateIn={{ key }}>
-		<div in:blur|local={{ duration: 500, delay: 250  }}>
+	<div class="flex flex-col h-full w-full overflow-x-hidden overflow-y-auto" in:animateIn={{ key }} bind:this={main}>
+		<div class="w-screen" in:blur|local={{ duration: 500, delay: 250 }}>
 			<Header />
 		</div>
 		<Emscripten />
 		{#key $page.url.pathname + loaded + $page.error}
-			<main class="flex-1" in:blur|local={{ duration: 250, delay: 50, opacity: 0.25 }}>
-				<slot />
+			<main class="flex-1 md:w-screen" in:blur|local={{ duration: 250, delay: 50, opacity: 0.25 }}>
+				<div class="overflow-x-auto h-full">
+					<div class="flex h-full">
+						<slot />
+					</div>
+				</div>
 			</main>
 		{/key}
-		<div in:blur|local={{ duration: 500, delay: 250 }}>
+		<div class="w-screen" in:blur|local={{ duration: 500, delay: 250 }}>
 			<Footer />
 		</div>
 	</div>
