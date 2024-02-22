@@ -12,7 +12,7 @@
 	<svelte:fragment slot="status-slot">
 		<h1>¯\_(ツ)_/¯<br />An error has occurred, sorry!</h1>
 		{#if $page.error}
-			<hr class="h-0.5 lg:h-1 bg-black rounded-lg" />
+			<hr class="h-0.5 lg:h-1 bg-black border-transparent rounded-lg" />
 			<div class="text-xl lg:text-3xl font-normal text-left px-4 pt-2">
 				{#if $page?.status}
 					<p><i class="italic">Status:</i> {$page?.status}</p>

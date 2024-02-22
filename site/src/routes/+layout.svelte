@@ -128,7 +128,7 @@
 		<main class="flex-1">
 			<StatusContainer>
 				<svelte:fragment slot="status-slot">
-					<h1>Please enable Javascript.</h1>
+					<h1>This site requires JavaScript.<br/>Please enable to continue.</h1>
 				</svelte:fragment>
 			</StatusContainer>
 		</main>
