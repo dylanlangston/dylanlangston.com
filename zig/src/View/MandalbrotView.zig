@@ -59,7 +59,7 @@ pub const MandalbrotView = Common.ViewLocator.createView(
                     raylib.WHITE,
                 );
                 raylib.EndTextureMode();
-                
+
                 raylib.UnloadRenderTexture(MandalbrotViewModel.juliaTarget);
                 MandalbrotViewModel.juliaTarget = newJuliaTarget;
 
@@ -104,7 +104,7 @@ pub const MandalbrotView = Common.ViewLocator.createView(
                 };
             }
 
-            const movMod = 0.0;
+            const movMod = 0.35;
             MandalbrotViewModel.position = raylib.Vector2{
                 .x = if (MandalbrotViewModel.incrementX) MandalbrotViewModel.position.x + movMod else MandalbrotViewModel.position.x - movMod,
                 .y = if (MandalbrotViewModel.incrementY) MandalbrotViewModel.position.y + movMod else MandalbrotViewModel.position.y - movMod,
