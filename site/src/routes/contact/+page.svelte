@@ -51,7 +51,7 @@
 						class="w-full mt-2 h-36 px-3 py-2 resize-none appearance-none bg-transparent outline-none border border-black shadow-sm rounded-lg"
 					></textarea>
 				</div>
-				<button class="w-full px-4 py-2 font-medium rounded-lg duration-150"> Submit </button>
+				<button class="w-full px-4 py-2 font-medium rounded-lg duration-150 hover:shadow-md hover:bg-rainbow transition-colors"> Submit </button>
 			</form>
 		</div>
 	</svelte:fragment>

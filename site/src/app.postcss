@@ -10,8 +10,13 @@ a {
 	-webkit-tap-highlight-color: transparent;
 }
 
+::selection {
+  color: white;
+  background: var(--Rainbow);
+}
+
 * {
-  scrollbar-color: color-mix(in srgb, color-mix(in hsl increasing hue, var(--Rainbow) 90%, black) 90%, transparent) color-mix(in srgb, color-mix(in hsl increasing hue, var(--Rainbow) 80%, white) 75%, transparent);
+  scrollbar-color: color-mix(in srgb, color-mix(in hsl increasing hue, var(--Rainbow) 95%, black) 90%, transparent) color-mix(in srgb, color-mix(in hsl increasing hue, var(--Rainbow) 80%, white) 75%, transparent);
 }
 
 .background-overlay {
@@ -28,10 +33,15 @@ a {
   background: linear-gradient(
     130deg, 
     color-mix(in srgb, var(--Rainbow) 25%, transparent), 
-    color-mix(in srgb, color-mix(in hsl increasing hue, var(--Rainbow) 80%, white) 75%, transparent)
-    , 
+    color-mix(in srgb, color-mix(in hsl increasing hue, var(--Rainbow) 80%, white) 75%, transparent), 
     70%, 
     color-mix(in srgb, var(--Rainbow) 25%, transparent)
     );
   @apply shadow-lg shadow-black/[.5] outline outline-1 outline-black/[0.15] animate-glass;
+}
+
+.glass-no-animate {
+  filter: blur(0px) !important;
+  backdrop-filter: blur(16px) !important;
+  @apply glass;
 }

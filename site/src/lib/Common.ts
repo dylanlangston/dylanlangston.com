@@ -3,7 +3,7 @@ import { readable, writable, get } from 'svelte/store';
 
 
 export class Environment {
-    private constructor() {}
+    private constructor() { }
 
     public static get Dev(): boolean {
         return import.meta.env.MODE == 'development';
@@ -11,13 +11,14 @@ export class Environment {
 
     private static detector = new BrowserDetector();
 
-    private static _mobile?: boolean = undefined;
-    public static get isMobile(): boolean {
-        if (this._mobile === undefined) {
-            this._mobile = this.detector.parseUserAgent().isMobile;
-        }
-        return this._mobile;
-    }
+    public static isMobile = readable(false, (set: (value: boolean) => void) => {
+        const listener = (e: Event) => {
+            set(this.detector.parseUserAgent(window.navigator.userAgent).isMobile);
+        };
+        window.addEventListener("resize", listener);
+        set(this.detector.parseUserAgent(window.navigator.userAgent).isMobile);
+        return () => { window.removeEventListener("resize", listener); };
+    });
 }
 
 export const sanitizeEvent = <T>(e: any, n: number = 0): T => {
@@ -63,16 +64,16 @@ export const sanitizeEvent = <T>(e: any, n: number = 0): T => {
 // https://stackoverflow.com/a/52171480
 export const hash = (str: string, seed: number = 0): number => {
     let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
-    for(let i = 0, ch; i < str.length; i++) {
+    for (let i = 0, ch; i < str.length; i++) {
         ch = str.charCodeAt(i);
         h1 = Math.imul(h1 ^ ch, 2654435761);
         h2 = Math.imul(h2 ^ ch, 1597334677);
     }
-    h1  = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
     h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
-    h2  = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
     h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
-  
+
     return 4294967296 * (2097151 & h2) + (h1 >>> 0);
 };
 
@@ -86,19 +87,19 @@ export class RateLimiter {
     }
     shouldAllow(timestamp: number = Date.now()): boolean {
         const diff = timestamp - this.timeFrameSize;
-        while (this.queue[this.queue.length - 1] <= diff ) { 
+        while (this.queue[this.queue.length - 1] <= diff) {
             this.queue.pop();
         }
-        if(this.queue.length < this.allowedRequests){
+        if (this.queue.length < this.allowedRequests) {
             this.queue.unshift(timestamp);
             return true;
-        }else{
+        } else {
             return false
         }
     }
 }
 
-export interface IHashMap<Type> { [indexer: number] : Type }
+export interface IHashMap<Type> { [indexer: number]: Type }
 
 export class HashMapQueue<Type> {
     hashFunction: (t: Type) => number;
@@ -139,26 +140,26 @@ export class HashMapQueue<Type> {
     }
 }
 
-export const useMediaQuery = (mediaQueryString: string)=>{
-      const matches = readable(false, (set: (value: boolean) => void) => {
-          const m=window.matchMedia(mediaQueryString);
-          set(m.matches);
-          const el = (e: MediaQueryListEvent) => set(e.matches);
-          m.addEventListener("change", el);
-          return () => {m.removeEventListener("change", el)};
-      });
-      return matches;
+export const useMediaQuery = (mediaQueryString: string) => {
+    const matches = readable(false, (set: (value: boolean) => void) => {
+        const m = window.matchMedia(mediaQueryString);
+        set(m.matches);
+        const el = (e: MediaQueryListEvent) => set(e.matches);
+        m.addEventListener("change", el);
+        return () => { m.removeEventListener("change", el) };
+    });
+    return matches;
 }
 
 (<any>globalThis).saveFileFromMEMFSToDisk = (memoryFSname: string, localFSname: string) => {
-	const data = FS.readFile(memoryFSname);
-	const blob = new Blob([data.buffer], { type: 'application/octet-binary' });
+    const data = FS.readFile(memoryFSname);
+    const blob = new Blob([data.buffer], { type: 'application/octet-binary' });
 
-	const blobUrl = URL.createObjectURL(blob);
+    const blobUrl = URL.createObjectURL(blob);
 
-	const link = document.createElement('a');
-	link.href = blobUrl;
-	link.target = '_blank';
-	link.download = localFSname;
-	link.click();
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.target = '_blank';
+    link.download = localFSname;
+    link.click();
 };

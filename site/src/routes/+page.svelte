@@ -7,6 +7,8 @@
 	let loaded: boolean = false;
 
 	onMount(() => (loaded = true));
+
+	const mobile = Environment.isMobile;
 </script>
 
 <Panel>
@@ -14,7 +16,7 @@
 		<div class="space-y-3 mx-2">
 			{#if loaded}
 				<h1 class="text-center text-2xl lg:text-6xl font-bold">
-					Hello {Environment.isMobile ? 'Mobile' : 'Desktop'} HTML World
+					Hello {$mobile ? 'Mobile' : 'Desktop'} HTML World
 				</h1>
 			{/if}
 		</div>
