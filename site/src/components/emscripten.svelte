@@ -162,8 +162,8 @@
 			'bottom-0',
 			'left-0',
 			'right-0',
-			'w-full',
-			'h-full',
+			'w-lvw',
+			'h-lvh',
 			'-z-50',
 			'animate-background'
 		);
@@ -210,16 +210,6 @@
 		<div class="-z-50" in:fade={{ duration: 500, delay: 500 }} use:setCanvas={{ canvas }} />
 	{:catch error}
 		<!-- Todo Dialog with Error Message -->
-		<div class="fixed top-0 left-0 bottom-0 right-0 z-1 bg-rainbow">
-			<StatusContainer>
-				<svelte:fragment slot="status-slot">
-					<h1>¯\_(ツ)_/¯<br />An error has occurred, sorry!</h1>
-					<hr class="h-0.5 lg:h-1 bg-black rounded-lg" />
-					<div class="text-xl lg:text-3xl font-normal text-left px-4 pt-2">
-						<p><i class="italic">Error Message:</i> {error}</p>
-					</div>
-				</svelte:fragment>
-			</StatusContainer>
-		</div>
+
 	{/await}
 {/if}
