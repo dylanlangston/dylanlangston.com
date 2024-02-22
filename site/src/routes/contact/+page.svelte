@@ -1,5 +1,9 @@
-<div class="max-w-screen-xl mx-auto px-4 md:px-8 py-8">
-	<div class="py-4 mx-auto w-fit rounded-lg glass">
+<script>
+	import Panel from '../../components/panel.svelte';
+</script>
+
+<Panel>
+	<svelte:fragment>
 		<div class="max-w-lg space-y-3 sm:text-center mx-auto w-max">
 			<p class="text-3xl font-semibold sm:text-4xl">Get in touch</p>
 		</div>
@@ -47,10 +51,8 @@
 						class="w-full mt-2 h-36 px-3 py-2 resize-none appearance-none bg-transparent outline-none border border-black shadow-sm rounded-lg"
 					></textarea>
 				</div>
-				<button class="w-full px-4 py-2 font-medium rounded-lg duration-150">
-					Submit
-				</button>
+				<button class="w-full px-4 py-2 font-medium rounded-lg duration-150"> Submit </button>
 			</form>
 		</div>
-	</div>
-</div>
+	</svelte:fragment>
+</Panel>
