@@ -17,20 +17,20 @@
 
 	let themeButton: HTMLInputElement | undefined = undefined;
 
+	const darkModeMediaQuery = useMediaQuery('(prefers-color-scheme: dark)');
 	let darkModeOverride: ((value: boolean) => void) | undefined = undefined;
-	const darkModeOverrideReadable = () => {
+	const darkModeMediaQueryOverride = () => {
 		const matches = readable(false, (set: (value: boolean) => void) => {
 			darkModeOverride = set;
-			const darkMode = useMediaQuery('(prefers-color-scheme: dark)');
-			const unsub = darkMode.subscribe(
+			const unsub = darkModeMediaQuery.subscribe(
 				(run) => set(run),
-				(invalidate) => toggleTheme(!get(darkMode))
+				(invalidate) => toggleTheme(!get(darkModeMediaQuery))
 			);
 			return unsub;
 		});
 		return matches;
 	};
-	const darkMode = darkModeOverrideReadable();
+	const darkMode = darkModeMediaQueryOverride();
 
 	function toggleTheme(override: boolean | undefined = undefined): void {
 		if ((override != undefined && override) || (override == undefined && get(darkMode) == true)) {
@@ -70,14 +70,14 @@
 				class="theme-toggle h-fit my-auto rounded-full p-2 mx-2 hover:shadow-md hover:bg-rainbow"
 				title="Toggle theme"
 			>
-				<input
-					type="checkbox"
-					checked={$darkMode}
-					on:click={(e) => toggleTheme()}
-					bind:this={themeButton}
-				/>
-				<span class="theme-toggle-sr">Toggle theme</span>
-				<Ripple fullscreen={true}>
+				<Ripple classList={'theme-toggle'} fullscreen={true}>
+					<input
+						type="checkbox"
+						checked={$darkMode}
+						on:click={(e) => toggleTheme()}
+						bind:this={themeButton}
+					/>
+					<span class="theme-toggle-sr">Toggle theme</span>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						aria-hidden="true"
