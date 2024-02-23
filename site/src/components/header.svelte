@@ -61,9 +61,11 @@
 
 <header class="p-1 glass px-4 md:px-8">
 	<nav class="container flex justify-between h-16 mx-auto">
-		<a rel="noopener noreferrer" href="/" aria-label="Back to homepage" class="flex items-center">
-			<Ripple escapeParent={true}>Dylan Langston.com</Ripple>
-		</a>
+		<Ripple classList="flex h-full items-center" escapeParent={true}>
+			<a rel="noopener noreferrer" href="/" aria-label="Back to homepage">
+				Dylan Langston.com
+			</a>
+		</Ripple>
 
 		<div class="flex content-center justify-end mr-0 ml-auto">
 			<label
