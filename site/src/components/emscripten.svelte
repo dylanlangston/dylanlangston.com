@@ -205,7 +205,7 @@
 </script>
 
 {#await loadFn() then canvas}
-	<div class="-z-50" in:fade={{ duration: 500, delay: 500 }} use:setCanvas={{ canvas }} />
+	<div class="-z-50" in:fade={{ duration: 500, delay: 800 }} use:setCanvas={{ canvas }} />
 {:catch error}
 	<!-- Todo Dialog with Error Message -->
 {/await}

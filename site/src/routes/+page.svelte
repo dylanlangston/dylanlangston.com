@@ -13,7 +13,7 @@
 
 <Panel>
 	<svelte:fragment>
-		<div class="space-y-3 mx-2">
+		<div class="space-y-3 mx-2 lg:m-4">
 			{#if loaded}
 				<h1 class="text-center text-2xl lg:text-6xl font-bold">
 					Hello {$mobile ? 'Mobile' : 'Desktop'} HTML World

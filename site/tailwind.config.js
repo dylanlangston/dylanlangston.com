@@ -112,7 +112,7 @@ export default {
 			animation: {
 				loader: 'loader 1s infinite linear alternate, loader-rotate 2s infinite ease, loader-shadow 9s infinite alternate, fade-in 2s',
 				background: 'background-hue-rotate 17s linear infinite alternate',
-				glass: 'blur-in 200ms 250ms linear forwards',
+				glass: 'blur-in 200ms 300ms linear forwards',
 			}
 		},
 		fontFamily: {

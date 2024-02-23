@@ -1,5 +1,7 @@
 <script lang="ts">
 	/**
+	 * Source: https://svelte.dev/repl/4430fde7d42a4b03845d81411e701702?version=3.57.0
+	 * 
 	 * Defines the classic Material Design ripple effect as an action. `ripple` is a wrapper around the returned action.
 	 * This allows it to be easily used as a prop.
 	 *
@@ -16,11 +18,13 @@
 			function createRipple(e: MouseEvent) {
 				const elementRect = element.getBoundingClientRect();
 
-				const diameter = (escapeParent || fullscreen) ? Math.max(window.innerWidth, window.innerHeight) : Math.max(elementRect.width, elementRect.height);
+				const useInternalElement = !(escapeParent || fullscreen);
+
+				const diameter = useInternalElement ? Math.max(elementRect.width, elementRect.height) : Math.max(window.innerWidth, window.innerHeight);
 
 				const radius = diameter / 2;
-				const left = `${e.x - radius}px`;
-				const top = `${e.y - radius}px`;
+				const left = `${useInternalElement ? (e.x - elementRect.x - radius) : (e.x - radius)}px`;
+				const top = `${useInternalElement ? (e.y - elementRect.y - radius) : (e.y - radius)}px`;
 
 				const span = document.createElement('span');
 				span.style.width = `${diameter}px`;
@@ -30,6 +34,7 @@
 				span.style.position = 'absolute';
 				span.style.borderRadius = '50%';
 				span.style.backgroundColor = `var(--color-effect-ripple, ${color})`;
+				span.style.pointerEvents = "none";
 
                 let div: HTMLDivElement | undefined = undefined;
                 if (escapeParent) {
