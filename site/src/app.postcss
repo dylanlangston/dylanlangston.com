@@ -42,7 +42,7 @@ a {
       color-mix(in srgb, var(--Rainbow) 25%, transparent)
       );
   transition: opacity 0.5s linear;
-  @apply top-0 bottom-0 left-0 right-0 absolute content-[''] opacity-0 -z-10;
+  @apply top-0 bottom-0 left-0 right-0 absolute content-[''] opacity-0 -z-10 rounded-lg;
 }
 .glass::after {
   background: linear-gradient(
@@ -53,7 +53,7 @@ a {
     color-mix(in srgb, var(--Rainbow) 25%, transparent)
     );
   transition: opacity 0.5s linear;
-  @apply top-0 bottom-0 left-0 right-0 absolute content-[''] opacity-100 -z-10;
+  @apply top-0 bottom-0 left-0 right-0 absolute content-[''] opacity-100 -z-10 rounded-lg;
 }
 
 .glass-no-animate {

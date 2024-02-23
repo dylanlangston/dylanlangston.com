@@ -2,9 +2,8 @@
 	import { fade, blur, fly, slide, scale } from 'svelte/transition';
 	import { readable, writable, get } from 'svelte/store';
 
-	import Panel from './panel.svelte';
-	import { Environment } from '$lib/Common';
-	import { invalidate } from '$app/navigation';
+	import Ripple from './ripple.svelte';
+	import { useMediaQuery } from '$lib/Common';
 
 	import { onMount } from 'svelte';
 
@@ -22,9 +21,10 @@
 	const darkModeOverrideReadable = () => {
 		const matches = readable(false, (set: (value: boolean) => void) => {
 			darkModeOverride = set;
-			const unsub = Environment.darkMode.subscribe(
+			const darkMode = useMediaQuery('(prefers-color-scheme: dark)');
+			const unsub = darkMode.subscribe(
 				(run) => set(run),
-				(invalidate) => toggleTheme(!get(Environment.darkMode))
+				(invalidate) => toggleTheme(!get(darkMode))
 			);
 			return unsub;
 		});
@@ -62,8 +62,9 @@
 <header class="p-1 glass px-4 md:px-8">
 	<nav class="container flex justify-between h-16 mx-auto">
 		<a rel="noopener noreferrer" href="/" aria-label="Back to homepage" class="flex items-center">
-			Dylan Langston.com
+			<Ripple escapeParent={true}>Dylan Langston.com</Ripple>
 		</a>
+
 		<div class="flex content-center justify-end mr-0 ml-auto">
 			<label
 				class="theme-toggle h-fit my-auto rounded-full p-2 mx-2 hover:shadow-md hover:bg-rainbow"
@@ -76,77 +77,82 @@
 					bind:this={themeButton}
 				/>
 				<span class="theme-toggle-sr">Toggle theme</span>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					aria-hidden="true"
-					class="theme-toggle__within"
-					height="24px"
-					width="24px"
-					viewBox="0 0 32 32"
-					fill="currentColor"
-				>
-					<clipPath id="theme-toggle__within__clip">
-						<path d="M0 0h32v32h-32ZM6 16A1 1 0 0026 16 1 1 0 006 16" />
-					</clipPath>
-					<g clip-path="url(#theme-toggle__within__clip)">
+				<Ripple fullscreen={true}>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						aria-hidden="true"
+						class="theme-toggle__within"
+						height="24px"
+						width="24px"
+						viewBox="0 0 32 32"
+						fill="currentColor"
+					>
+						<clipPath id="theme-toggle__within__clip">
+							<path d="M0 0h32v32h-32ZM6 16A1 1 0 0026 16 1 1 0 006 16" />
+						</clipPath>
+						<g clip-path="url(#theme-toggle__within__clip)">
+							<path
+								d="M30.7 21.3 27.1 16l3.7-5.3c.4-.5.1-1.3-.6-1.4l-6.3-1.1-1.1-6.3c-.1-.6-.8-.9-1.4-.6L16 5l-5.4-3.7c-.5-.4-1.3-.1-1.4.6l-1 6.3-6.4 1.1c-.6.1-.9.9-.6 1.3L4.9 16l-3.7 5.3c-.4.5-.1 1.3.6 1.4l6.3 1.1 1.1 6.3c.1.6.8.9 1.4.6l5.3-3.7 5.3 3.7c.5.4 1.3.1 1.4-.6l1.1-6.3 6.3-1.1c.8-.1 1.1-.8.7-1.4zM16 25.1c-5.1 0-9.1-4.1-9.1-9.1 0-5.1 4.1-9.1 9.1-9.1s9.1 4.1 9.1 9.1c0 5.1-4 9.1-9.1 9.1z"
+							/>
+						</g>
 						<path
-							d="M30.7 21.3 27.1 16l3.7-5.3c.4-.5.1-1.3-.6-1.4l-6.3-1.1-1.1-6.3c-.1-.6-.8-.9-1.4-.6L16 5l-5.4-3.7c-.5-.4-1.3-.1-1.4.6l-1 6.3-6.4 1.1c-.6.1-.9.9-.6 1.3L4.9 16l-3.7 5.3c-.4.5-.1 1.3.6 1.4l6.3 1.1 1.1 6.3c.1.6.8.9 1.4.6l5.3-3.7 5.3 3.7c.5.4 1.3.1 1.4-.6l1.1-6.3 6.3-1.1c.8-.1 1.1-.8.7-1.4zM16 25.1c-5.1 0-9.1-4.1-9.1-9.1 0-5.1 4.1-9.1 9.1-9.1s9.1 4.1 9.1 9.1c0 5.1-4 9.1-9.1 9.1z"
+							class="theme-toggle__within__circle"
+							d="M16 7.7c-4.6 0-8.2 3.7-8.2 8.2s3.6 8.4 8.2 8.4 8.2-3.7 8.2-8.2-3.6-8.4-8.2-8.4zm0 14.4c-3.4 0-6.1-2.9-6.1-6.2s2.7-6.1 6.1-6.1c3.4 0 6.1 2.9 6.1 6.2s-2.7 6.1-6.1 6.1z"
 						/>
-					</g>
-					<path
-						class="theme-toggle__within__circle"
-						d="M16 7.7c-4.6 0-8.2 3.7-8.2 8.2s3.6 8.4 8.2 8.4 8.2-3.7 8.2-8.2-3.6-8.4-8.2-8.4zm0 14.4c-3.4 0-6.1-2.9-6.1-6.2s2.7-6.1 6.1-6.1c3.4 0 6.1 2.9 6.1 6.2s-2.7 6.1-6.1 6.1z"
-					/>
-					<path
-						class="theme-toggle__within__inner"
-						d="M16 9.5c-3.6 0-6.4 2.9-6.4 6.4s2.8 6.5 6.4 6.5 6.4-2.9 6.4-6.4-2.8-6.5-6.4-6.5z"
-					/>
-				</svg>
+						<path
+							class="theme-toggle__within__inner"
+							d="M16 9.5c-3.6 0-6.4 2.9-6.4 6.4s2.8 6.5 6.4 6.5 6.4-2.9 6.4-6.4-2.8-6.5-6.4-6.5z"
+						/>
+					</svg>
+				</Ripple>
 			</label>
 		</div>
 		<ul class="items-stretch hidden space-x-3 md:flex">
 			<li class="flex">
-				<a
-					rel="noopener noreferrer"
-					href="/about"
-					class="flex items-center -mb-1 border-b-4 border-transparent hover:border-rainbow"
-					>About</a
-				>
+				<Ripple classList={'flex h-full'} escapeParent={true}>
+					<a
+						rel="noopener noreferrer"
+						href="/about"
+						class="flex items-center -mb-1 border-b-4 border-transparent hover:border-rainbow"
+						>About</a
+					>
+				</Ripple>
 			</li>
 			<li class="flex">
-				<a
-					rel="noopener noreferrer"
-					href="/contact"
-					class="flex items-center -mb-1 border-b-4 border-transparent hover:border-rainbow"
-					>Contact</a
-				>
+				<Ripple classList={'flex h-full'} escapeParent={true}>
+					<a
+						rel="noopener noreferrer"
+						href="/contact"
+						class="flex items-center -mb-1 border-b-4 border-transparent hover:border-rainbow"
+						>Contact</a
+					>
+				</Ripple>
 			</li>
 		</ul>
 		<div class="flex items-center justify-end md:hidden">
-			<div class="relative inline-block">
-				<!-- Button -->
-				{#key $darkMode}
-					<button
-						class="hamburger dark:darkburger hamburger--spin inline-flex gap-2 rounded-full px-2 pt-2 mx-2 hover:shadow-md hover:bg-rainbow cursor-pointer"
-						class:darkburger={$darkMode}
-						type="button"
-						title="Menu"
-						aria-label="Menu"
-						aria-controls="navigation"
-						aria-expanded={menuOpen}
-						class:is-active={menuOpen}
-						in:fade|local={{ duration: 250 }}
-						on:click|preventDefault={(e) => {
-							menuOpen = !menuOpen;
-						}}
-						bind:this={menuButton}
-					>
+			{#key $darkMode}
+				<button
+					class="hamburger dark:darkburger hamburger--spin inline-flex gap-2 rounded-full px-2 pt-2 mx-2 hover:shadow-md hover:bg-rainbow cursor-pointer"
+					class:darkburger={$darkMode}
+					type="button"
+					title="Menu"
+					aria-label="Menu"
+					aria-controls="navigation"
+					aria-expanded={menuOpen}
+					class:is-active={menuOpen}
+					in:fade|local={{ duration: 250 }}
+					on:click|preventDefault={(e) => {
+						menuOpen = !menuOpen;
+					}}
+					bind:this={menuButton}
+				>
+					<Ripple classList={'relative inline-block'} escapeParent={true}>
 						<span class="hamburger-box">
 							<span class="hamburger-inner"></span>
 						</span>
-					</button>
-				{/key}
-			</div>
+					</Ripple>
+				</button>
+			{/key}
 		</div>
 	</nav>
 	<!-- Panel -->
@@ -156,16 +162,20 @@
 			in:slide|local={{ duration: 250 }}
 			out:slide|local={{ duration: 250 }}
 		>
-			<a
-				href="/about"
-				class="flex items-center rounded-md px-3 py-2 text-sm hover:shadow-md hover:bg-rainbow transition-colors duration-300"
-				>About</a
-			>
-			<a
-				href="/contact"
-				class="flex items-center rounded-md px-3 py-2 text-sm hover:shadow-md hover:bg-rainbow transition-colors duration-300"
-				>Contact</a
-			>
+			<Ripple color={'currentColor'}>
+				<a
+					href="/about"
+					class="flex items-center rounded-md px-3 py-2 text-sm hover:shadow-md hover:bg-rainbow transition-colors duration-300"
+					>About</a
+				>
+			</Ripple>
+			<Ripple color={'currentColor'}>
+				<a
+					href="/contact"
+					class="flex items-center rounded-md px-3 py-2 text-sm hover:shadow-md hover:bg-rainbow transition-colors duration-300"
+					>Contact</a
+				>
+			</Ripple>
 		</div>
 	{/if}
 </header>
@@ -176,9 +186,6 @@
  * @description Theme Toggle
  * @link https://toggles.dev/
  */
-	.theme-toggle.theme-toggle--reversed .theme-toggle__within {
-		transform: scale(-1, 1);
-	}
 	.theme-toggle {
 		--theme-toggle__within--duration: 500ms;
 	}

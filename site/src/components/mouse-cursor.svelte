@@ -65,7 +65,7 @@
 />
 
 {#if !$mobile}
-	<svg
+<svg
 		class="absolute top-0 left-0 w-screen h-screen pointer-events-none animate-background transition"
 	>
 		<circle

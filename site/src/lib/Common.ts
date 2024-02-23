@@ -152,10 +152,6 @@ export class Environment {
     public static accessibilityRequested = useMediaQuery(
 		'(prefers-reduced-motion: reduce) or (forced-colors: active)'
 	);
-
-    public static darkMode = useMediaQuery(
-        '(prefers-color-scheme: dark)'
-    );
 }
 
 (<any>globalThis).saveFileFromMEMFSToDisk = (memoryFSname: string, localFSname: string) => {
