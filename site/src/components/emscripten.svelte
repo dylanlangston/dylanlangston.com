@@ -165,7 +165,8 @@
 			'w-lvw',
 			'h-lvh',
 			'-z-50',
-			'animate-background'
+			'animate-background',
+			'transition'
 		);
 
 		canvasElement.width = window.innerWidth;
@@ -201,15 +202,10 @@
 			}
 		};
 	}
-
-	const accessibilityRequested = useMediaQuery('(prefers-reduced-motion: reduce) or (forced-colors: active)');
 </script>
 
-{#if !$accessibilityRequested}
-	{#await loadFn() then canvas}
-		<div class="-z-50" in:fade={{ duration: 500, delay: 500 }} use:setCanvas={{ canvas }} />
-	{:catch error}
-		<!-- Todo Dialog with Error Message -->
-
-	{/await}
-{/if}
+{#await loadFn() then canvas}
+	<div class="-z-50" in:fade={{ duration: 500, delay: 500 }} use:setCanvas={{ canvas }} />
+{:catch error}
+	<!-- Todo Dialog with Error Message -->
+{/await}

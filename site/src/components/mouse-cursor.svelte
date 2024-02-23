@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Environment } from '$lib/Common';
+	import { Environment, useMediaQuery } from '$lib/Common';
 	import { spring } from 'svelte/motion';
 	import { readable, writable, get } from 'svelte/store';
 	import { onMount } from 'svelte';
@@ -22,8 +22,7 @@
 
 	let size = spring(10, {
 		stiffness: 0.05,
-		damping: 0.35,
-		
+		damping: 0.35
 	});
 
 	let visible: boolean = false;
@@ -44,14 +43,14 @@
 			e.clientY >= window.innerHeight
 		) {
 			visible = false;
-			size.set(0);
+			size.set(0, { hard: true });
 		}
 	}}
 	on:mousemove|capture|stopPropagation|nonpassive={(e) => {
 		coords1.set({ x: e.clientX, y: e.clientY }, { hard: !visible });
 		coords2.set({ x: e.clientX, y: e.clientY }, { hard: !visible });
 		if (!visible) {
-			size.set(0);
+			size.set(0, { hard: true });
 		} else if (get(size) == 0) {
 			size.set(10);
 		}
@@ -66,7 +65,9 @@
 />
 
 {#if !$mobile}
-	<svg class="absolute top-0 left-0 w-screen h-screen pointer-events-none animate-background">
+	<svg
+		class="absolute top-0 left-0 w-screen h-screen pointer-events-none animate-background transition"
+	>
 		<circle
 			cx={$coords1.x}
 			cy={$coords1.y}
@@ -75,7 +76,12 @@
 			stroke-width="3"
 			fill-opacity="0"
 		/>
-		<circle cx={$coords2.x} cy={$coords2.y} r={$size / 3} fill="black" class="stroke-white/[.5]"
-		stroke-width="0.5" />
+		<circle
+			cx={$coords2.x}
+			cy={$coords2.y}
+			r={$size / 3}
+			class="stroke-white/[.5] dark:stroke-black/[.5] fill-black dark:fill-white"
+			stroke-width="0.5"
+		/>
 	</svg>
 {/if}

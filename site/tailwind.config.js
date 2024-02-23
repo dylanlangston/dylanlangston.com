@@ -4,6 +4,10 @@ const colors = require('tailwindcss/colors')
 
 /** @type {import('tailwindcss').Config} */
 export default {
+	darkMode: ['variant', [
+		'@media (prefers-color-scheme: dark) { &:not(.light *) }',
+		'&:is(.dark *)',
+	]],
 	content: ['./src/**/*.{html,js,svelte,ts,css}'],
 	theme: {
 		colors: {
@@ -99,9 +103,9 @@ export default {
 					'100%': { opacity: 1 },
 				},
 				'blur-in': {
-					'to': { 
-						'filter': 'blur(0)', 
-						'backdrop-filter': 'blur(16px)' 
+					'to': {
+						'filter': 'blur(0)',
+						'backdrop-filter': 'blur(16px)'
 					},
 				}
 			},

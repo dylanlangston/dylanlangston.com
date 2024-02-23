@@ -15,7 +15,7 @@
 						<input
 							type="text"
 							required
-							class="w-full mt-2 px-3 py-2 bg-transparent outline-none border border-black shadow-sm rounded-lg"
+							class="w-full mt-2 px-3 py-2 bg-transparent outline-none border border-black dark:border-white shadow-sm rounded-lg"
 						/>
 					</div>
 					<div>
@@ -23,7 +23,7 @@
 						<input
 							type="text"
 							required
-							class="w-full mt-2 px-3 py-2 bg-transparent outline-none border border-black shadow-sm rounded-lg"
+							class="w-full mt-2 px-3 py-2 bg-transparent outline-none border border-black dark:border-white shadow-sm rounded-lg"
 						/>
 					</div>
 				</div>
@@ -32,7 +32,7 @@
 					<input
 						type="email"
 						required
-						class="w-full mt-2 px-3 py-2 bg-transparent outline-none border border-black shadow-sm rounded-lg"
+						class="w-full mt-2 px-3 py-2 bg-transparent outline-none border border-black dark:border-white shadow-sm rounded-lg"
 					/>
 				</div>
 				<div>
@@ -41,14 +41,14 @@
 						type="tel"
 						placeholder="+1 234-567-8901"
 						pattern="\+?([0-9]{1}[- ])?[0-9]{3}[- ][0-9]{3}[- ][0-9]{4}"
-						class="w-full mt-2 px-3 py-2 bg-transparent outline-none border border-black shadow-sm rounded-lg placeholder:text-black/[.5]"
+						class="w-full mt-2 px-3 py-2 bg-transparent outline-none border border-black dark:border-white shadow-sm rounded-lg placeholder:text-black/[.5]"
 					/>
 				</div>
 				<div>
 					<label class="font-medium"> Message </label>
 					<textarea
 						required
-						class="w-full mt-2 h-36 px-3 py-2 resize-none appearance-none bg-transparent outline-none border border-black shadow-sm rounded-lg"
+						class="w-full mt-2 h-36 px-3 py-2 resize-none appearance-none bg-transparent outline-none border border-black dark:border-white shadow-sm rounded-lg"
 					></textarea>
 				</div>
 				<button class="w-full px-4 py-2 font-medium rounded-lg duration-150 hover:shadow-md hover:bg-rainbow transition-colors"> Submit </button>

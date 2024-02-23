@@ -13,7 +13,8 @@
 	import { onMount } from 'svelte';
 	import { fade, blur, fly, slide, scale, crossfade } from 'svelte/transition';
 	import { quintOut, bounceInOut, backOut, elasticOut } from 'svelte/easing';
-	import { Environment } from '$lib/Common';
+	import { readable, writable, get } from 'svelte/store';
+	import { Environment, useMediaQuery } from '$lib/Common';
 
 	const key = 'main';
 	const [send, receive] = crossfade({
@@ -67,7 +68,12 @@
 	let loaded: boolean = false;
 	let main: HTMLDivElement | undefined = undefined;
 
-	onMount(() => (loaded = true));
+	let accessibilityRequested: typeof Environment.accessibilityRequested | undefined = undefined;
+	
+	onMount(() => {
+		accessibilityRequested = Environment.accessibilityRequested;
+		loaded = true;
+	});
 </script>
 
 <svelte:head>
@@ -76,6 +82,7 @@
 	{/if}
 	<link rel="preload" href="dylanlangston.com.wasm" as="fetch" />
 
+	<!-- GTAG Partytown 🕶️ -->
 	<!-- GTAG Partytown 🕶️ -->
 	<!-- GTAG Partytown 🕶️ -->
 	<script>
@@ -100,7 +107,7 @@
 		gtag('config', 'G-VXRC4ZZ8Q9');
 	</script>
 </svelte:head>
-<div class="w-full h-full {!loaded ? 'cursor-progress' : 'cursor-none'}">
+<div class="w-full h-full {$accessibilityRequested ? '' : (!loaded ? 'cursor-progress' : 'cursor-none')}">
 	{#if loaded}
 		<div
 			class="flex flex-col h-full w-full overflow-x-hidden overflow-y-auto"
@@ -110,7 +117,9 @@
 			<div class="w-screen" in:blur|local={{ duration: 500, delay: 250 }}>
 				<Header />
 			</div>
-			<Emscripten />
+			{#if !$accessibilityRequested}
+				<Emscripten />
+			{/if}
 			{#key $page.url.pathname + loaded + $page.error}
 				<main
 					class="flex-1 md:w-screen"
@@ -127,7 +136,9 @@
 				<Footer />
 			</div>
 		</div>
-		<MouseCursor />
+		{#if !$accessibilityRequested}
+			<MouseCursor />
+		{/if}
 	{:else}
 		<noscript class="flex flex-col h-full">
 			<style>
@@ -143,7 +154,7 @@
 				</StatusContainer>
 			</main>
 		</noscript>
-		<div class="jsonly absolute top-1/2 left-1/2 animate-background" out:animateOut={{ key }}>
+		<div class="jsonly absolute top-1/2 left-1/2" out:animateOut={{ key }}>
 			<div class="loader"></div>
 		</div>
 	{/if}

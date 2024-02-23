@@ -1,26 +1,6 @@
 import { BrowserDetector } from 'browser-dtector';
 import { readable, writable, get } from 'svelte/store';
 
-
-export class Environment {
-    private constructor() { }
-
-    public static get Dev(): boolean {
-        return import.meta.env.MODE == 'development';
-    }
-
-    private static detector = new BrowserDetector();
-
-    public static isMobile = readable(false, (set: (value: boolean) => void) => {
-        const listener = (e: Event) => {
-            set(this.detector.parseUserAgent(window.navigator.userAgent).isMobile);
-        };
-        window.addEventListener("resize", listener);
-        set(this.detector.parseUserAgent(window.navigator.userAgent).isMobile);
-        return () => { window.removeEventListener("resize", listener); };
-    });
-}
-
 export const sanitizeEvent = <T>(e: any, n: number = 0): T => {
     const obj: any = {};
 
@@ -149,6 +129,33 @@ export const useMediaQuery = (mediaQueryString: string) => {
         return () => { m.removeEventListener("change", el) };
     });
     return matches;
+}
+
+export class Environment {
+    private constructor() { }
+
+    public static get Dev(): boolean {
+        return import.meta.env.MODE == 'development';
+    }
+
+    private static detector = new BrowserDetector();
+
+    public static isMobile = readable(false, (set: (value: boolean) => void) => {
+        const listener = (e: Event) => {
+            set(this.detector.parseUserAgent(window.navigator.userAgent).isMobile);
+        };
+        window.addEventListener("resize", listener);
+        set(this.detector.parseUserAgent(window.navigator.userAgent).isMobile);
+        return () => { window.removeEventListener("resize", listener); };
+    });
+
+    public static accessibilityRequested = useMediaQuery(
+		'(prefers-reduced-motion: reduce) or (forced-colors: active)'
+	);
+
+    public static darkMode = useMediaQuery(
+        '(prefers-color-scheme: dark)'
+    );
 }
 
 (<any>globalThis).saveFileFromMEMFSToDisk = (memoryFSname: string, localFSname: string) => {

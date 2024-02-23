@@ -16,7 +16,8 @@ a {
 }
 
 * {
-  scrollbar-color: color-mix(in srgb, color-mix(in hsl increasing hue, var(--Rainbow) 95%, black) 90%, transparent) color-mix(in srgb, color-mix(in hsl increasing hue, var(--Rainbow) 80%, white) 75%, transparent);
+  @apply text-black transition;
+  scrollbar-color: color-mix(in hsl increasing hue, var(--Rainbow) 85%, black) color-mix(in srgb, color-mix(in hsl increasing hue, var(--Rainbow) 80%, white) 75%, transparent);
 }
 
 .background-overlay {
@@ -30,6 +31,20 @@ a {
 .glass {
   filter: blur(6px);
   backdrop-filter: blur(0px);
+  @apply shadow-lg shadow-black/[.5] outline outline-1 outline-black/[0.15] dark:outline-white/[0.15] animate-glass transition-all;
+}
+.glass::before {
+  background: linear-gradient(
+      130deg, 
+      color-mix(in srgb, var(--Rainbow) 25%, transparent), 
+      color-mix(in srgb, color-mix(in hsl increasing hue, var(--Rainbow) 80%, black) 75%, transparent), 
+      70%, 
+      color-mix(in srgb, var(--Rainbow) 25%, transparent)
+      );
+  transition: opacity 0.5s linear;
+  @apply top-0 bottom-0 left-0 right-0 absolute content-[''] opacity-0 -z-10;
+}
+.glass::after {
   background: linear-gradient(
     130deg, 
     color-mix(in srgb, var(--Rainbow) 25%, transparent), 
@@ -37,11 +52,36 @@ a {
     70%, 
     color-mix(in srgb, var(--Rainbow) 25%, transparent)
     );
-  @apply shadow-lg shadow-black/[.5] outline outline-1 outline-black/[0.15] animate-glass;
+  transition: opacity 0.5s linear;
+  @apply top-0 bottom-0 left-0 right-0 absolute content-[''] opacity-100 -z-10;
 }
 
 .glass-no-animate {
   filter: blur(0px) !important;
   backdrop-filter: blur(16px) !important;
   @apply glass;
+}
+
+/* Dark Theme */
+@media (prefers-color-scheme: dark) {
+  body:not(.light) main * {
+    @apply text-white transition;
+    scrollbar-color: color-mix(in hsl increasing hue, var(--Rainbow) 85%, white) color-mix(in srgb, color-mix(in hsl increasing hue, var(--Rainbow) 80%, black) 75%, transparent);
+  }
+  body:not(.light) .glass::before {
+    opacity: 1;
+  }
+  body:not(.light) .glass::after {
+    opacity: 0;
+  }
+}
+body.dark * {
+  @apply text-white transition;
+  scrollbar-color: color-mix(in hsl increasing hue, var(--Rainbow) 85%, white) color-mix(in srgb, color-mix(in hsl increasing hue, var(--Rainbow) 80%, black) 75%, transparent);
+}
+body.dark .glass::before {
+  opacity: 1;
+}
+body.dark .glass::after {
+  opacity: 0;
 }
