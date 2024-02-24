@@ -150,8 +150,9 @@ export class Environment {
     });
 
     public static accessibilityRequested = useMediaQuery(
-		'(prefers-reduced-motion: reduce) or (forced-colors: active)'
-	);
+        '(prefers-reduced-motion: reduce) or (forced-colors: active)'
+    );
+    public static contrastRequested = useMediaQuery('(prefers-contrast: more) or (prefers-contrast: custom)');
 }
 
 (<any>globalThis).saveFileFromMEMFSToDisk = (memoryFSname: string, localFSname: string) => {

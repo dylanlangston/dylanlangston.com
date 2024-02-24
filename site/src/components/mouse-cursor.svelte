@@ -46,7 +46,7 @@
 			size.set(0, { hard: true });
 		}
 	}}
-	on:mousemove|capture|stopPropagation|nonpassive={(e) => {
+	on:mousemove|capture|nonpassive={(e) => {
 		coords1.set({ x: e.clientX, y: e.clientY }, { hard: !visible });
 		coords2.set({ x: e.clientX, y: e.clientY }, { hard: !visible });
 		if (!visible) {
@@ -56,10 +56,10 @@
 		}
 		visible = getComputedStyle(e.target).cursor == 'none';
 	}}
-	on:mousedown|capture|stopPropagation|passive={(e) => {
+	on:mousedown|capture|passive={(e) => {
 		if (visible) size.set(30);
 	}}
-	on:mouseup|capture|stopPropagation|passive={(e) => {
+	on:mouseup|capture|passive={(e) => {
 		if (visible) size.set(10);
 	}}
 />

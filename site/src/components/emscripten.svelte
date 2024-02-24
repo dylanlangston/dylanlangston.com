@@ -164,7 +164,6 @@
 			'right-0',
 			'w-lvw',
 			'h-lvh',
-			'-z-50',
 			'animate-background',
 			'transition'
 		);
@@ -205,7 +204,7 @@
 </script>
 
 {#await loadFn() then canvas}
-	<div class="-z-50" in:fade={{ duration: 500, delay: 800 }} use:setCanvas={{ canvas }} />
+	<div in:fade={{ duration: 500, delay: 800 }} use:setCanvas={{ canvas }} />
 {:catch error}
 	<!-- Todo Dialog with Error Message -->
 {/await}

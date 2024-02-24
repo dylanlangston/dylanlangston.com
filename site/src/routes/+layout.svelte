@@ -69,9 +69,11 @@
 	let main: HTMLDivElement | undefined = undefined;
 
 	let accessibilityRequested: typeof Environment.accessibilityRequested | undefined = undefined;
-	
+	let contrastRequested: typeof Environment.contrastRequested | undefined = undefined;
+
 	onMount(() => {
 		accessibilityRequested = Environment.accessibilityRequested;
+		contrastRequested = Environment.contrastRequested;
 		loaded = true;
 	});
 </script>
@@ -82,8 +84,6 @@
 	{/if}
 	<link rel="preload" href="dylanlangston.com.wasm" as="fetch" />
 
-	<!-- GTAG Partytown 🕶️ -->
-	<!-- GTAG Partytown 🕶️ -->
 	<!-- GTAG Partytown 🕶️ -->
 	<script>
 		// Forward the necessary functions to the web worker layer
@@ -107,19 +107,22 @@
 		gtag('config', 'G-VXRC4ZZ8Q9');
 	</script>
 </svelte:head>
-<div class="w-full h-full {$accessibilityRequested ? '' : (!loaded ? 'cursor-progress' : 'cursor-none')}">
+
+<div
+	class="w-full h-full {($accessibilityRequested || $contrastRequested) ? '' : !loaded ? 'cursor-progress' : 'cursor-none'}"
+>
 	{#if loaded}
 		<div
 			class="flex flex-col h-full w-full overflow-x-hidden overflow-y-auto"
 			in:animateIn={{ key }}
 			bind:this={main}
 		>
+			{#if !$accessibilityRequested && !$contrastRequested}
+				<Emscripten />
+			{/if}
 			<div class="w-screen" in:blur|local={{ duration: 500, delay: 250 }}>
 				<Header />
 			</div>
-			{#if !$accessibilityRequested}
-				<Emscripten />
-			{/if}
 			{#key $page.url.pathname + loaded + $page.error}
 				<main
 					class="flex-1 md:w-screen"
@@ -136,7 +139,7 @@
 				<Footer />
 			</div>
 		</div>
-		{#if !$accessibilityRequested}
+		{#if !$accessibilityRequested && !$contrastRequested}
 			<MouseCursor />
 		{/if}
 	{:else}

@@ -3,7 +3,7 @@
 	import { readable, writable, get } from 'svelte/store';
 
 	import Ripple from './ripple.svelte';
-	import { useMediaQuery } from '$lib/Common';
+	import { Environment, useMediaQuery } from '$lib/Common';
 
 	import { onMount } from 'svelte';
 
@@ -45,6 +45,8 @@
 		}
 	}
 
+	const accessibilityRequested = Environment.accessibilityRequested;
+
 	onMount(() => {
 		if (get(darkMode) == false) {
 			document.body.classList.add('light');
@@ -68,6 +70,7 @@
 		</div>
 
 		<div class="flex content-center justify-end mr-0 ml-auto">
+			{#if !$accessibilityRequested}
 			<label
 				class="theme-toggle h-fit my-auto rounded-full p-2 mx-2 hover:shadow-md hover:bg-rainbow"
 				title="Toggle theme"
@@ -108,6 +111,7 @@
 					</svg>
 				</Ripple>
 			</label>
+			{/if}
 		</div>
 		<ul class="items-stretch hidden space-x-3 md:flex">
 			<li class="flex">

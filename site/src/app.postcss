@@ -16,8 +16,14 @@ a {
 }
 
 * {
-  @apply text-black transition;
+  @apply text-black transition antialiased;
   scrollbar-color: color-mix(in hsl increasing hue, var(--Rainbow) 85%, black) color-mix(in srgb, color-mix(in hsl increasing hue, var(--Rainbow) 80%, white) 75%, transparent);
+}
+
+@media ((forced-colors: active) or (prefers-contrast: more) or (prefers-contrast: custom)) {
+  * {
+    @apply font-black tracking-wide contrast-125;
+  }
 }
 
 .background-overlay {
@@ -42,7 +48,7 @@ a {
       color-mix(in srgb, var(--Rainbow) 25%, transparent)
       );
   transition: opacity 0.5s linear;
-  @apply top-0 bottom-0 left-0 right-0 absolute content-[''] opacity-0 -z-10 rounded-lg;
+  @apply top-0 bottom-0 left-0 right-0 absolute content-[''] opacity-0 -z-10;
 }
 .glass::after {
   background: linear-gradient(
@@ -53,7 +59,43 @@ a {
     color-mix(in srgb, var(--Rainbow) 25%, transparent)
     );
   transition: opacity 0.5s linear;
-  @apply top-0 bottom-0 left-0 right-0 absolute content-[''] opacity-100 -z-10 rounded-lg;
+  @apply top-0 bottom-0 left-0 right-0 absolute content-[''] opacity-100 -z-10;
+}
+.glass.round::before {
+  @apply rounded-lg;
+}
+.glass.round::after {
+  @apply rounded-lg;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass::before {
+    background: linear-gradient(
+        130deg, 
+        color-mix(in srgb, var(--Rainbow) 25%, rgba(0,0,0,0.85)), 
+        color-mix(in srgb, color-mix(in hsl increasing hue, var(--Rainbow) 80%, black) 75%, rgba(0,0,0,0.85)), 
+        70%, 
+        color-mix(in srgb, var(--Rainbow) 25%, rgba(0,0,0,0.85))
+        );
+  }
+  .glass::after {
+    background: linear-gradient(
+      130deg, 
+      color-mix(in srgb, var(--Rainbow) 25%, rgba(255,255,255,0.85)), 
+      color-mix(in srgb, color-mix(in hsl increasing hue, var(--Rainbow) 80%, white) 75%, rgba(255,255,255,0.85)), 
+      70%, 
+      color-mix(in srgb, var(--Rainbow) 25%, rgba(255,255,255,0.85))
+      );
+  }
+}
+
+@media ((forced-colors: active) or (prefers-contrast: more) or (prefers-contrast: custom)) {
+  .glass::before {
+    background: color-mix(in hsl increasing hue, var(--Rainbow) 80%, black)
+  }
+  .glass::after {
+    background: color-mix(in hsl increasing hue, var(--Rainbow) 80%, white);
+  }
 }
 
 .glass-no-animate {
