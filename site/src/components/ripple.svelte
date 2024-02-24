@@ -108,7 +108,9 @@
 	const accessibilityRequested = Environment.accessibilityRequested;
 </script>
 
-{#if !accessibilityRequested}
+{#if $accessibilityRequested}
+	<slot />
+{:else}
 	<div class={escapeParent ? '' : 'rounded-lg relative overflow-hidden'}>
 		<div class={classList} use:ripple>
 			<slot />
@@ -120,6 +122,4 @@
 			bind:this={parentElement}
 		></div>
 	{/if}
-{:else}
-	<slot/>
 {/if}
