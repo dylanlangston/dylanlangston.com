@@ -165,7 +165,8 @@
 			'w-lvw',
 			'h-lvh',
 			'animate-background',
-			'transition'
+			'transition',
+			'-z-10'
 		);
 
 		canvasElement.width = window.innerWidth;
