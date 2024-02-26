@@ -27,8 +27,6 @@
 
 	let visible: boolean = false;
 
-	const mobile = Environment.isMobile;
-
 	let loaded: boolean = false;
 
 	onMount(() => (loaded = true));
@@ -63,11 +61,10 @@
 		if (visible) size.set(10);
 	}}
 />
-
-{#if !$mobile}
 <svg
-		class="absolute top-0 left-0 w-screen h-screen pointer-events-none animate-background transition"
-	>
+	class="absolute top-0 left-0 w-screen h-screen pointer-events-none animate-background transition"
+>
+	{#if $size > 0}
 		<circle
 			cx={$coords1.x}
 			cy={$coords1.y}
@@ -76,6 +73,7 @@
 			stroke-width="3"
 			fill-opacity="0"
 		/>
+
 		<circle
 			cx={$coords2.x}
 			cy={$coords2.y}
@@ -83,5 +81,5 @@
 			class="stroke-white/[.5] dark:stroke-black/[.5] fill-black dark:fill-white"
 			stroke-width="0.5"
 		/>
-	</svg>
-{/if}
+	{/if}
+</svg>

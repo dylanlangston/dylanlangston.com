@@ -15,6 +15,7 @@
 	import { quintOut, bounceInOut, backOut, elasticOut } from 'svelte/easing';
 	import { readable, writable, get } from 'svelte/store';
 	import { Environment, useMediaQuery } from '$lib/Common';
+	import ContextMenu from '../components/context-menu.svelte';
 
 	const key = 'main';
 	const [send, receive] = crossfade({
@@ -68,10 +69,12 @@
 	let loaded: boolean = false;
 	let main: HTMLDivElement | undefined = undefined;
 
+	let mobile: typeof Environment.isMobile | undefined = undefined;
 	let accessibilityRequested: typeof Environment.accessibilityRequested | undefined = undefined;
 	let contrastRequested: typeof Environment.contrastRequested | undefined = undefined;
 
 	onMount(() => {
+		mobile = Environment.isMobile;
 		accessibilityRequested = Environment.accessibilityRequested;
 		contrastRequested = Environment.contrastRequested;
 		loaded = true;
@@ -109,7 +112,7 @@
 </svelte:head>
 
 <div
-	class="w-full h-full {($accessibilityRequested || $contrastRequested) ? '' : !loaded ? 'cursor-progress' : 'cursor-none'}"
+	class="w-full h-full {($mobile || $accessibilityRequested || $contrastRequested) ? '' : !loaded ? 'cursor-progress' : 'cursor-none'}"
 >
 	{#if loaded}
 		<div
@@ -139,7 +142,8 @@
 				<Footer />
 			</div>
 		</div>
-		{#if !$accessibilityRequested && !$contrastRequested}
+		{#if !$mobile && !$accessibilityRequested && !$contrastRequested}
+			<ContextMenu/>
 			<MouseCursor />
 		{/if}
 	{:else}
