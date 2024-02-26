@@ -203,9 +203,10 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
         //if (debugging_wasm) "-sGL_TRACK_ERRORS=1" else "-sGL_TRACK_ERRORS=0",
         // if (debugging_wasm) "-sRUNTIME_DEBUG=1" else "",
         if (debugging_wasm) "" else "-fno-exceptions",
+        if (debugging_wasm) "" else "-sDISABLE_EXCEPTION_THROWING",
 
         // Ports
-        if (debugging_wasm) "--use-port=contrib.glfw3:disableWarning=false:disableMultiWindow=true" else "--use-port=contrib.glfw3:disableWarning=true:disableMultiWindow=true", // https://github.com/pongasoft/emscripten-glfw
+        //if (debugging_wasm) "--use-port=contrib.glfw3:disableWarning=false:disableMultiWindow=true" else "--use-port=contrib.glfw3:disableWarning=true:disableMultiWindow=true", // https://github.com/pongasoft/emscripten-glfw
 
         // Export as a ES6 Module for use in svelte
         "-sMODULARIZE",
