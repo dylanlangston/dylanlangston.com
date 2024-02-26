@@ -13,6 +13,7 @@
 		useMediaQuery
 	} from '$lib/Common';
 	import StatusContainer from '../components/status-container.svelte';
+	import { Favicon } from '$lib/Favicon';
 
 	const initWorker = async (canvasElement: HTMLCanvasElement) =>
 		new Promise<Worker>((resolve, reject) => {
@@ -154,6 +155,7 @@
 			worker.onerror = (er) => reject(er);
 		});
 
+	let favicon: Favicon | undefined = undefined;
 	const loadFn: () => Promise<HTMLCanvasElement> = async () => {
 		const canvasElement = document.createElement('canvas');
 		canvasElement.classList.add(
@@ -186,12 +188,17 @@
 				} catch {}
 			};
 		}
+
+		favicon = new Favicon(canvasElement);
+
 		return canvasElement;
 	};
 
 	var unload: () => void | undefined;
 	onDestroy(() => {
 		if (unload) unload();
+
+		favicon?.destroy();
 	});
 
 	function setCanvas(self: HTMLDivElement, options: { canvas: HTMLCanvasElement }) {

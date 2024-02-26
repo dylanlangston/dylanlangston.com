@@ -45,7 +45,7 @@
 		}
 	}
 
-	const accessibilityRequested = Environment.accessibilityRequested;
+	const contrastRequested = Environment.contrastRequested;
 
 	onMount(() => {
 		if (get(darkMode) == false) {
@@ -70,7 +70,7 @@
 		</div>
 
 		<div class="flex content-center justify-end mr-0 ml-auto">
-			{#if !$accessibilityRequested}
+			{#if !$contrastRequested}
 			<label
 				class="theme-toggle h-fit my-auto rounded-full p-2 mx-2 hover:shadow-md hover:bg-rainbow"
 				title="Toggle theme"
