@@ -14,6 +14,7 @@
 	} from '$lib/Common';
 	import StatusContainer from '../components/status-container.svelte';
 	import { Favicon } from '$lib/Favicon';
+	import type { Unsubscriber } from 'svelte/store';
 
 	const initWorker = async (canvasElement: HTMLCanvasElement) =>
 		new Promise<Worker>((resolve, reject) => {
@@ -156,6 +157,7 @@
 		});
 
 	let favicon: Favicon | undefined = undefined;
+	let mobileSubscription: Unsubscriber | undefined = undefined;
 	const loadFn: () => Promise<HTMLCanvasElement> = async () => {
 		const canvasElement = document.createElement('canvas');
 		canvasElement.classList.add(
@@ -191,6 +193,15 @@
 
 		favicon = new Favicon(canvasElement);
 
+		mobileSubscription = Environment.isMobile.subscribe((mobile) => {
+			if (mobile) {
+				favicon?.destroy();
+			}
+			else {
+				favicon = new Favicon(canvasElement);
+			}
+		});
+
 		return canvasElement;
 	};
 
@@ -199,7 +210,10 @@
 		if (unload) unload();
 
 		favicon?.destroy();
+
+		if (mobileSubscription) mobileSubscription();
 	});
+
 
 	function setCanvas(self: HTMLDivElement, options: { canvas: HTMLCanvasElement }) {
 		self.appendChild(options.canvas);
