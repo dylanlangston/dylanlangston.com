@@ -204,6 +204,9 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
         // if (debugging_wasm) "-sRUNTIME_DEBUG=1" else "",
         if (debugging_wasm) "" else "-fno-exceptions",
 
+        // Ports
+        if (debugging_wasm) "--use-port=contrib.glfw3:disableWarning=false:disableMultiWindow=true" else "--use-port=contrib.glfw3:disableWarning=true:disableMultiWindow=true", // https://github.com/pongasoft/emscripten-glfw
+
         // Export as a ES6 Module for use in svelte
         "-sMODULARIZE",
         "-sEXPORT_ES6",
