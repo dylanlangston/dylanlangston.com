@@ -29,17 +29,18 @@ export class Favicon {
 		faviconContext!.closePath();
 		faviconContext!.clip();
 
-		// Update favicon every other frame
 		let hue = Math.floor(Math.random() * 360);
 		let lastFrame = performance.now();
-		let updateThisFrame = true;
+		let currentFrameCount = 0;
+
 		const faviconUpdate = (timestamp: DOMHighResTimeStamp) => {
-            // Skip every other frame
-			updateThisFrame = !updateThisFrame;
-			if (!updateThisFrame) {
+            // Only draw every 5 frames
+			currentFrameCount += 1;
+			if (currentFrameCount < 5) {
 				this.faviconAnimation = requestAnimationFrame(faviconUpdate);
 				return;
 			}
+            currentFrameCount = 0;
 
             if (hue > 359) {
 				hue = 0;
