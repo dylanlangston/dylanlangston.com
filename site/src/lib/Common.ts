@@ -153,6 +153,32 @@ export class Environment {
         '(prefers-reduced-motion: reduce) or (forced-colors: active)'
     );
     public static contrastRequested = useMediaQuery('(prefers-contrast: more) or (prefers-contrast: custom)');
+
+	private static darkModeOverride: ((value: boolean) => void) | undefined = undefined;
+	private static darkModeMediaQueryOverride = () => {
+		const matches = readable(false, (set: (value: boolean) => void) => {
+			Environment.darkModeOverride = set;
+            const darkModeMediaQuery = useMediaQuery('(prefers-color-scheme: dark)');
+			const unsub = darkModeMediaQuery.subscribe(
+				(run) => set(run),
+				(invalidate) => Environment.setTheme(!get(darkModeMediaQuery))
+			);
+			return unsub;
+		});
+		return matches;
+	};
+	public static darkMode = Environment.darkModeMediaQueryOverride();
+    public static setTheme = (darkMode: boolean) => {
+        if (Environment.darkModeOverride) Environment.darkModeOverride(darkMode);
+        
+        if (darkMode) {
+			document.body.classList.remove('light');
+			document.body.classList.add('dark');
+		} else {
+			document.body.classList.remove('dark');
+			document.body.classList.add('light');
+		}
+    };
 }
 
 (<any>globalThis).saveFileFromMEMFSToDisk = (memoryFSname: string, localFSname: string) => {

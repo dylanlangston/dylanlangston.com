@@ -17,44 +17,20 @@
 
 	let themeButton: HTMLInputElement | undefined = undefined;
 
-	const darkModeMediaQuery = useMediaQuery('(prefers-color-scheme: dark)');
-	let darkModeOverride: ((value: boolean) => void) | undefined = undefined;
-	const darkModeMediaQueryOverride = () => {
-		const matches = readable(false, (set: (value: boolean) => void) => {
-			darkModeOverride = set;
-			const unsub = darkModeMediaQuery.subscribe(
-				(run) => set(run),
-				(invalidate) => toggleTheme(!get(darkModeMediaQuery))
-			);
-			return unsub;
-		});
-		return matches;
-	};
-	const darkMode = darkModeMediaQueryOverride();
+	const darkMode = Environment.darkMode;
 
 	function toggleTheme(override: boolean | undefined = undefined): void {
 		if ((override != undefined && override) || (override == undefined && get(darkMode) == true)) {
-			document.body.classList.remove('dark');
-			document.body.classList.add('light');
-			if (darkModeOverride != undefined) darkModeOverride(false);
+			Environment.setTheme(false);
 		} else {
-			document.body.classList.remove('light');
-			document.body.classList.add('dark');
-
-			if (darkModeOverride != undefined) darkModeOverride(true);
+			Environment.setTheme(true);
 		}
 	}
 
 	const contrastRequested = Environment.contrastRequested;
 
 	onMount(() => {
-		if (get(darkMode) == false) {
-			document.body.classList.add('light');
-			document.body.classList.remove('dark');
-		} else {
-			document.body.classList.add('dark');
-			document.body.classList.remove('light');
-		}
+		Environment.setTheme(get(darkMode));
 	});
 </script>
 
