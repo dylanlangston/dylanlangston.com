@@ -254,7 +254,7 @@ pub const MandalbrotView = Common.ViewLocator.createView(
             raylib.SetShaderValue(
                 MandalbrotViewModel.waveShader.shader,
                 MandalbrotViewModel.waveTimeLoc,
-                &0,
+                &raylib.GetFrameTime(),
                 raylib.SHADER_UNIFORM_FLOAT,
             );
         }

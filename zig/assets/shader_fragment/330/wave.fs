@@ -11,15 +11,27 @@ uniform vec4 colDiffuse;
 // Output fragment color
 out vec4 finalColor;
 
-// NOTE: Add here your custom variables
+uniform float seconds;
 
-void main()
-{
-    // Texel color fetching from texture sampler
-    vec4 texelColor = texture(texture0, fragTexCoord);
+uniform vec2 size;
 
-    // NOTE: Implement here your fragment shader code
+float freqX = 5.0;
+float freqY = 5.0;
+float ampX = 20.0;
+float ampY = 20.0;
+float speedX = 4.0;
+float speedY = 2.0;
 
-    finalColor = texelColor*colDiffuse;
+void main() {
+    float pixelWidth = 1.0 / size.x;
+    float pixelHeight = 1.0 / size.y;
+    float aspect = pixelHeight / pixelWidth;
+    float boxLeft = 0.0;
+    float boxTop = 0.0;
+
+    vec2 p = fragTexCoord;
+    p.x += cos((fragTexCoord.y - boxTop) * freqX / ( pixelWidth * 750.0) + (seconds * speedX)) * ampX * pixelWidth;
+    p.y += sin((fragTexCoord.x - boxLeft) * freqY * aspect / ( pixelHeight * 750.0) + (seconds * speedY)) * ampY * pixelHeight;
+
+    finalColor = texture(texture0, p)*colDiffuse*fragColor;
 }
-
