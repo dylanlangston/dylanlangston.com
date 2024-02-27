@@ -1,76 +1,97 @@
+import type { Unsubscriber } from "svelte/store";
+import { Environment } from "./Common";
+
 export class Favicon {
-    private faviconAnimation: number = 0;
+	private faviconAnimation: number;
+	private darkModeSubscription: Unsubscriber;
+
+	private faviconSize = 64;
+	private faviconRadius = 40;
+
+	private hue = Math.floor(Math.random() * 360);
+	private darkMode = false;
+
+	private copyCanvas(dest: CanvasRenderingContext2D, source: HTMLCanvasElement | OffscreenCanvas) {
+		dest.globalCompositeOperation = "copy";
+		dest.clearRect(0, 0, this.faviconSize, this.faviconSize);
+		dest.fillStyle = "hsl(" + this.hue + ", 50%, " + (this.darkMode ? 30 : 60) + "%)";
+		const canvasQuarterWidth = source.width / 4;
+		const canvasQuarterHeight = source.height / 4;
+		dest.drawImage(
+			source,
+			canvasQuarterWidth,
+			canvasQuarterHeight,
+			canvasQuarterWidth * 2,
+			canvasQuarterHeight * 2,
+			0,
+			0,
+			this.faviconSize,
+			this.faviconSize
+		);
+		dest.globalCompositeOperation = this.darkMode ? "color-dodge" : "color-burn";
+		dest.fillRect(0,0, this.faviconSize, this.faviconSize);
+		return dest;
+	}
+
+	private roundCorners(dest: CanvasRenderingContext2D,) {
+		dest.beginPath();
+		dest.moveTo(this.faviconRadius, 0);
+		dest.lineTo(this.faviconSize - this.faviconRadius, 0);
+		dest.quadraticCurveTo(this.faviconSize, 0, this.faviconSize, this.faviconRadius);
+		dest.lineTo(this.faviconSize, this.faviconSize - this.faviconRadius);
+		dest.quadraticCurveTo(
+			this.faviconSize,
+			this.faviconSize,
+			this.faviconSize - this.faviconRadius,
+			this.faviconSize
+		);
+		dest.lineTo(this.faviconRadius, this.faviconSize);
+		dest.quadraticCurveTo(0, this.faviconSize, 0, this.faviconSize - this.faviconRadius);
+		dest.lineTo(0, this.faviconRadius);
+		dest.quadraticCurveTo(0, 0, this.faviconRadius, 0);
+		dest.closePath();
+		dest.clip();
+	}
 
 	constructor(canvasElement: HTMLCanvasElement | OffscreenCanvas) {
-        const faviconSize = 64;
-		const faviconRadius = 40;
+
 		const link: HTMLLinkElement | null = document.querySelector("link[rel~='icon']");
 		const faviconCanvas: HTMLCanvasElement = document.createElement('canvas');
-		faviconCanvas.width = faviconSize;
-		faviconCanvas.height = faviconSize;
+		faviconCanvas.style.background = "transparent";
+		faviconCanvas.width = this.faviconSize;
+		faviconCanvas.height = this.faviconSize;
 		const faviconContext = faviconCanvas!.getContext('2d');
 
-		// Rounded Corner
-		faviconContext!.beginPath();
-		faviconContext!.moveTo(faviconRadius, 0);
-		faviconContext!.lineTo(faviconSize - faviconRadius, 0);
-		faviconContext!.quadraticCurveTo(faviconSize, 0, faviconSize, faviconRadius);
-		faviconContext!.lineTo(faviconSize, faviconSize - faviconRadius);
-		faviconContext!.quadraticCurveTo(
-			faviconSize,
-			faviconSize,
-			faviconSize - faviconRadius,
-			faviconSize
-		);
-		faviconContext!.lineTo(faviconRadius, faviconSize);
-		faviconContext!.quadraticCurveTo(0, faviconSize, 0, faviconSize - faviconRadius);
-		faviconContext!.lineTo(0, faviconRadius);
-		faviconContext!.quadraticCurveTo(0, 0, faviconRadius, 0);
-		faviconContext!.closePath();
-		faviconContext!.clip();
+		this.roundCorners(faviconContext!);
 
-		let hue = Math.floor(Math.random() * 360);
+
 		let lastFrame = performance.now();
 		let currentFrameCount = 0;
 
+		this.darkModeSubscription = Environment.darkMode.subscribe((dark) => {
+			this.darkMode = dark;
+		});
+
 		const faviconUpdate = (timestamp: DOMHighResTimeStamp) => {
-            // Only draw every 5 frames
+			// Only draw every 5 frames
 			currentFrameCount += 1;
 			if (currentFrameCount < 5) {
 				this.faviconAnimation = requestAnimationFrame(faviconUpdate);
 				return;
 			}
-            currentFrameCount = 0;
+			currentFrameCount = 0;
 
-            if (hue > 359) {
-				hue = 0;
+			if (this.hue > 359) {
+				this.hue = 0;
 			} else {
-				hue += (lastFrame - timestamp) / 100;
+				this.hue += (lastFrame - timestamp) / 100;
 				lastFrame = timestamp;
 			}
 
-            // Change hue
-			faviconContext!.globalCompositeOperation = 'hue';
-			faviconContext!.fillStyle = 'hsl(' + hue + ',100%, 50%)';
-			faviconContext!.fillRect(0, 0, faviconSize, faviconSize);
-
 			// Copy the main canvas to a smaller one for the favicon
-			faviconContext!.globalCompositeOperation = 'source-over';
-			const canvasQuarterWidth = canvasElement.width / 4;
-			const canvasQuarterHeight = canvasElement.height / 4;
-			faviconContext!.drawImage(
-				canvasElement,
-				canvasQuarterWidth,
-				canvasQuarterHeight,
-				canvasQuarterWidth * 2,
-				canvasQuarterHeight * 2,
-				0,
-				0,
-				faviconSize,
-				faviconSize
-			);
+			this.copyCanvas(faviconContext!, canvasElement);
 
-            // Set Favicon to canvas
+			// Set Favicon to canvas
 			link!.href = faviconCanvas.toDataURL('image/png');
 
 			this.faviconAnimation = requestAnimationFrame(faviconUpdate);
@@ -78,10 +99,12 @@ export class Favicon {
 		this.faviconAnimation = requestAnimationFrame(faviconUpdate);
 	}
 
-    public destroy(): void {
-        cancelAnimationFrame(this.faviconAnimation);
+	public destroy(): void {
+		cancelAnimationFrame(this.faviconAnimation);
 
-        const link: HTMLLinkElement | null = document.querySelector("link[rel~='icon']");
+		this.darkModeSubscription();
+
+		const link: HTMLLinkElement | null = document.querySelector("link[rel~='icon']");
 		link!.href = '/favicon.png';
-    }
+	}
 }

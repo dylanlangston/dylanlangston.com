@@ -194,10 +194,8 @@
 		favicon = new Favicon(canvasElement);
 
 		mobileSubscription = Environment.isMobile.subscribe((mobile) => {
-			if (mobile) {
-				favicon?.destroy();
-			}
-			else {
+			favicon?.destroy();
+			if (!mobile) {
 				favicon = new Favicon(canvasElement);
 			}
 		});
