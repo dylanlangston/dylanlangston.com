@@ -161,7 +161,7 @@ export class Environment {
             const darkModeMediaQuery = useMediaQuery('(prefers-color-scheme: dark)');
 			const unsub = darkModeMediaQuery.subscribe(
 				(run) => set(run),
-				(invalidate) => Environment.setTheme(!get(darkModeMediaQuery))
+				(invalidate) => Environment.setTheme(get(darkModeMediaQuery))
 			);
 			return unsub;
 		});

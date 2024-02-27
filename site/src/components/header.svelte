@@ -15,16 +15,10 @@
 		if (menuOpen) menuOpen = false;
 	}
 
-	let themeButton: HTMLInputElement | undefined = undefined;
-
 	const darkMode = Environment.darkMode;
 
-	function toggleTheme(override: boolean | undefined = undefined): void {
-		if ((override != undefined && override) || (override == undefined && get(darkMode) == true)) {
-			Environment.setTheme(false);
-		} else {
-			Environment.setTheme(true);
-		}
+	function toggleTheme(): void {
+		Environment.setTheme(!get(darkMode));
 	}
 
 	const contrastRequested = Environment.contrastRequested;
@@ -55,8 +49,7 @@
 					<input
 						type="checkbox"
 						checked={$darkMode}
-						on:click={(e) => toggleTheme()}
-						bind:this={themeButton}
+						on:change={(e) => toggleTheme()}
 					/>
 					<span class="theme-toggle-sr">Toggle theme</span>
 					<svg
