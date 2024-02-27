@@ -104,6 +104,7 @@ interface IEmscriptenWorker extends DedicatedWorkerGlobalScope {
     outerHeight: number,
     pageXOffset: number,
     pageYOffset: number,
+    devicePixelRatio: number;
 }
 declare let self: IEmscriptenWorker;
 
@@ -114,6 +115,9 @@ self.onmessage = (ev: MessageEvent<IPCMessage>) => {
         WorkerMessageEventHandler.Handler.OnMessage(ev.data.type, ev.data.message);
     }
 };
+// This is just a dummy/placeholder, as the correctly scaled resolution is already sent to the worker
+self.devicePixelRatio = 1;
+
 Object.defineProperty(self, "innerWidth", {
     get: () => self.window.innerWidth,
 });

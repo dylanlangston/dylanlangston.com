@@ -279,9 +279,10 @@ pub const Common = struct {
         } else raylib.SetTraceLogLevel(raylib.LOG_NONE);
 
         raylib.SetTargetFPS(0);
-        raylib.SetConfigFlags(raylib.FLAG_VSYNC_HINT | raylib.FLAG_MSAA_4X_HINT);
 
         if (is_emscripten) {
+            raylib.SetConfigFlags(raylib.FLAG_VSYNC_HINT | raylib.FLAG_MSAA_4X_HINT);
+
             // Set initial Window Size
             var width: c_int = undefined;
             var height: c_int = undefined;
@@ -294,9 +295,14 @@ pub const Common = struct {
                 fn resize(t: c_int, data: [*c]const emscripten.struct_EmscriptenUiEvent, callback: ?*anyopaque) callconv(.C) c_int {
                     _ = t;
                     _ = callback;
+
+                    const dpi = emscripten.emscripten_get_device_pixel_ratio();
+                    const scaledWidth: c_int = @as(c_int, @intFromFloat(@as(f64, @floatFromInt(data.*.windowInnerWidth)) * dpi));
+                    const scaledHeight: c_int = @as(c_int, @intFromFloat(@as(f64, @floatFromInt(data.*.windowInnerHeight)) * dpi));
+
                     emscripten.emscripten_set_canvas_size(
-                        data.*.windowInnerWidth,
-                        data.*.windowInnerHeight,
+                        scaledWidth,
+                        scaledHeight,
                     );
 
                     // Update frame on resize so there isn't a flicker
@@ -305,6 +311,8 @@ pub const Common = struct {
                 }
             }.resize);
         } else {
+            raylib.SetConfigFlags(raylib.FLAG_VSYNC_HINT | raylib.FLAG_MSAA_4X_HINT | raylib.FLAG_WINDOW_HIGHDPI);
+
             raylib.InitWindow(1600, 900, "dylanlangston.com");
         }
 
