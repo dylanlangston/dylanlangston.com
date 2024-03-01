@@ -1,44 +1,50 @@
 # https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
 version: 2
-open-pull-requests-limit: 20
 updates:
   - package-ecosystem: "npm"
+    open-pull-requests-limit: 50
     commit-message:
       prefix: "Node/Bun - "
     directory: "/site"
     schedule:
       interval: "weekly"
   - package-ecosystem: "gitsubmodule"
+    open-pull-requests-limit: 3
     commit-message:
       prefix: "Submodule - "
     directory: "/"
     schedule:
       interval: "weekly"
   - package-ecosystem: "cargo"
+    open-pull-requests-limit: 50
     commit-message:
       prefix: "Rust - "
     directory: "/contact-lambda"
     schedule:
       interval: "weekly"
   - package-ecosystem: "github-actions"
+    open-pull-requests-limit: 10
     commit-message:
       prefix: "Github Actions - "
     directory: ./.github/actions/DockerCache
     schedule:
       interval: "weekly"
   - package-ecosystem: "github-actions"
+    open-pull-requests-limit: 10
     commit-message:
       prefix: "Github Actions - "
     directory: ./.github/actions/VersionString
     schedule:
       interval: "weekly"
   - package-ecosystem: "github-actions"
+    open-pull-requests-limit: 10
     commit-message:
       prefix: "Github Actions - "
     directory: ./.github/actions/PopulateBuildSummary
     schedule:
       interval: "weekly"
   - package-ecosystem: "github-actions"
+    open-pull-requests-limit: 10
     commit-message:
       prefix: "Github Actions - "
     directory: ./.github/workflows/
