@@ -1,5 +1,6 @@
 FROM gitpod/workspace-base:latest as base
 
+# Install General Dependencies
 RUN sudo apt-get update \
      && sudo apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git python3 glslang-tools nodejs npm \
      && sudo apt-get clean && sudo rm -rf /var/cache/apt/* && sudo rm -rf /var/lib/apt/lists/* && sudo rm -rf /tmp/*
@@ -9,7 +10,7 @@ USER gitpod
 WORKDIR /home/gitpod
 
 # Install ZVM - https://github.com/tristanisham/zvm
-RUN curl https://raw.githubusercontent.com/tristanisham/zvm/master/install.sh | bash
+RUN curl --proto '=https' --tlsv1.3 -sSf https://raw.githubusercontent.com/tristanisham/zvm/master/install.sh | bash
 RUN echo "# ZVM" >> $HOME/.bashrc
 RUN echo export ZVM_INSTALL="$HOME/.zvm" >> $HOME/.bashrc
 RUN echo export PATH="\$PATH:\$ZVM_INSTALL/bin" >> $HOME/.bashrc
