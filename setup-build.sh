@@ -25,6 +25,7 @@ curl --proto '=https' --tlsv1.3 -sSf https://sh.rustup.rs | bash
 curl -L --proto '=https' --tlsv1.3 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
 
 # Install Cargo Lambda
+source "$HOME/.cargo/env"
 cargo binstall cargo-lambda
 
 # Install Node
