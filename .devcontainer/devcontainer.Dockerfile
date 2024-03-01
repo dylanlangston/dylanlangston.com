@@ -38,7 +38,7 @@ RUN curl --proto '=https' --tlsv1.3 -sSf https://sh.rustup.rs | bash -s -- -y
 RUN curl -L --proto '=https' --tlsv1.3 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
 
 # Install Cargo Lambda
-RUN cargo binstall cargo-lambda
+RUN $HOME/.cargo/bin/cargo binstall cargo-lambda
 
 # Install Bun
 RUN curl -fsSL https://bun.sh/install | bash
