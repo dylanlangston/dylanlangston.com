@@ -5,20 +5,6 @@
 # Update and Install Deps
 apt-get update && apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git python3
 
-# Install ZVM - https://github.com/tristanisham/zvm
-cur -L --proto '=https' --tlsv1.3 -sSf https://raw.githubusercontent.com/tristanisham/zvm/master/install.sh | bash
-echo "# ZVM" >> $HOME/.bashrc
-echo export ZVM_INSTALL="$HOME/.zvm" >> $HOME/.bashrc
-echo export PATH="\$PATH:\$ZVM_INSTALL/bin" >> $HOME/.bashrc
-echo export PATH="\$PATH:\$ZVM_INSTALL/self" >> $HOME/.bashrc
-source "$HOME/.bashrc"
-
-# Install ZIG
-$HOME/.zvm/self/zvm i master
-
-# Install ZLS
-$HOME/.zvm/self/zvm i -D=zls master
-
 # Install rust
 curl --proto '=https' --tlsv1.3 -sSf https://sh.rustup.rs | bash
 
@@ -28,6 +14,19 @@ curl -L --proto '=https' --tlsv1.3 -sSf https://raw.githubusercontent.com/cargo-
 # Install Cargo Lambda
 source "$HOME/.cargo/env"
 cargo binstall cargo-lambda
+
+# Install ZVM - https://github.com/tristanisham/zvm
+cur -L --proto '=https' --tlsv1.3 -sSf https://raw.githubusercontent.com/tristanisham/zvm/master/install.sh | bash
+echo "# ZVM" >> $HOME/.bashrc
+echo export ZVM_INSTALL="$HOME/.zvm" >> $HOME/.bashrc
+echo export PATH="\$PATH:\$ZVM_INSTALL/bin" >> $HOME/.bashrc
+echo export PATH="\$PATH:\$ZVM_INSTALL/self" >> $HOME/.bashrc
+
+# Install ZIG
+$HOME/.zvm/self/zvm i master
+
+# Install ZLS
+$HOME/.zvm/self/zvm i -D=zls master
 
 # Install Node
 apt-get -y install --no-install-recommends nodejs npm
