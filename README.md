@@ -80,8 +80,8 @@ flowchart LR
     B5 -.- B6
     B10 -.- B11
 
-    B1 --Setup--> subGraph0 --Build--> subGraph1 --Build--> subGraph2 --Release--> B9
-    B8 --CI/CD--> B7 --Dev Container--> B1
+    B1 --Build--> subGraph0 --Build--> subGraph1 --Build--> subGraph2 --Release--> B9
+    B8 --Dev Container--> B7 --Setup--> B1
     B8 ~~~ B9
     B8 ~~~ B1
     B8 ~~~ subGraph0
