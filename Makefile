@@ -62,7 +62,7 @@ clean: ## Default Clean Target.
 
 clean-cache: clean ## Clean the Zig-cache also
 	@rm -rf ./zig-cache/*
-	@cargo clean --manifest-path ./contact-lambda/Cargo.toml
+	@cargo clean --manifest-path ./contact-lambda/Cargo.toml || true
 	@echo Cleaned Cache
 
 setup-git-clone: ## Clone git submodules
