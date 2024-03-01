@@ -1,10 +1,18 @@
 FROM mcr.microsoft.com/devcontainers/base:debian as base
 
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-     && install -m 0755 -d /etc/apt/keyrings && curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc && chmod a+r /etc/apt/keyrings/docker.asc \
-     && apt-get update \
-     && apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git python3 glslang-tools nodejs npm install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin \
+     && apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git python3 glslang-tools nodejs npm \
      && apt-get clean && rm -rf /var/cache/apt/* && rm -rf /var/lib/apt/lists/* && rm -rf /tmp/*
+
+# Install Docker
+RUN install -m 0755 -d /etc/apt/keyrings \
+     && curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc \
+     && chmod a+r /etc/apt/keyrings/docker.asc \
+     && echo \
+     "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+     $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+     tee /etc/apt/sources.list.d/docker.list > /dev/null \
+     && apt-get update
 
 # Important we change to the vscode user that the devcontainer runs under
 USER vscode
