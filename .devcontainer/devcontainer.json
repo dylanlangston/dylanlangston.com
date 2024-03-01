@@ -7,6 +7,7 @@
 	},
 	"containerUser": "vscode",
 	"postCreateCommand": "make setup-git-clone setup",
+	"runArgs": ["--volume=/var/lib/docker", "--privileged"],
 	"customizations": {
 		"vscode": {
 			"extensions": [
