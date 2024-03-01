@@ -22,7 +22,9 @@
 				"GitHub.codespaces",
 				"bierner.markdown-preview-github-styles",
 				"bierner.markdown-mermaid",
-				"dtoplak.vscode-glsllint"
+				"dtoplak.vscode-glsllint",
+				"rust-lang.rust-analyzer",
+				"tamasfe.even-better-toml"
 			],
 			"settings": {
 				"zig.path": "",

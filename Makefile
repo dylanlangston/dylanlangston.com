@@ -49,8 +49,9 @@ ifeq ($(USE_NODE),1)
 else
 	@bun -b run --cwd ./site test-bun
 endif
+	@make test-contact-lambda
 
-release: clean build-web build-site ## Default Release Target. Builds Web Version for publish
+release: clean build-web build-site build-contact-lambda ## Default Release Target. Builds Web Version for publish
 
 setup: setup-emscripten setup-bun setup-tests # Default Setup Target. Clones git repos, sets up emscripten, and sets up nodejs.
 
@@ -61,6 +62,7 @@ clean: ## Default Clean Target.
 
 clean-cache: clean ## Clean the Zig-cache also
 	@rm -rf ./zig-cache/*
+	@cargo clean --manifest-path ./contact-lambda/Cargo.toml
 	@echo Cleaned Cache
 
 setup-git-clone: ## Clone git submodules
@@ -151,4 +153,11 @@ endif
 update-version: ## Update Version. Optionally pass in the VERSION=1.0.0 argument.
 	@sed -i -r 's/ .version = "([[:digit:]]{1,}\.*){3,4}"/ .version = "$(VERSION)"/g' ./build.zig.zon
 	@sed -i -r 's/"version": "([[:digit:]]{1,}\.*){3,4}"/"version": "$(VERSION)"/g' ./site/package.json
+	@sed -r -r 's/version = "([[:digit:]]{1,}\.*){3,4}"/version = "$(VERSION)"/g' ./contact-lambda/Cargo.toml
 	@echo Updated Version to $(VERSION)
+
+build-contact-lambda: ## Build the Contact API Lambda
+	@cd ./contact-lambda; cargo lambda build --release --arm64 --output-format zip
+
+test-contact-lambda: ## Test the Contact API Lambda
+	@cd ./contact-lambda; cargo lambda build && (cargo lambda watch & sleep 5; cargo lambda invoke contact-lambda --data-example apigw-request; kill %)

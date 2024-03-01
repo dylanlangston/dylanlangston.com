@@ -13,6 +13,12 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+  - package-ecosystem: "cargo"
+    commit-message:
+      prefix: "Rust - "
+    directory: "/contact-lambda"
+    schedule:
+      interval: "weekly"
   - package-ecosystem: "github-actions"
     commit-message:
       prefix: "Github Actions - "
