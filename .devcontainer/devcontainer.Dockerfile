@@ -32,7 +32,7 @@ RUN $HOME/.zvm/self/zvm i master
 RUN $HOME/.zvm/self/zvm i -D=zls master
 
 # Install rust
-RUN curl --proto '=https' --tlsv1.3 -sSf https://sh.rustup.rs | bash
+RUN curl --proto '=https' --tlsv1.3 -sSf https://sh.rustup.rs | bash -s -- -y
 
 # Install Cargo B(inary)Install
 RUN curl -L --proto '=https' --tlsv1.3 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
