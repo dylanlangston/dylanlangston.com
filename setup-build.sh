@@ -11,6 +11,7 @@ echo "# ZVM" >> $HOME/.bashrc
 echo export ZVM_INSTALL="$HOME/.zvm" >> $HOME/.bashrc
 echo export PATH="\$PATH:\$ZVM_INSTALL/bin" >> $HOME/.bashrc
 echo export PATH="\$PATH:\$ZVM_INSTALL/self" >> $HOME/.bashrc
+source "$HOME/.bashrc"
 
 # Install ZIG
 $HOME/.zvm/self/zvm i master
