@@ -143,6 +143,7 @@ release-docker:  ## Builds Web Version for publish using docker.
 	@docker build --cache-from dylanlangston.com:build --cache-from debian:stable-slim -t dylanlangston.com:latest --target publish . --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE) --build-arg PRECOMPRESS_RELEASE=$(PRECOMPRESS_RELEASE)
 	@docker create --name site-temp dylanlangston.com
 	@docker cp site-temp:/root/dylanlangston.com/site/build/ ./site/
+	@docker cp site-temp:/root/dylanlangston.com/contact-lambda/target/ ./contact-lambda/
 	@docker rm -f site-temp
 
 test-docker:  ## clean, setup, and test using docker.
@@ -158,7 +159,7 @@ endif
 update-version: ## Update Version. Optionally pass in the VERSION=1.0.0 argument.
 	@sed -i -r 's/ .version = "([[:digit:]]{1,}\.*){3,4}"/ .version = "$(VERSION)"/g' ./build.zig.zon
 	@sed -i -r 's/"version": "([[:digit:]]{1,}\.*){3,4}"/"version": "$(VERSION)"/g' ./site/package.json
-	@sed -r -r 's/version = "([[:digit:]]{1,}\.*){3,4}"/version = "$(VERSION)"/g' ./contact-lambda/Cargo.toml
+	@sed -i -r 's/version = "([[:digit:]]{1,}\.*){3,4}"/version = "$(VERSION)"/g' ./contact-lambda/Cargo.toml
 	@echo Updated Version to $(VERSION)
 
 build-contact-lambda: ## Build the Contact API Lambda
