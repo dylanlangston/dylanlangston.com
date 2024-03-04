@@ -167,4 +167,6 @@ build-contact-lambda: ## Build the Contact API Lambda
 
 test-contact-lambda: ## Test the Contact API Lambda
 	@cd ./contact-lambda; cargo test
-	@cd ./contact-lambda; cargo lambda watch -w & sleep 1; cargo lambda invoke contact-lambda --data-example apigw-request; kill %
+	@cd ./contact-lambda; cargo lambda watch -w & sleep 5;
+	@cd ./contact-lambda; cargo lambda invoke contact-lambda --data-example apigw-request
+	@kill %
