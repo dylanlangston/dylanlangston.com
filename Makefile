@@ -51,7 +51,11 @@ else
 endif
 	@make test-contact-lambda
 
-release: clean build-web build-site build-contact-lambda ## Default Release Target. Builds Web Version for publish
+release: clean build-web build-site  ## Default Release Target. Builds Web Version for publish
+ifeq ($(OPTIMIZE),Debug)
+else
+	@make build-contact-lambda
+endif
 
 setup: setup-emscripten setup-bun setup-tests # Default Setup Target. Clones git repos, sets up emscripten, and sets up nodejs.
 
