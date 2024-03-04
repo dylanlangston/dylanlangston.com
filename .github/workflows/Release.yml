@@ -6,10 +6,6 @@ on:
       version:
         required: true
         type: string
-      name-prefix:
-        required: false
-        type: string
-        default: "dylanlangston.com-v"
       commit-message:
         required: true
         type: string
@@ -45,21 +41,6 @@ jobs:
           INPUT_COMMIT-MESSAGE: ${{ inputs.commit-message }}
         with:
           script: |
-            const allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
-               owner: context.repo.owner,
-               repo: context.repo.repo,
-               run_id: '${{ github.run_id }}',
-            });
-            const matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
-              return artifact.name == "${{ inputs.name-prefix }}${{ inputs.version }}"
-            })[0];
-            const download = await github.rest.actions.downloadArtifact({
-               owner: context.repo.owner,
-               repo: context.repo.repo,
-               artifact_id: matchArtifact.id,
-               archive_format: 'zip',
-            });
-
             const repoName = "${{ github.repository }}".split('/')[1];
             const releaseResponse = await github.rest.repos.createRelease({
                 body: "**DylanLangston.com - _Prerelease v${{ inputs.version }}_**<br/>" + core.getInput('commit-message', { required: true }),
@@ -76,15 +57,35 @@ jobs:
             const releaseId = releaseData.id;
             const uploadUrl = releaseData.upload_url;
 
-            const uploadResponse = await github.rest.repos.uploadReleaseAsset({
-                url: uploadUrl,
-                headers: {
-                    "content-length": download.headers['content-length'],
-                    "content-type": download.headers['content-type']
-                },
-                data: download.data,
-                name: "${{ inputs.name-prefix }}${{ inputs.version }}.zip",
-                owner: "${{ github.repository_owner }}",
-                release_id: releaseId,
-                repo: repoName
+            const allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               run_id: '${{ github.run_id }}',
             });
+
+            for (let prefix of ["dylanlangston.com-v", "dylanlangston.com-contact-v"]) {
+              const matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
+                return artifact.name == prefix + "${{ inputs.version }}"
+              })[0];
+              const download = await github.rest.actions.downloadArtifact({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                artifact_id: matchArtifact.id,
+                archive_format: 'zip',
+              });
+
+              const uploadResponse = await github.rest.repos.uploadReleaseAsset({
+                  url: uploadUrl,
+                  headers: {
+                      "content-length": download.headers['content-length'],
+                      "content-type": download.headers['content-type']
+                  },
+                  data: download.data,
+                  name: prefix + "${{ inputs.version }}.zip",
+                  owner: "${{ github.repository_owner }}",
+                  release_id: releaseId,
+                  repo: repoName
+              });
+            }
+            
+            
