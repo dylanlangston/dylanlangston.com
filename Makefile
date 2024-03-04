@@ -62,6 +62,7 @@ setup: setup-emscripten setup-bun setup-tests # Default Setup Target. Clones git
 clean: ## Default Clean Target.
 	@rm -rf ./zig-out/*
 	@rm -rf ./site/build/*
+	@rm -rf ./contact-lambda/target/*
 	@echo Cleaned Output
 
 clean-cache: clean ## Clean the Zig-cache also
@@ -161,7 +162,7 @@ update-version: ## Update Version. Optionally pass in the VERSION=1.0.0 argument
 	@echo Updated Version to $(VERSION)
 
 build-contact-lambda: ## Build the Contact API Lambda
-	@cd ./contact-lambda; cargo lambda build --release --arm64 --output-format zip
+	@cd ./contact-lambda; cargo lambda build --release --arm64 --output-format zip -l ./target
 
 test-contact-lambda: ## Test the Contact API Lambda
 	@cd ./contact-lambda; cargo test
