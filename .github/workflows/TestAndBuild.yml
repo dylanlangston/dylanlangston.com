@@ -59,13 +59,13 @@ jobs:
           path: '${{ github.workspace }}/site/build'
       - name: Upload Lambda artifact
         if: ${{ success() || steps.upload.conclusion == 'success' }}
-        id: upload-lambda
+        id: upload_lambda
         uses: actions/upload-artifact@v4
         with:
           name: dylanlangston.com-contact-v${{ inputs.version }}
           path: '${{ github.workspace }}/contact-lambda/target/lambda/contact-lambda'
       - name: Build Debug using Docker
-        if: ${{ success() || (steps.upload-lambda.conclusion == 'success') }}
+        if: ${{ success() || (steps.upload_lambda.conclusion == 'success') }}
         id: build_debug
         run: |
           cp -r ./site/build/ ./site/release
