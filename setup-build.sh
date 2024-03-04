@@ -3,10 +3,10 @@
 # This script is intended to setup the docker/github action build environment. 
 
 # Update and Install Deps
-apt-get update && apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git python3
+apt-get update && apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git python3 build-essential
 
 # Install ZVM - https://github.com/tristanisham/zvm
-cur -L --proto '=https' --tlsv1.3 -sSf https://raw.githubusercontent.com/tristanisham/zvm/master/install.sh | bash
+curl -L --proto '=https' --tlsv1.3 -sSf https://raw.githubusercontent.com/tristanisham/zvm/master/install.sh | bash
 echo "# ZVM" >> $HOME/.bashrc
 echo export ZVM_INSTALL="$HOME/.zvm" >> $HOME/.bashrc
 echo export PATH="\$PATH:\$ZVM_INSTALL/bin" >> $HOME/.bashrc

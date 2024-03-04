@@ -14,7 +14,7 @@ COPY ./setup-build.sh /root/dylanlangston.com/setup-build.sh
 COPY ./emsdk /root/dylanlangston.com/emsdk
 
 # Setup Build Environment
-ENV PATH="/root/.bun/bin/:/root/.zvm/self/:/root/.zvm/bin:$PATH"
+ENV PATH="/root/.bun/bin/:/root/.zvm/self/:/root/.zvm/bin:/root/.cargo/bin:$PATH"
 WORKDIR /root/dylanlangston.com
 RUN sh ./setup-build.sh
 

@@ -21,7 +21,7 @@ jobs:
   Build:
     name: "Test 🧪 + Build 🧰"
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Test + Build Summary
         uses: dylanlangston/dylanlangston.com/.github/actions/PopulateBuildSummary@main
@@ -57,8 +57,15 @@ jobs:
         with:
           name: dylanlangston.com-v${{ inputs.version }}
           path: '${{ github.workspace }}/site/build'
+      - name: Upload Lambda artifact
+        if: ${{ success() || steps.upload.conclusion == 'success' }}
+        id: upload_lambda
+        uses: actions/upload-artifact@v4
+        with:
+          name: dylanlangston.com-contact-v${{ inputs.version }}
+          path: '${{ github.workspace }}/contact-lambda/target/contact-lambda/'
       - name: Build Debug using Docker
-        if: ${{ success() || (steps.upload.conclusion == 'success') }}
+        if: ${{ success() || (steps.upload_lambda.conclusion == 'success') }}
         id: build_debug
         run: |
           cp -r ./site/build/ ./site/release

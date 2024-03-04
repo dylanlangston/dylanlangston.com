@@ -97,7 +97,17 @@ export class Favicon {
 			this.faviconAnimation = requestAnimationFrame(faviconUpdate);
 		};
 		this.faviconAnimation = requestAnimationFrame(faviconUpdate);
+
+		document.addEventListener("visibilitychange", this.onVisiblityChange);
 	}
+
+	private onVisiblityChange = () => {
+		// Restore original icon when window is no longer visible (since the animation stops when the window is inactive)
+		if (document.hidden) {
+			const link: HTMLLinkElement | null = document.querySelector("link[rel~='icon']");
+			link!.href = '/favicon.png';
+		}
+	};
 
 	public destroy(): void {
 		cancelAnimationFrame(this.faviconAnimation);
@@ -106,5 +116,7 @@ export class Favicon {
 
 		const link: HTMLLinkElement | null = document.querySelector("link[rel~='icon']");
 		link!.href = '/favicon.png';
+
+		document.removeEventListener("visibilitychange", this.onVisiblityChange);
 	}
 }

@@ -51,13 +51,18 @@ else
 endif
 	@make test-contact-lambda
 
-release: clean build-web build-site build-contact-lambda ## Default Release Target. Builds Web Version for publish
+release: clean build-web build-site  ## Default Release Target. Builds Web Version for publish
+ifeq ($(OPTIMIZE),Debug)
+else
+	@make build-contact-lambda
+endif
 
 setup: setup-emscripten setup-bun setup-tests # Default Setup Target. Clones git repos, sets up emscripten, and sets up nodejs.
 
 clean: ## Default Clean Target.
 	@rm -rf ./zig-out/*
 	@rm -rf ./site/build/*
+	@rm -rf ./contact-lambda/target/*
 	@echo Cleaned Output
 
 clean-cache: clean ## Clean the Zig-cache also
@@ -138,6 +143,7 @@ release-docker:  ## Builds Web Version for publish using docker.
 	@docker build --cache-from dylanlangston.com:build --cache-from debian:stable-slim -t dylanlangston.com:latest --target publish . --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE) --build-arg PRECOMPRESS_RELEASE=$(PRECOMPRESS_RELEASE)
 	@docker create --name site-temp dylanlangston.com
 	@docker cp site-temp:/root/dylanlangston.com/site/build/ ./site/
+	@docker cp site-temp:/root/dylanlangston.com/contact-lambda/target/ ./contact-lambda/
 	@docker rm -f site-temp
 
 test-docker:  ## clean, setup, and test using docker.
@@ -153,11 +159,12 @@ endif
 update-version: ## Update Version. Optionally pass in the VERSION=1.0.0 argument.
 	@sed -i -r 's/ .version = "([[:digit:]]{1,}\.*){3,4}"/ .version = "$(VERSION)"/g' ./build.zig.zon
 	@sed -i -r 's/"version": "([[:digit:]]{1,}\.*){3,4}"/"version": "$(VERSION)"/g' ./site/package.json
-	@sed -r -r 's/version = "([[:digit:]]{1,}\.*){3,4}"/version = "$(VERSION)"/g' ./contact-lambda/Cargo.toml
+	@sed -i -r 's/version = "([[:digit:]]{1,}\.*){3,4}"/version = "$(VERSION)"/g' ./contact-lambda/Cargo.toml
 	@echo Updated Version to $(VERSION)
 
 build-contact-lambda: ## Build the Contact API Lambda
-	@cd ./contact-lambda; cargo lambda build --release --arm64 --output-format zip
+	@cd ./contact-lambda; cargo lambda build --release --arm64 --output-format zip -l ./target
 
 test-contact-lambda: ## Test the Contact API Lambda
-	@cd ./contact-lambda; cargo lambda build && (cargo lambda watch & sleep 5; cargo lambda invoke contact-lambda --data-example apigw-request; kill %)
+	@cd ./contact-lambda; cargo test
+	@cd ./contact-lambda; cargo lambda watch -w & sleep 1; cargo lambda invoke contact-lambda --data-example apigw-request; kill %
