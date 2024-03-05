@@ -147,7 +147,7 @@ release-docker:  ## Builds Web Version for publish using docker.
 	@docker rm -f site-temp
 
 test-docker:  ## clean, setup, and test using docker.
-	@docker build --cache-from dylanlangston.com:build -t dylanlangston.com . --target test --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE)
+	@docker build --network host --cache-from dylanlangston.com:build -t dylanlangston.com . --target test --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE)
 
 run-site: build-web ## Run Website
 ifeq ($(USE_NODE),1)
@@ -169,4 +169,4 @@ test-contact-lambda: ## Test the Contact API Lambda
 	@cd ./contact-lambda; cargo test
 	@cd ./contact-lambda; cargo lambda watch -w & sleep 5;
 	@cd ./contact-lambda; cargo lambda invoke contact-lambda --data-example apigw-request
-	@kill %
+	@pkill cargo-lambda
