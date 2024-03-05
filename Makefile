@@ -12,7 +12,7 @@ endif
 
 # Specify if nodejs should be used instead of bun
 ifeq ($(USE_NODE),)
-	USE_NODE = 0
+	USE_NODE = 1
 else ifeq ($(USE_NODE),0)
 else ifeq ($(USE_NODE),1)
 else
