@@ -21,8 +21,6 @@ jobs:
   Build:
     name: "Test 🧪 + Build 🧰"
     runs-on: ubuntu-latest
-    container:
-      options: --privileged
     timeout-minutes: 15
     steps:
       - name: Test + Build Summary
