@@ -6,7 +6,7 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: ${{ github.ref }}
+  group: merge-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:

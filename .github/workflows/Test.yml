@@ -12,7 +12,7 @@ on:
         type: boolean
 
 concurrency:
-  group: "test"
+  group: test-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
