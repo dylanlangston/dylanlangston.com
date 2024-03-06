@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/devcontainers/base:debian as base
 
 # Install General Dependencies
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-     && apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git python3 glslang-tools nodejs npm
+     && apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git python3 glslang-tools nodejs npm awscli
 
 # Install Docker
 RUN install -m 0755 -d /etc/apt/keyrings \
@@ -13,6 +13,13 @@ RUN install -m 0755 -d /etc/apt/keyrings \
      $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
      tee /etc/apt/sources.list.d/docker.list > /dev/null \
      && apt-get update && apt-get -y install --no-install-recommends docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# Install AWS SAM CLI
+RUN curl -L "https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip" -o sam.zip
+RUN unzip sam.zip -d ./sam
+RUN rm sam.zip
+RUN ./sam/install
+RUN rm -rf ./sam
 
 # Clean Image
 RUN apt-get clean && rm -rf /var/cache/apt/* && rm -rf /var/lib/apt/lists/* && rm -rf /tmp/*

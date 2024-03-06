@@ -2,8 +2,15 @@ FROM gitpod/workspace-base:latest as base
 
 # Install General Dependencies
 RUN sudo apt-get update \
-     && sudo apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git python3 glslang-tools nodejs npm \
+     && sudo apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git python3 glslang-tools nodejs npm awscli \
      && sudo apt-get clean && sudo rm -rf /var/cache/apt/* && sudo rm -rf /var/lib/apt/lists/* && sudo rm -rf /tmp/*
+
+# Install AWS SAM CLI
+RUN curl -L "https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip" -o sam.zip
+RUN unzip sam.zip -d ./sam
+RUN rm sam.zip
+RUN sudo ./sam/install
+RUN rm -rf ./sam
 
 # Important we change to the gitpod user that the devcontainer runs under
 USER gitpod
