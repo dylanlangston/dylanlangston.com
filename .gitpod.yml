@@ -21,3 +21,5 @@ vscode:
     - dtoplak.vscode-glsllint
     - rust-lang.rust-analyzer
     - tamasfe.even-better-toml
+    - redhat.vscode-yaml
+    - amazonwebservices.aws-toolkit-vscode

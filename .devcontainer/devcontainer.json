@@ -25,7 +25,9 @@
 				"bierner.markdown-mermaid",
 				"dtoplak.vscode-glsllint",
 				"rust-lang.rust-analyzer",
-				"tamasfe.even-better-toml"
+				"tamasfe.even-better-toml",
+				"redhat.vscode-yaml",
+				"amazonwebservices.aws-toolkit-vscode"
 			],
 			"settings": {
 				"zig.path": "",
