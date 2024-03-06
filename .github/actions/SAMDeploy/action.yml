@@ -25,5 +25,5 @@ runs:
         aws configure set default.region ${{ inputs.aws-region }}
         aws configure set default.output json
 branding:
-  icon: 'layers'
+  icon: 'server'
   color: 'green'
