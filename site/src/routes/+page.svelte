@@ -1,24 +1,19 @@
 <script lang="ts">
-	import { Environment } from '$lib/Common';
-	import { onMount } from 'svelte';
-	import { fade, blur, fly, slide, scale, crossfade } from 'svelte/transition';
 	import Panel from '../components/panel.svelte';
-
-	let loaded: boolean = false;
-
-	onMount(() => (loaded = true));
-
-	const mobile = Environment.isMobile;
+	import { ToolIcon } from 'svelte-feather-icons';
 </script>
 
 <Panel>
 	<svelte:fragment>
-		<div class="space-y-3 mx-2 lg:m-4">
-			{#if loaded}
-				<h1 class="text-center text-2xl lg:text-6xl font-bold">
-					Hello {$mobile ? 'Mobile' : 'Desktop'} HTML World
-				</h1>
-			{/if}
+		<div class="text-center mx-2 lg:m-4">
+			<div class="flex flex-row">
+				<h1 class="text-2xl lg:text-6xl font-bold">Under Construction</h1>
+				<ToolIcon class="pl-2 size-8 m-auto lg:size-16 lg:pl-4" />
+			</div>
+
+			<hr />
+			<br/>
+			<p>Please check back soon.</p>
 		</div>
 	</svelte:fragment>
 </Panel>
