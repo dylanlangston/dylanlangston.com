@@ -47,6 +47,13 @@ updates:
     open-pull-requests-limit: 10
     commit-message:
       prefix: "Github Actions - "
+    directory: ./.github/actions/SAMDeploy
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "github-actions"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "Github Actions - "
     directory: ./.github/workflows/
     schedule:
       interval: "weekly"
