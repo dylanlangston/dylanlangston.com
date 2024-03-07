@@ -143,14 +143,14 @@ develop-docker-stop: ## Stop all docker containers
 	@echo Stopping Docker Container
 
 release-docker:  ## Builds Web Version for publish using docker.
-	@docker build --cache-from dylanlangston.com:build --cache-from debian:stable-slim -t dylanlangston.com:latest --target publish . --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE) --build-arg PRECOMPRESS_RELEASE=$(PRECOMPRESS_RELEASE)
+	@docker build --rm --cache-from dylanlangston.com:build --cache-from debian:stable-slim -t dylanlangston.com:latest --target publish . --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE) --build-arg PRECOMPRESS_RELEASE=$(PRECOMPRESS_RELEASE)
 	@docker create --name site-temp dylanlangston.com
 	@docker cp site-temp:/root/dylanlangston.com/site/build/ ./site/
 	@docker cp site-temp:/root/dylanlangston.com/contact-lambda/target/ ./contact-lambda/
 	@docker rm -f site-temp
 
 test-docker:  ## clean, setup, and test using docker.
-	@docker build --network host --cache-from dylanlangston.com:build -t dylanlangston.com . --target test --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE)
+	@docker build --rm --network host --cache-from dylanlangston.com:build -t dylanlangston.com . --target test --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE)
 
 run-site: build-web ## Run Website
 ifeq ($(USE_NODE),1)
