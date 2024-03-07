@@ -57,7 +57,7 @@ else
 	@make build-contact-lambda
 endif
 
-setup: setup-emscripten setup-bun setup-tests # Default Setup Target. Clones git repos, sets up emscripten, and sets up nodejs.
+setup: setup-emscripten setup-bun setup-tests setup-rust # Default Setup Target. Clones git repos, sets up emscripten, sets up nodejs, and sets up rust.
 
 clean: ## Default Clean Target.
 	@rm -rf ./zig-out/*
@@ -95,6 +95,9 @@ else
 	@bunx --bun playwright install
 	@bunx --bun playwright install-deps
 endif
+
+setup-rust:
+	@rustup target add aarch64-unknown-linux-gnu
 
 build-desktop: ## Build Desktop. Optionally pass in the OPTIMIZE=... argument.
 	@zig build -Doptimize=$(OPTIMIZE) -freference-trace
@@ -140,14 +143,14 @@ develop-docker-stop: ## Stop all docker containers
 	@echo Stopping Docker Container
 
 release-docker:  ## Builds Web Version for publish using docker.
-	@docker build --cache-from dylanlangston.com:build --cache-from debian:stable-slim -t dylanlangston.com:latest --target publish . --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE) --build-arg PRECOMPRESS_RELEASE=$(PRECOMPRESS_RELEASE)
+	@docker build --rm --cache-from dylanlangston.com:build --cache-from debian:stable-slim -t dylanlangston.com:latest --target publish . --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE) --build-arg PRECOMPRESS_RELEASE=$(PRECOMPRESS_RELEASE)
 	@docker create --name site-temp dylanlangston.com
 	@docker cp site-temp:/root/dylanlangston.com/site/build/ ./site/
 	@docker cp site-temp:/root/dylanlangston.com/contact-lambda/target/ ./contact-lambda/
 	@docker rm -f site-temp
 
 test-docker:  ## clean, setup, and test using docker.
-	@docker build --network host --cache-from dylanlangston.com:build -t dylanlangston.com . --target test --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE)
+	@docker build --rm --network host --cache-from dylanlangston.com:build -t dylanlangston.com . --target test --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE)
 
 run-site: build-web ## Run Website
 ifeq ($(USE_NODE),1)
@@ -163,7 +166,7 @@ update-version: ## Update Version. Optionally pass in the VERSION=1.0.0 argument
 	@echo Updated Version to $(VERSION)
 
 build-contact-lambda: ## Build the Contact API Lambda
-	@cd ./contact-lambda; cargo lambda build --release --arm64 --output-format zip -l ./target
+	@cd ./contact-lambda; cargo lambda build --release --target aarch64-unknown-linux-gnu --output-format zip -l ./target
 
 test-contact-lambda: ## Test the Contact API Lambda
 	@cd ./contact-lambda; cargo test
