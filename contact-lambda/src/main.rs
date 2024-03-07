@@ -1,31 +1,84 @@
-use lambda_http::{run, service_fn, tracing, Body, Error, Request, RequestExt, Response};
+#![allow(non_snake_case)]
 
-/// This is the main body for the function.
-/// Write your code inside it.
-/// There are some code example in the following URLs:
-/// - https://github.com/awslabs/aws-lambda-rust-runtime/tree/main/examples
+use lambda_http::{run, service_fn, Body, Error, Request, Response};
+use rusoto_core::Region;
+use rusoto_ses::{Body as SesBody, Content, Destination, Message, SendEmailRequest, Ses};
+use serde::Deserialize;
+
+#[derive(Debug, Deserialize)]
+struct ContactRequest {
+    firstName: String,
+    lastName: String,
+    phone: String,
+    email: String,
+    message: String,
+}
+
 async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
-    // Extract some useful information from the request
-    let who = event
-        .query_string_parameters_ref()
-        .and_then(|params| params.first("name"))
-        .unwrap_or("world");
-    let message = format!("Hello {who}, this is an AWS Lambda HTTP request");
+    // Deserialize JSON into ContactRequest struct
+    let contact_request: ContactRequest = serde_json::from_slice(event.body())?;
 
-    // Return something that implements IntoResponse.
-    // It will be serialized to the right response event automatically by the runtime
-    let resp: Response<Body> = Response::builder()
-        .status(500)
-        .header("content-type", "text/html")
-        .body(message.into())
-        .map_err(Box::new)?;
-    
+    if contact_request.email == "test" {
+        // Don't send an email if this is a test
+    } else {
+        // Send email using AWS SES
+        send_email(&contact_request).await?;
+    }
+
+    // Return HTTP response
+    let resp = Response::builder()
+        .status(200)
+        .body(Body::Empty)
+        .expect("Failed to build response");
+
     Ok(resp)
+}
+
+async fn send_email(contact_request: &ContactRequest) -> Result<(), Error> {
+    // Initialize SES client
+    let ses_client = rusoto_ses::SesClient::new(Region::default());
+
+    // Construct email message
+    let subject = format!(
+        "Contact Request - {} {}",
+        contact_request.firstName, contact_request.lastName
+    );
+    let body = format!(
+        "Phone: {}\nEmail: {}\nMessage: {}",
+        contact_request.phone, contact_request.email, contact_request.message
+    );
+
+    // Construct SES request
+    let request = SendEmailRequest {
+        destination: Destination {
+            to_addresses: Some(vec!["dylanlangston@gmail.com".to_string()]),
+            ..Default::default()
+        },
+        message: Message {
+            body: SesBody {
+                text: Some(Content {
+                    data: body,
+                    charset: Some("UTF-8".to_string()),
+                }),
+                ..Default::default()
+            },
+            subject: Content {
+                data: subject,
+                charset: Some("UTF-8".to_string()),
+            },
+        },
+        source: "mail@dylanlangston.com".to_string(),
+        reply_to_addresses: Some(vec![contact_request.email.clone()]),
+        ..Default::default()
+    };
+
+    // Send email
+    ses_client.send_email(request).await?;
+
+    Ok(())
 }
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
-    tracing::init_default_subscriber();
-
     run(service_fn(function_handler)).await
 }
