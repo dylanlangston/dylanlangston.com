@@ -159,7 +159,7 @@ endif
 update-version: ## Update Version. Optionally pass in the VERSION=1.0.0 argument.
 	@sed -i -r 's/ .version = "([[:digit:]]{1,}\.*){3,4}"/ .version = "$(VERSION)"/g' ./build.zig.zon
 	@sed -i -r 's/"version": "([[:digit:]]{1,}\.*){3,4}"/"version": "$(VERSION)"/g' ./site/package.json
-	@sed -i -r 's/version = "([[:digit:]]{1,}\.*){3,4}"/version = "$(VERSION)"/g' ./contact-lambda/Cargo.toml
+	@sed -i -r 's/version = "([[:digit:]]{1,}\.*){3,4}"$$/version = "$(VERSION)"/g' ./contact-lambda/Cargo.toml
 	@echo Updated Version to $(VERSION)
 
 build-contact-lambda: ## Build the Contact API Lambda
