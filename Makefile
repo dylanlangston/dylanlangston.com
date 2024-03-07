@@ -57,7 +57,7 @@ else
 	@make build-contact-lambda
 endif
 
-setup: setup-emscripten setup-bun setup-tests # Default Setup Target. Clones git repos, sets up emscripten, and sets up nodejs.
+setup: setup-emscripten setup-bun setup-tests setup-rust # Default Setup Target. Clones git repos, sets up emscripten, sets up nodejs, and sets up rust.
 
 clean: ## Default Clean Target.
 	@rm -rf ./zig-out/*
@@ -95,6 +95,9 @@ else
 	@bunx --bun playwright install
 	@bunx --bun playwright install-deps
 endif
+
+setup-rust:
+	@rustup target add aarch64-unknown-linux-gnu
 
 build-desktop: ## Build Desktop. Optionally pass in the OPTIMIZE=... argument.
 	@zig build -Doptimize=$(OPTIMIZE) -freference-trace
@@ -163,7 +166,7 @@ update-version: ## Update Version. Optionally pass in the VERSION=1.0.0 argument
 	@echo Updated Version to $(VERSION)
 
 build-contact-lambda: ## Build the Contact API Lambda
-	@cd ./contact-lambda; cargo lambda build --release --arm64 --output-format zip -l ./target
+	@cd ./contact-lambda; cargo lambda build --release --target aarch64-unknown-linux-gnu --output-format zip -l ./target
 
 test-contact-lambda: ## Test the Contact API Lambda
 	@cd ./contact-lambda; cargo test
