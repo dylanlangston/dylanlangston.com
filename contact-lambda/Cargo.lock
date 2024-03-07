@@ -215,6 +215,7 @@ name = "contact-lambda"
 version = "0.1.0"
 dependencies = [
  "lambda_http",
+ "openssl",
  "rusoto_core",
  "rusoto_ses",
  "serde",
@@ -1100,6 +1101,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ff011a302c396a5197692431fc1948019154afc178baf7d8e37367442a4601cf"
 
 [[package]]
+name = "openssl-src"
+version = "300.2.3+3.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5cff92b6f71555b61bb9315f7c64da3ca43d87531622120fea0195fc761b4843"
+dependencies = [
+ "cc",
+]
+
+[[package]]
 name = "openssl-sys"
 version = "0.9.101"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1107,6 +1117,7 @@ checksum = "dda2b0f344e78efc2facf7d195d098df0dd72151b26ab98da807afc26c198dff"
 dependencies = [
  "cc",
  "libc",
+ "openssl-src",
  "pkg-config",
  "vcpkg",
 ]
