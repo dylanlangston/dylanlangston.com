@@ -2,7 +2,7 @@ FROM gitpod/workspace-base:latest as base
 
 # Install General Dependencies
 RUN sudo apt-get update \
-     && sudo apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git python3 glslang-tools nodejs npm awscli pkg-config \
+     && sudo apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git python3 glslang-tools nodejs npm awscli \
      && sudo apt-get clean && sudo rm -rf /var/cache/apt/* && sudo rm -rf /var/lib/apt/lists/* && sudo rm -rf /tmp/*
 
 # Install AWS SAM CLI
