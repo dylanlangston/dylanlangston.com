@@ -222,7 +222,7 @@ version = "0.1.0"
 dependencies = [
  "lambda_http",
  "openssl",
- "rusoto_core 0.45.0",
+ "rusoto_core 0.48.0",
  "rusoto_ses",
  "serde",
  "serde_json",
