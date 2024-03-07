@@ -228,9 +228,9 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
         "-sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE=[]",
         "-sEXPORTED_FUNCTIONS=['_malloc','_free','_main']",
         if (debugging_wasm)
-            "-sEXPORTED_RUNTIME_METHODS=allocateUTF8,UTF8ToString,abort,WasmOffsetConverter"
+            "-sEXPORTED_RUNTIME_METHODS=stringToNewUTF8,UTF8ToString,abort,WasmOffsetConverter"
         else
-            "-sEXPORTED_RUNTIME_METHODS=allocateUTF8,UTF8ToString,abort",
+            "-sEXPORTED_RUNTIME_METHODS=stringToNewUTF8,UTF8ToString,abort",
         "-sINCOMING_MODULE_JS_API=['setStatus','printErr','print','onAbort','instantiateWasm','locateFile','onRuntimeInitialized','canvas','elementPointerLock','requestFullscreen']",
         "-sDYNAMIC_EXECUTION=0",
         "-sWASM_BIGINT=1",
