@@ -2,7 +2,7 @@ SHELL=/bin/bash
 
 # Default to Debug for the optimization level
 ifeq ($(OPTIMIZE),)
-	OPTIMIZE = 'Debug'
+	OPTIMIZE = Debug
 endif
 
 # Set default build version
