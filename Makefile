@@ -147,7 +147,10 @@ release-docker:  ## Builds Web Version for publish using docker.
 	@docker build --rm --network host --cache-from dylanlangston.com:build -t dylanlangston.com . --target publish --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE) --build-arg PRECOMPRESS_RELEASE=$(PRECOMPRESS_RELEASE)
 	@docker create --name site-temp dylanlangston.com
 	@docker cp site-temp:/root/dylanlangston.com/site/build/ ./site/
+ifeq ($(OPTIMIZE),Debug)
+else
 	@docker cp site-temp:/root/dylanlangston.com/contact-lambda/target/ ./contact-lambda/
+endif
 	@docker rm -f site-temp
 
 test-docker:  ## clean, setup, and test using docker.
