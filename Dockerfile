@@ -18,6 +18,7 @@ COPY ./emsdk /root/dylanlangston.com/emsdk
 
 # Setup Build Environment
 RUN sh ./setup-build.sh
+RUN echo done
 
 FROM base as test
 COPY . /root/dylanlangston.com/
