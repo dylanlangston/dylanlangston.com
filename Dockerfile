@@ -13,11 +13,11 @@ COPY ./site/bun.lockb /root/dylanlangston.com/site/bun.lockb
 COPY ./site/bunfig.toml /root/dylanlangston.com/site/bunfig.toml
 COPY ./.gitmodules /root/dylanlangston.com/.gitmodules
 COPY ./Makefile /root/dylanlangston.com/Makefile
-COPY ./setup-build.sh /root/dylanlangston.com/setup-build.sh
+COPY ./setup-build.sh /root/dylanlangston.com/setup.sh
 COPY ./emsdk /root/dylanlangston.com/emsdk
 
 # Setup Build Environment
-RUN sh ./setup-build.sh
+RUN sh ./setup.sh
 RUN echo done
 
 FROM base as test
