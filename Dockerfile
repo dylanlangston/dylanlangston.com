@@ -5,14 +5,14 @@ FROM debian:stable-slim as base
 USER root
 
 ENV PATH="/root/.bun/bin/:/root/.zvm/self/:/root/.zvm/bin:/root/.cargo/bin:$PATH"
-COPY --link . /root/dylanlangston.com/
+COPY . /root/dylanlangston.com/
 WORKDIR /root/dylanlangston.com
 
 # Setup Build Environment
 RUN sh ./setup-build.sh
 
 FROM base as test
-COPY --link . /root/dylanlangston.com/
+COPY . /root/dylanlangston.com/
 RUN make setup-git-clone build-web test USE_NODE=1
 
 FROM base AS develop
@@ -20,7 +20,7 @@ EXPOSE 5173
 CMD ["make", "develop", "USE_NODE=1"]
 
 FROM base AS publish
-COPY --link . /root/dylanlangston.com/
+COPY . /root/dylanlangston.com/
 ARG VERSION
 RUN test -n "$VERSION"
 ARG OPTIMIZE='Debug'
