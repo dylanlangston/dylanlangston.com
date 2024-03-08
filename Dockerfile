@@ -8,13 +8,13 @@ ENV PATH="/root/.bun/bin/:/root/.zvm/self/:/root/.zvm/bin:/root/.cargo/bin:$PATH
 WORKDIR /root/dylanlangston.com
 
 # Copy only the files we absolutely need
-COPY ./site/package.json /root/dylanlangston.com/site/package.json
-COPY ./site/bun.lockb /root/dylanlangston.com/site/bun.lockb
-COPY ./site/bunfig.toml /root/dylanlangston.com/site/bunfig.toml
-COPY ./contact-lambda/Cargo.toml /root/dylanlangston.com/contact-lambda/Cargo.toml
-COPY ./.gitmodules /root/dylanlangston.com/.gitmodules
-COPY ./Makefile /root/dylanlangston.com/Makefile
-COPY ./emsdk /root/dylanlangston.com/emsdk
+COPY --link ./site/package.json /root/dylanlangston.com/site/package.json
+COPY --link ./site/bun.lockb /root/dylanlangston.com/site/bun.lockb
+COPY --link ./site/bunfig.toml /root/dylanlangston.com/site/bunfig.toml
+COPY --link ./contact-lambda /root/dylanlangston.com/contact-lambda
+COPY --link ./.gitmodules /root/dylanlangston.com/.gitmodules
+COPY --link ./Makefile /root/dylanlangston.com/Makefile
+COPY --link ./emsdk /root/dylanlangston.com/emsdk
 COPY --link ./setup-build.sh /root/dylanlangston.com/setup-build.sh
 
 # Setup Build Environment
