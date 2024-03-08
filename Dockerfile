@@ -18,10 +18,9 @@ COPY ./emsdk /root/dylanlangston.com/emsdk
 
 # Setup Build Environment
 RUN sh ./setup.sh
-RUN echo done
 
 FROM base as test
-COPY . /root/dylanlangston.com/
+COPY --link . /root/dylanlangston.com/
 RUN make setup-git-clone build-web test USE_NODE=1
 
 FROM base AS develop
@@ -29,7 +28,7 @@ EXPOSE 5173
 CMD ["make", "develop", "USE_NODE=1"]
 
 FROM base AS publish
-COPY . /root/dylanlangston.com/
+COPY --link . /root/dylanlangston.com/
 ARG VERSION
 RUN test -n "$VERSION"
 ARG OPTIMIZE='Debug'
