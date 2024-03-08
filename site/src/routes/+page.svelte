@@ -11,7 +11,7 @@
 				<ToolIcon class="pl-2 size-8 m-auto lg:size-16 lg:pl-4" />
 			</div>
 
-			<hr />
+			<hr class="h-0.5 lg:h-1 bg-black dark:bg-white border-transparent rounded-lg" />
 			<br/>
 			<p>Please check back soon.</p>
 		</div>

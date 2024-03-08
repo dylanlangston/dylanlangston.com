@@ -18,12 +18,8 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     // Deserialize JSON into ContactRequest struct
     let contact_request: ContactRequest = serde_json::from_slice(event.body())?;
 
-    if contact_request.email == "test" {
-        // Don't send an email if this is a test
-    } else {
-        // Send email using AWS SES
-        send_email(&contact_request).await?;
-    }
+    // Send email using AWS SES
+    send_email(&contact_request).await?;
 
     // Return HTTP response
     let resp = Response::builder()
@@ -72,8 +68,14 @@ async fn send_email(contact_request: &ContactRequest) -> Result<(), Error> {
         ..Default::default()
     };
 
-    // Send email
-    ses_client.send_email(request).await?;
+
+    if contact_request.email == "test" {
+        // Don't send an email if this is a test
+    } else {
+        // Send email
+        ses_client.send_email(request).await?;
+    }
+
 
     Ok(())
 }

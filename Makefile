@@ -96,7 +96,7 @@ else
 	@bunx --bun playwright install-deps
 endif
 
-setup-rust:
+setup-rust: ## Setup Rusy Environment
 	@rustup target add aarch64-unknown-linux-gnu
 
 build-desktop: ## Build Desktop. Optionally pass in the OPTIMIZE=... argument.

@@ -81,6 +81,11 @@ export class Favicon {
 			}
 			currentFrameCount = 0;
 
+			if (document.hidden) {
+				this.faviconAnimation = requestAnimationFrame(faviconUpdate);
+				return;
+			}
+
 			if (this.hue > 359) {
 				this.hue = 0;
 			} else {
