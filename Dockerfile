@@ -15,10 +15,10 @@ COPY --link ./contact-lambda /root/dylanlangston.com/contact-lambda
 COPY --link ./.gitmodules /root/dylanlangston.com/.gitmodules
 COPY --link ./Makefile /root/dylanlangston.com/Makefile
 COPY --link ./emsdk /root/dylanlangston.com/emsdk
-COPY --link ./setup-build.sh /root/dylanlangston.com/setup-build.sh
+COPY --link ./setup-build.sh /root/dylanlangston.com/setup.sh
 
 # Setup Build Environment
-RUN sh ./setup-build.sh
+RUN sh ./setup.sh
 
 FROM base as test
 COPY --link . /root/dylanlangston.com/
