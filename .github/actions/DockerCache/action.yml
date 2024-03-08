@@ -30,7 +30,7 @@ runs:
     - name: Build Docker Image
       if: steps.cache-restore.outputs.cache-hit != 'true'
       shell: sh
-      run: docker build -t ${{ inputs.tag }} --target ${{ inputs.target }} --cache-to type=inline .
+      run: docker build --rm --network host -t ${{ inputs.tag }} --target ${{ inputs.target }} .
     - name: Save Docker Image
       if: steps.cache-restore.outputs.cache-hit != 'true'
       shell: sh

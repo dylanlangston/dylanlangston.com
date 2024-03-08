@@ -40,7 +40,7 @@ jobs:
         id: cache
         with:
           key: docker-${{ runner.os }}-${{ hashFiles('Dockerfile', '.github/workflows/*.yml', 'Makefile', 'setup-build.sh', 'site/bun*', '.gitmodules', 'site/package*.json') }}
-          target: default
+          target: base
           tag: dylanlangston.com:build
       - name: Test using Docker
         if: ${{ inputs.should-test }}
