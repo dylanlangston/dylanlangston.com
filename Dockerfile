@@ -4,6 +4,9 @@
 FROM debian:stable-slim as base
 USER root
 
+ENV PATH="/root/.bun/bin/:/root/.zvm/self/:/root/.zvm/bin:/root/.cargo/bin:$PATH"
+WORKDIR /root/dylanlangston.com
+
 # Copy only the files we absolutely need
 COPY ./site/package.json /root/dylanlangston.com/site/package.json
 COPY ./site/bun.lockb /root/dylanlangston.com/site/bun.lockb
@@ -14,8 +17,6 @@ COPY ./setup-build.sh /root/dylanlangston.com/setup-build.sh
 COPY ./emsdk /root/dylanlangston.com/emsdk
 
 # Setup Build Environment
-ENV PATH="/root/.bun/bin/:/root/.zvm/self/:/root/.zvm/bin:/root/.cargo/bin:$PATH"
-WORKDIR /root/dylanlangston.com
 RUN sh ./setup-build.sh
 
 FROM base as test
