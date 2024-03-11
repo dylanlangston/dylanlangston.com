@@ -90,7 +90,8 @@ jobs:
               });
 
               const filePath = path.join(artifactsFolder, `${prefix}${{ inputs.version }}.zip`);
-              fs.writeFileSync(filePath, download.data);
+              const fileBuffer = Buffer.from(download.data);
+              fs.writeFileSync(filePath, fileBuffer);
 
               const uploadResponse = await github.rest.repos.uploadReleaseAsset({
                   url: uploadUrl,
