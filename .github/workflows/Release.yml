@@ -73,7 +73,7 @@ jobs:
                run_id: '${{ github.run_id }}',
             });
 
-            const artifactsFolder = path.join(__dirname, 'artifacts');
+            const artifactsFolder = path.join(process.env.GITHUB_WORKSPACE, 'artifacts');
             if (!fs.existsSync(artifactsFolder)) {
               fs.mkdirSync(artifactsFolder);
             }
