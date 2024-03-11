@@ -23,7 +23,14 @@ runs:
         echo "::add-mask::${{ inputs.aws-secret-access-key }}"
         echo "::add-mask::${{ inputs.aws-acm-arn }}"
     - name: Setup SAM     
-      uses: aws-actions/setup-sam@v2
+      shell: sh
+      run: |
+        sudo apt-get -y install --no-install-recommends awscli
+        curl -L "https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip" -o sam.zip
+        unzip sam.zip -d ./sam
+        rm sam.zip
+        sudo ./sam/install
+        rm -rf ./sam
     - name: Set up AWS credentials
       shell: sh
       run: |
@@ -31,6 +38,11 @@ runs:
         aws configure set aws_secret_access_key ${{ inputs.aws-secret-access-key }}
         aws configure set default.region ${{ inputs.aws-region }}
         aws configure set default.output json
+    - name: Stage Artifacts 
+      shell: sh
+      run: |
+        unzip ./artifact/dylanlangston.com-v*.zip -d ./site/build
+        unzip ./artifact/dylanlangston.com-contact-v*.zip -d ./contact-lambda/target/contact-lambda
     - name: Deploy with SAM
       shell: sh
       run: |

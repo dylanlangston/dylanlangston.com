@@ -70,6 +70,11 @@ jobs:
                run_id: '${{ github.run_id }}',
             });
 
+            const artifactsFolder = path.join(__dirname, 'artifacts');
+            if (!fs.existsSync(artifactsFolder)) {
+              fs.mkdirSync(artifactsFolder);
+            }
+
             for (let prefix of ["dylanlangston.com-v", "dylanlangston.com-contact-v"]) {
               const matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
                 return artifact.name == prefix + "${{ inputs.version }}"
@@ -80,6 +85,9 @@ jobs:
                 artifact_id: matchArtifact.id,
                 archive_format: 'zip',
               });
+
+              const filePath = path.join(artifactsFolder, `${prefix}${inputs.version}.zip`);
+              fs.writeFileSync(filePath, download.data);
 
               const uploadResponse = await github.rest.repos.uploadReleaseAsset({
                   url: uploadUrl,
@@ -94,6 +102,9 @@ jobs:
                   repo: repoName
               });
             }
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
       - name: Deploy to AWS
         uses: dylanlangston/dylanlangston.com/.github/actions/SAMDeploy@main
         id: deploy
