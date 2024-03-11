@@ -1,72 +1,70 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Globals:
-  Function:
-    Timeout: 30
+Description: SAM template for Rust binaries
+
+Parameters:
+  SslCertificateArn:
+    Type: String
+    Description: ARN of the ACM certificate for custom domain
+  DomainName:
+    Type: String
+    Description: Domain name for the API Gateway custom domain
+    Default: dylanlangston.com
+
 Resources:
-  MyS3Bucket:
-    Type: AWS::S3::Bucket
+  RustFunctionRole:
+    Type: AWS::IAM::Role
     Properties:
-      AccessControl: PublicRead
-      WebsiteConfiguration:
-        IndexDocument: index.html
-        ErrorDocument: index.html
-  MyCloudFrontDistribution:
-    Type: AWS::CloudFront::Distribution
-    Properties:
-      DistributionConfig:
-        Origins:
-          - Id: S3Origin
-            DomainName: !GetAtt MyS3Bucket.DomainName
-            S3OriginConfig:
-              OriginAccessIdentity: ''
-        DefaultCacheBehavior:
-          TargetOriginId: S3Origin
-          ForwardedValues:
-            QueryString: 'false'
-          ViewerProtocolPolicy: redirect-to-https
-        Enabled: true
-  MyApiGateway:
-    Type: AWS::ApiGateway::RestApi
-    Properties:
-      Name: MyApiGateway
-  MyApiGatewayResource:
-    Type: AWS::ApiGateway::Resource
-    Properties:
-      RestApiId: !Ref MyApiGateway
-      ParentId: !GetAtt MyApiGateway.RootResourceId
-      PathPart: myendpoint
-  MyApiGatewayMethod:
-    Type: AWS::ApiGateway::Method
-    Properties:
-      HttpMethod: POST
-      AuthorizationType: NONE
-      ResourceId: !Ref MyApiGatewayResource
-      RestApiId: !Ref MyApiGateway
-      Integration:
-        IntegrationHttpMethod: POST
-        Type: AWS_PROXY
-        Uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${MyLambdaFunction.Arn}/invocations
-  MyLambdaFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      Handler: index.handler
-      Runtime: provided
-      CodeUri: ./path/to/your/lambda.zip
-      MemorySize: 128
-      Timeout: 10
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
       Policies:
-        - AWSLambdaBasicExecutionRole
+        - PolicyName: LambdaSESAccessPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: ses:SendEmail
+                Resource: '*'
+
+  RustFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: contact-lambda/target/contact-lambda/bootstrap.zip
+      Handler: rust.handler
+      Runtime: provided.al2023
+      Role: !GetAtt RustFunctionRole.Arn
+      Architectures:
+        - arm64
       Events:
-        MyApiGatewayEvent:
+        ContactApi:
           Type: Api
           Properties:
-            Path: /myendpoint
-            Method: POST
+            Path: /contact
+            Method: post
+
+  ApiGatewayCustomDomain:
+    Type: AWS::ApiGateway::DomainName
+    Properties:
+      DomainName: !Sub "api.${DomainName}"
+      CertificateArn: !Ref SslCertificateArn
+
+  ApiGatewayBasePathMapping:
+    Type: AWS::ApiGateway::BasePathMapping
+    Properties:
+      DomainName: !Ref ApiGatewayCustomDomain
+      RestApiId: !Ref ServerlessRestApi
+      Stage: Prod
+
 Outputs:
-  WebsiteURL:
-    Description: URL for the website
-    Value: !GetAtt MyS3Bucket.WebsiteURL
-  APIGatewayURL:
-    Description: URL for the API Gateway endpoint
-    Value: !Sub https://${MyApiGateway}.execute-api.${AWS::Region}.amazonaws.com/myendpoint
+  RustFunction:
+    Description: "Lambda Function ARN"
+    Value: !GetAtt RustFunction.Arn
+
+  ApiUrl:
+    Description: "API Gateway URL"
+    Value: !Sub "https://api.${DomainName}/contact"

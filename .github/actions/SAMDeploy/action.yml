@@ -10,6 +10,9 @@ inputs:
   aws-secret-access-key:
     description: 'AWS Secret Key'
     required: true
+  aws-acm-arn:
+    description: 'AWS ACM ARN'
+    required: true
 runs:
   using: "composite"
   steps:
@@ -18,6 +21,7 @@ runs:
       run: |
         echo "::add-mask::${{ inputs.aws-access-key-id }}"
         echo "::add-mask::${{ inputs.aws-secret-access-key }}"
+        echo "::add-mask::${{ inputs.aws-acm-arn }}"
     - name: Setup SAM     
       uses: aws-actions/setup-sam@v2
     - name: Set up AWS credentials
@@ -27,6 +31,10 @@ runs:
         aws configure set aws_secret_access_key ${{ inputs.aws-secret-access-key }}
         aws configure set default.region ${{ inputs.aws-region }}
         aws configure set default.output json
+    - name: Deploy with SAM
+      shell: sh
+      run: |
+        sam deploy --profile dylan --parameter-overrides SslCertificateArn=${{ inputs.aws-acm-arn }}
 branding:
   icon: 'server'
   color: 'green'
