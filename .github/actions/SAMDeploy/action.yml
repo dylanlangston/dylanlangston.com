@@ -29,7 +29,7 @@ runs:
         curl -L "https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip" -o sam.zip
         unzip sam.zip -d ./sam
         rm sam.zip
-        sudo ./sam/install
+        sudo ./sam/install --update
         rm -rf ./sam
     - name: Set up AWS credentials
       shell: sh
