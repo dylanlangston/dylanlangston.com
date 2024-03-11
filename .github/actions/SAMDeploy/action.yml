@@ -34,7 +34,7 @@ runs:
     - name: Deploy with SAM
       shell: sh
       run: |
-        sam deploy --profile dylan --parameter-overrides SslCertificateArn=${{ inputs.aws-acm-arn }}
+        sam deploy --parameter-overrides SslCertificateArn=${{ inputs.aws-acm-arn }}
 branding:
   icon: 'server'
   color: 'green'

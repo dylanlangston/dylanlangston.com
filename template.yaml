@@ -10,6 +10,10 @@ Parameters:
     Type: String
     Description: Domain name for the API Gateway custom domain
     Default: dylanlangston.com
+  BucketName:
+    Type: String
+    Description: Name of the S3 bucket for static website hosting
+    Default: test.dylanlangston.com
 
 Resources:
   RustFunctionRole:
@@ -30,6 +34,27 @@ Resources:
               - Effect: Allow
                 Action: ses:SendEmail
                 Resource: '*'
+
+  UploadFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: S3UploadPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:PutObjectAcl
+                Resource: !Sub "arn:aws:s3:::${BucketName}/*"
 
   RustFunction:
     Type: AWS::Serverless::Function 
@@ -60,6 +85,54 @@ Resources:
       RestApiId: !Ref ServerlessRestApi
       Stage: Prod
 
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketName
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: 404.html
+
+  UploadWebsiteFolderFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: index.handler
+      Role: !GetAtt UploadFunctionRole.Arn
+      Runtime: nodejs20.x
+      Code:
+        ZipFile: |
+          const AWS = require('aws-sdk');
+          const fs = require('fs');
+          const path = require('path');
+
+          const s3 = new AWS.S3();
+
+          exports.handler = async (event, context) => {
+              const bucketName = event.ResourceProperties.BucketName;
+              const folderPath = event.ResourceProperties.FolderPath;
+              
+              const files = fs.readdirSync(folderPath);
+
+              await Promise.all(files.map(async (file) => {
+                  const filePath = path.join(folderPath, file);
+                  const fileContent = fs.readFileSync(filePath);
+                  
+                  await s3.upload({
+                      Bucket: bucketName,
+                      Key: file,
+                      Body: fileContent
+                  }).promise();
+              }));
+          };
+      Timeout: 300
+
+  UploadWebsiteFolderCustomResource:
+    Type: AWS::CloudFormation::CustomResource
+    Properties:
+      ServiceToken: !GetAtt UploadWebsiteFolderFunction.Arn
+      BucketName: !Ref BucketName
+      FolderPath: ./site/build
+
 Outputs:
   RustFunction:
     Description: "Lambda Function ARN"
@@ -68,3 +141,11 @@ Outputs:
   ApiUrl:
     Description: "API Gateway URL"
     Value: !Sub "https://api.${DomainName}/contact"
+
+  WebsiteBucket:
+    Description: "S3 Bucket for static website hosting"
+    Value: !Ref S3Bucket
+
+  UploadFunctionRoleArn:
+    Description: "Upload Function Role ARN"
+    Value: !GetAtt UploadFunctionRole.Arn
