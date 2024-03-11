@@ -4,22 +4,27 @@ inputs:
   aws-region:
     description: 'AWS Region'
     required: true
-    
+  aws-access-key-id:
+    description: 'AWS Access Key'
+    required: true
+  aws-secret-access-key:
+    description: 'AWS Secret Key'
+    required: true
 runs:
   using: "composite"
   steps:
     - name: Add mask
       shell: sh
       run: |
-        echo "::add-mask::${{ secrets.aws-access-key-id }}"
-        echo "::add-mask::${{ secrets.aws-secret-access-key }}"
+        echo "::add-mask::${{ inputs.aws-access-key-id }}"
+        echo "::add-mask::${{ inputs.aws-secret-access-key }}"
     - name: Setup SAM     
       uses: aws-actions/setup-sam@v2
     - name: Set up AWS credentials
       shell: sh
       run: |
-        aws configure set aws_access_key_id ${{ secrets.aws-access-key-id }}
-        aws configure set aws_secret_access_key ${{ secrets.aws-secret-access-key }}
+        aws configure set aws_access_key_id ${{ inputs.aws-access-key-id }}
+        aws configure set aws_secret_access_key ${{ inputs.aws-secret-access-key }}
         aws configure set default.region ${{ inputs.aws-region }}
         aws configure set default.output json
 branding:
