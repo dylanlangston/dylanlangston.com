@@ -61,6 +61,7 @@ jobs:
     if: ${{ success() || needs.Deploy.result == 'success' }}
     uses: dylanlangston/dylanlangston.com/.github/workflows/Release.yml@main
     needs: [Initialize, Deploy]
+    secrets: inherit
     permissions:
       packages: read
       contents: write
