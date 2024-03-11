@@ -89,7 +89,7 @@ jobs:
                 archive_format: 'zip',
               });
 
-              const filePath = path.join(artifactsFolder, `${prefix}${inputs.version}.zip`);
+              const filePath = path.join(artifactsFolder, `${prefix}${{ inputs.version }}.zip`);
               fs.writeFileSync(filePath, download.data);
 
               const uploadResponse = await github.rest.repos.uploadReleaseAsset({
