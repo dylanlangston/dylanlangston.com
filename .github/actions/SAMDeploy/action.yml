@@ -41,6 +41,7 @@ runs:
     - name: Stage Artifacts 
       shell: sh
       run: |
+        ls -lah
         unzip ./artifacts/dylanlangston.com-v*.zip -d ./site/build
         unzip ./artifacts/dylanlangston.com-contact-v*.zip -d ./contact-lambda/target/contact-lambda
     - name: Deploy with SAM
