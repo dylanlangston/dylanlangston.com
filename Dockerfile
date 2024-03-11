@@ -11,6 +11,8 @@ WORKDIR /root/dylanlangston.com
 COPY ./site/package.json /root/dylanlangston.com/site/package.json
 COPY ./site/bun.lockb /root/dylanlangston.com/site/bun.lockb
 COPY ./site/bunfig.toml /root/dylanlangston.com/site/bunfig.toml
+COPY ./contact-lambda/Cargo.toml /root/dylanlangston.com/contact-lambda/Cargo.toml
+COPY ./contact-lambda/Cargo.lock /root/dylanlangston.com/contact-lambda/Cargo.lock
 COPY ./.gitmodules /root/dylanlangston.com/.gitmodules
 COPY ./Makefile /root/dylanlangston.com/Makefile
 COPY ./emsdk /root/dylanlangston.com/emsdk

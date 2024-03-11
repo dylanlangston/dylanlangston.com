@@ -12,6 +12,13 @@ on:
       runId:
         required: true
         type: string
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        description: 'AWS Access Key'
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        description: 'AWS Secret Key'
+        required: true
 
 concurrency:
   group: publish-${{ github.ref }}
