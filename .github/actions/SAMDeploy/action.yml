@@ -42,6 +42,7 @@ runs:
       shell: sh
       run: |
         ls -lah
+        pwd
         unzip ./artifacts/dylanlangston.com-v*.zip -d ./site/build
         unzip ./artifacts/dylanlangston.com-contact-v*.zip -d ./contact-lambda/target/contact-lambda
     - name: Deploy with SAM
