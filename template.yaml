@@ -56,7 +56,8 @@ Resources:
                   - ses:SendRawEmail
                 Resource: 
                   - !Sub "arn:aws:s3:::${AwsS3BucketName}/*"
-                  - !Sub "arn:aws:ses:${AwsRegion}:${AwsAccountId}:identity/${DomainName}"
+                  - !Sub "arn:aws:ses:${AwsRegion}:${AwsAccountId}:identity/${FromEmail}"
+                  - !Sub "arn:aws:ses:${AwsRegion}:${AwsAccountId}:identity/${ToEmail}"
 
   EmailForwarderFunction:
     Type: AWS::Serverless::Function
@@ -70,8 +71,8 @@ Resources:
         - arm64
       Environment:
         Variables:
-          TO_EMAIL: !Ref ToEmail
-          FROM_EMAIL: !Ref FromEmail
+          ToEmail: !Ref ToEmail
+          FromEmail: !Ref FromEmail
       Role: !GetAtt EmailForwarderRole.Arn
       FunctionName: EmailForwarder
 
@@ -99,7 +100,9 @@ Resources:
                   - !Sub "arn:aws:logs:${AwsRegion}:${AwsAccountId}:log-group:/aws/lambda/ContactFunction:*"
               - Effect: Allow
                 Action: ses:SendEmail
-                Resource: !Sub "arn:aws:ses:${AwsRegion}:${AwsAccountId}:identity/${DomainName}"
+                Resource: 
+                  - !Sub "arn:aws:ses:${AwsRegion}:${AwsAccountId}:identity/${ToEmail}"
+                  - !Sub "arn:aws:ses:${AwsRegion}:${AwsAccountId}:identity/${FromEmail}"
 
   ContactFunction:
     Type: AWS::Serverless::Function 
@@ -112,8 +115,8 @@ Resources:
         - arm64
       Environment:
         Variables:
-          TO_EMAIL: !Ref ToEmail
-          FROM_EMAIL: !Ref FromEmail
+          ToEmail: !Ref ToEmail
+          FromEmail: !Ref FromEmail
       Events:
         ContactPOST:
           Type: Api

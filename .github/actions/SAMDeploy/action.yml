@@ -68,7 +68,7 @@ runs:
     - name: Deploy Lambda with SAM
       shell: sh
       run: |
-        sam deploy --parameter-overrides SslCertificateArn=${{ inputs.aws-acm-arn }} ToEmail=${{ inputs.to-email }} FromEmail=${{ inputs.from-email }} AwsS3BucketName=${{ inputs.aws-bucket }} AwsRegion=${{ inputs.aws-region }} AwsAccountId=${{ inputs.aws-account-id }}
+        sam deploy --capabilities CAPABILITY_NAMED_IAM --parameter-overrides SslCertificateArn=${{ inputs.aws-acm-arn }} ToEmail=${{ inputs.to-email }} FromEmail=${{ inputs.from-email }} AwsS3BucketName=${{ inputs.aws-bucket }} AwsRegion=${{ inputs.aws-region }} AwsAccountId=${{ inputs.aws-account-id }}
     - name: Deploy Site with CLI
       shell: sh
       run: |
