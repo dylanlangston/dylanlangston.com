@@ -21,8 +21,11 @@ COPY ./setup-build.sh /root/dylanlangston.com/setup-build.sh
 RUN sh ./setup-build.sh
 
 # Cleanup
-RUN rm -rf ./site
-RUN rm -rf ./contact-lambda
+RUN rm -rf ./site/src
+RUN rm -rf ./site/static
+RUN rm -rf ./site/tests
+RUN rm -f ./site/*.*
+RUN rm -rf ./contact-lambda/src
 RUN rm -rf ./.gitmodules
 RUN rm -rf ./Makefile
 RUN rm -rf ./setup-build.sh
