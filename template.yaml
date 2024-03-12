@@ -10,10 +10,6 @@ Parameters:
     Type: String
     Description: Domain name for the API Gateway custom domain
     Default: dylanlangston.com
-  BucketName:
-    Type: String
-    Description: Name of the S3 bucket for static website hosting
-    Default: test.dylanlangston.com
 
 Resources:
   RustFunctionRole:
@@ -55,6 +51,19 @@ Resources:
           Properties:
             Path: /contact
             Method: OPTIONS
+
+  ApiGatewayCustomDomain:
+    Type: AWS::ApiGateway::DomainName
+    Properties:
+      DomainName: !Sub "api.${DomainName}"
+      CertificateArn: !Ref SslCertificateArn
+
+  ApiGatewayBasePathMapping:
+    Type: AWS::ApiGateway::BasePathMapping
+    Properties:
+      DomainName: !Ref ApiGatewayCustomDomain
+      RestApiId: !Ref ServerlessRestApi
+      Stage: Prod
 
 Outputs:
   RustFunction:
