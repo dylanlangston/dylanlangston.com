@@ -9,8 +9,6 @@
 	let message = '';
 
 	async function handleSubmit(event) {
-		alert('submit');
-
 		event.preventDefault();
 
 		const formData = {

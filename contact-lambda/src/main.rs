@@ -38,6 +38,9 @@ async fn handle_post(event: Request) -> Result<Response<Body>, Error> {
     // Return HTTP response
     let resp = Response::builder()
         .status(200)
+        .header("Access-Control-Allow-Origin", "*")
+        .header("Access-Control-Allow-Methods", "POST, OPTIONS")
+        .header("Access-Control-Allow-Headers", "Content-Type")
         .body(Body::Empty)
         .expect("Failed to build response");
 
