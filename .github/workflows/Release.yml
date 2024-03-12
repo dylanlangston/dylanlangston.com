@@ -12,7 +12,6 @@ on:
       runId:
         required: true
         type: string
-    secrets: inherit
 
 concurrency:
   group: publish-${{ github.ref }}
