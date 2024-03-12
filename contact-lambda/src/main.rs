@@ -113,18 +113,30 @@ async fn send_email(contact_request: &ContactRequest) -> Result<(), Error> {
         "Contact Request - {} {}",
         contact_request.first_name, contact_request.last_name
     );
-    let message = encode_special_characters(&contact_request.message);
-    let body = format!(
-        "<b>Email:</b> {}\n<b>Message:</b> {}{}",
-        contact_request.email,
-        message,
+
+    let body_text = format!(
+        "{}\nEmail: {}\nMessage: {}",
         if let Some(phone) = &contact_request.phone {
-            format!("\n<b>Phone:</b> {}", phone)
+            format!("Phone: {}", phone)
         } else {
             "".to_string()
-        }
+        },
+        contact_request.email,
+        contact_request.message
     );
-
+    
+    let html_message = encode_special_characters(&contact_request.message);
+    let body_html = format!(
+        "{}<br/><b>Email:</b> {}<br/><b>Message:</b> {}",
+        if let Some(phone) = &contact_request.phone {
+            format!("<b>Phone:</b> {}", phone)
+        } else {
+            "".to_string()
+        },
+        contact_request.email,
+        html_message
+    );
+    
     // Construct SES request
     let request = SendEmailRequest {
         destination: Destination {
@@ -134,10 +146,13 @@ async fn send_email(contact_request: &ContactRequest) -> Result<(), Error> {
         message: Message {
             body: SesBody {
                 text: Some(Content {
-                    data: body,
+                    data: body_text,
                     charset: Some("UTF-8".to_string()),
                 }),
-                ..Default::default()
+                html: Some(Content {
+                    data: body_html,
+                    charset: Some("UTF-8".to_string()),
+                }),
             },
             subject: Content {
                 data: subject,
