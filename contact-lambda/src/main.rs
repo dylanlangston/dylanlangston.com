@@ -1,6 +1,6 @@
 #![allow(non_snake_case)]
 
-use lambda_http::{run, service_fn, Body, Error, Request, Response, StatusCode};
+use lambda_http::{run, service_fn, Body, Error, Request, Response};
 use rusoto_core::Region;
 use rusoto_ses::{Body as SesBody, Content, Destination, Message, SendEmailRequest, Ses};
 use serde::Deserialize;
@@ -21,7 +21,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         _ => {
             // Method not allowed
             Ok(Response::builder()
-                .status(StatusCode::METHOD_NOT_ALLOWED)
+                .status(405)
                 .body(Body::Empty)
                 .unwrap())
         }
