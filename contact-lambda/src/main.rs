@@ -3,15 +3,35 @@
 use lambda_http::{run, service_fn, Body, Error, Request, Response};
 use rusoto_core::Region;
 use rusoto_ses::{Body as SesBody, Content, Destination, Message, SendEmailRequest, Ses};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct ContactRequest {
-    firstName: String,
-    lastName: String,
-    phone: String,
+    #[serde(rename = "firstName")]
+    first_name: String,
+    #[serde(rename = "lastName")]
+    last_name: String,
     email: String,
     message: String,
+    phone: Option<String>,
+}
+
+impl ContactRequest {
+    fn validate(&self) -> Result<(), String> {
+        if self.first_name.is_empty() {
+            return Err("First name is required.".to_string());
+        }
+        if self.last_name.is_empty() {
+            return Err("Last name is required.".to_string());
+        }
+        if self.email.is_empty() {
+            return Err("Email address is required.".to_string());
+        }
+        if self.message.is_empty() {
+            return Err("Message is required.".to_string());
+        }
+        Ok(())
+    }
 }
 
 async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
@@ -30,7 +50,23 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
 
 async fn handle_post(event: Request) -> Result<Response<Body>, Error> {
     // Deserialize JSON into ContactRequest struct
-    let contact_request: ContactRequest = serde_json::from_slice(event.body())?;
+    let contact_request: ContactRequest = match serde_json::from_slice(event.body()) {
+        Ok(req) => req,
+        Err(_) => {
+            return Ok(Response::builder()
+                .status(400)
+                .body(Body::Text("Invalid JSON data".to_string()))
+                .unwrap())
+        }
+    };
+
+    // Validate the input
+    if let Err(error) = contact_request.validate() {
+        return Ok(Response::builder()
+            .status(400)
+            .body(Body::Text(error))
+            .unwrap());
+    }
 
     // Send email using AWS SES
     send_email(&contact_request).await?;
@@ -65,11 +101,18 @@ async fn send_email(contact_request: &ContactRequest) -> Result<(), Error> {
     // Construct email message
     let subject = format!(
         "Contact Request - {} {}",
-        contact_request.firstName, contact_request.lastName
+        contact_request.first_name, contact_request.last_name
     );
+    let message = encode_special_characters(&contact_request.message);
     let body = format!(
-        "Phone: {}\nEmail: {}\nMessage: {}",
-        contact_request.phone, contact_request.email, contact_request.message
+        "Email: {}\nMessage: {}{}",
+        contact_request.email,
+        message,
+        if let Some(phone) = &contact_request.phone {
+            format!("\nPhone: {}", phone)
+        } else {
+            "".to_string()
+        }
     );
 
     // Construct SES request
@@ -104,6 +147,21 @@ async fn send_email(contact_request: &ContactRequest) -> Result<(), Error> {
     }
 
     Ok(())
+}
+
+fn encode_special_characters(input: &str) -> String {
+    let mut encoded = String::new();
+    for ch in input.chars() {
+        match ch {
+            '<' => encoded.push_str("&lt;"),
+            '>' => encoded.push_str("&gt;"),
+            '&' => encoded.push_str("&amp;"),
+            '"' => encoded.push_str("&quot;"),
+            '\'' => encoded.push_str("&apos;"),
+            _ => encoded.push(ch),
+        }
+    }
+    encoded
 }
 
 #[tokio::main]
