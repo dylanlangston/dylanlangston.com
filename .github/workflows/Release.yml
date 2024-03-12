@@ -113,4 +113,6 @@ jobs:
           aws-region: 'us-east-1'
           to-email: "${{ secrets.TO_EMAIL }}"
           from-email: "${{ secrets.FROM_EMAIL }}"
+          aws-bucket: "${{ secrets.AWS_BUCKET }}"
+          aws-account-id: "${{ secrets.AWS_ACCOUNT_ID }}"
             

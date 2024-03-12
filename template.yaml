@@ -10,13 +10,21 @@ Parameters:
     Type: String
     Description: Domain name for the API Gateway custom domain
     Default: dylanlangston.com
-
   ToEmail:
     Type: String
     Description: Email address to forward emails to
   FromEmail:
     Type: String
     Description: Email address to use as the sender
+  AwsS3BucketName:
+    Type: String
+    Description: Name of the S3 bucket
+  AwsRegion:
+    Type: String
+    Description: AWS region
+  AwsAccountId:
+    Type: String
+    Description: AWS account ID
 
 Resources:
   EmailForwarderRole:
@@ -31,7 +39,7 @@ Resources:
               Service: lambda.amazonaws.com
             Action: sts:AssumeRole
       Policies:
-        - PolicyName: LambdaBasicExecutionPolicy
+        - PolicyName: EmailForwarderPolicy
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
@@ -40,11 +48,15 @@ Resources:
                   - logs:CreateLogGroup
                   - logs:CreateLogStream
                   - logs:PutLogEvents
-                Resource: arn:aws:logs:*:*:*
+                Resource: 
+                  - !Sub "arn:aws:logs:${AwsRegion}:${AwsAccountId}:log-group:/aws/lambda/EmailForwarder:*"
               - Effect: Allow
                 Action:
-                  - ses:SendEmail
-                Resource: '*'
+                  - s3:GetObject
+                  - ses:SendRawEmail
+                Resource: 
+                  - !Sub "arn:aws:s3:::${AwsS3BucketName}/*"
+                  - !Sub "arn:aws:ses:${AwsRegion}:${AwsAccountId}:identity/${DomainName}"
 
   EmailForwarderFunction:
     Type: AWS::Serverless::Function
@@ -63,7 +75,7 @@ Resources:
       Role: !GetAtt EmailForwarderRole.Arn
       FunctionName: EmailForwarder
 
-  ContactFunctionRole:
+  ContactRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -74,13 +86,20 @@ Resources:
               Service: lambda.amazonaws.com
             Action: sts:AssumeRole
       Policies:
-        - PolicyName: LambdaSESAccessPolicy
+        - PolicyName: ContactPolicy
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
               - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: 
+                  - !Sub "arn:aws:logs:${AwsRegion}:${AwsAccountId}:log-group:/aws/lambda/ContactFunction:*"
+              - Effect: Allow
                 Action: ses:SendEmail
-                Resource: '*'
+                Resource: !Sub "arn:aws:ses:${AwsRegion}:${AwsAccountId}:identity/${DomainName}"
 
   ContactFunction:
     Type: AWS::Serverless::Function 
@@ -88,7 +107,7 @@ Resources:
       CodeUri: rust-lambda/target/contact/bootstrap.zip
       Handler: rust.handler
       Runtime: provided.al2023
-      Role: !GetAtt ContactFunctionRole.Arn
+      Role: !GetAtt ContactRole.Arn
       Architectures:
         - arm64
       Environment:
