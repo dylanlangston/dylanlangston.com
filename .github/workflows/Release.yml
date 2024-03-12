@@ -12,13 +12,7 @@ on:
       runId:
         required: true
         type: string
-    secrets:
-      AWS_ACCESS_KEY_ID:
-        description: 'AWS Access Key'
-        required: true
-      AWS_SECRET_ACCESS_KEY:
-        description: 'AWS Secret Key'
-        required: true
+    secrets: inherit
 
 concurrency:
   group: publish-${{ github.ref }}
@@ -118,4 +112,6 @@ jobs:
           aws-acm-arn: "${{ secrets.AWS_ACM_ARN }}"
           aws-cloudfront-distribution: "${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION }}"
           aws-region: 'us-east-1'
+          to-email: "${{ secrets.TO_EMAIL }}"
+          from-email: "${{ secrets.FROM_EMAIL }}"
             

@@ -58,6 +58,8 @@ Resources:
       CodeUri: contact-lambda/target/contact-lambda/bootstrap.zip
       Timeout: 30
       MemorySize: 256
+      Architectures:
+        - arm64
       Environment:
         Variables:
           TO_EMAIL: !Ref ToEmail
@@ -93,6 +95,10 @@ Resources:
       Role: !GetAtt ContactFunctionRole.Arn
       Architectures:
         - arm64
+      Environment:
+        Variables:
+          TO_EMAIL: !Ref ToEmail
+          FROM_EMAIL: !Ref FromEmail
       Events:
         ContactPOST:
           Type: Api

@@ -16,6 +16,12 @@ inputs:
   aws-cloudfront-distribution:
     description: 'AWS Cloudfront Distribution'
     required: true
+  to-email:
+    description: 'Forward emails to this address'
+    required: true
+  from-email:
+    description: 'Send forwarded emails from this address'
+    required: true
 runs:
   using: "composite"
   steps:
@@ -26,6 +32,8 @@ runs:
         echo "::add-mask::${{ inputs.aws-secret-access-key }}"
         echo "::add-mask::${{ inputs.aws-acm-arn }}"
         echo "::add-mask::${{ inputs.aws-cloudfront-distribution }}"
+        echo "::add-mask::${{ inputs.to-email }}"
+        echo "::add-mask::${{ inputs.from-email }}"
     - name: Setup SAM     
       shell: sh
       run: |
@@ -54,7 +62,7 @@ runs:
     - name: Deploy Lambda with SAM
       shell: sh
       run: |
-        sam deploy --parameter-overrides SslCertificateArn=${{ inputs.aws-acm-arn }}
+        sam deploy --parameter-overrides SslCertificateArn=${{ inputs.aws-acm-arn }} ToEmail=${{ inputs.to-email }} FromEmail=${{ inputs.from-email }}
     - name: Deploy Site with CLI
       shell: sh
       run: |
