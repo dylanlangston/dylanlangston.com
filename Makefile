@@ -151,6 +151,7 @@ release-docker:  ## Builds Web Version for publish using docker.
 ifeq ($(OPTIMIZE),Debug)
 else
 	@docker cp site-temp:/root/dylanlangston.com/contact-lambda/target/ ./contact-lambda/
+	@docker cp site-temp:/root/dylanlangston.com/email-forward-lambda/target/ ./email-forward-lambda/
 endif
 	@docker rm -f site-temp
 
