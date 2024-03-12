@@ -19,14 +19,7 @@ updates:
     open-pull-requests-limit: 50
     commit-message:
       prefix: "Rust - "
-    directory: "/contact-lambda"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "cargo"
-    open-pull-requests-limit: 50
-    commit-message:
-      prefix: "Rust - "
-    directory: "/email-forward-lambda"
+    directory: "/rust-lambda"
     schedule:
       interval: "weekly"
   - package-ecosystem: "github-actions"

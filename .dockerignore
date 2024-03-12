@@ -10,5 +10,4 @@ compose-dev.yaml
 zig-cache
 zig-out
 cached-docker-image
-contact-lambda/target
-email-forward-lambda/target
+rust-lambda/target

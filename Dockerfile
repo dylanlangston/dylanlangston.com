@@ -11,8 +11,7 @@ WORKDIR /root/dylanlangston.com
 COPY ./site/package.json /root/dylanlangston.com/site/package.json
 COPY ./site/bun.lockb /root/dylanlangston.com/site/bun.lockb
 COPY ./site/bunfig.toml /root/dylanlangston.com/site/bunfig.toml
-COPY ./contact-lambda /root/dylanlangston.com/contact-lambda
-COPY ./email-forward-lambda /root/dylanlangston.com/email-forward-lambda
+COPY ./rust-lambda /root/dylanlangston.com/rust-lambda
 COPY ./.gitmodules /root/dylanlangston.com/.gitmodules
 COPY ./Makefile /root/dylanlangston.com/Makefile
 COPY ./emsdk /root/dylanlangston.com/emsdk
@@ -26,8 +25,7 @@ RUN rm -rf ./site/src
 RUN rm -rf ./site/static
 RUN rm -rf ./site/tests
 RUN rm -f ./site/*.*
-RUN rm -rf ./contact-lambda/src
-RUN rm -rf ./email-forward-lambda/src
+RUN rm -rf ./rust-lambda/src
 RUN rm -rf ./.gitmodules
 RUN rm -rf ./Makefile
 RUN rm -rf ./setup-build.sh

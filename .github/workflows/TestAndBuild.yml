@@ -39,7 +39,7 @@ jobs:
         uses: dylanlangston/dylanlangston.com/.github/actions/DockerCache@main
         id: cache
         with:
-          key: docker-${{ runner.os }}-${{ hashFiles('Dockerfile', '.github/workflows/*.yml', '.github/actions/*.yml', 'Makefile', 'setup-build.sh', 'site/bun*', '.gitmodules', 'site/package*.json', 'contact-lambda/*') }}
+          key: docker-${{ runner.os }}-${{ hashFiles('Dockerfile', '.github/workflows/*.yml', '.github/actions/*.yml', 'Makefile', 'setup-build.sh', 'site/bun*', '.gitmodules', 'site/package*.json', 'rust-lambda/*') }}
           target: base
           tag: dylanlangston.com:build
       - name: Test using Docker
@@ -63,14 +63,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dylanlangston.com-contact-v${{ inputs.version }}
-          path: '${{ github.workspace }}/contact-lambda/target/contact-lambda/'
+          path: '${{ github.workspace }}/rust-lambda/target/contact/'
       - name: Upload Email Forward Lambda artifact
         if: ${{ success() || steps.upload_contact_lambda.conclusion == 'success' }}
         id: upload_email_lambda
         uses: actions/upload-artifact@v4
         with:
           name: dylanlangston.com-email-v${{ inputs.version }}
-          path: '${{ github.workspace }}/email-forward-lambda/target/email-forward-lambda/'
+          path: '${{ github.workspace }}/rust-lambda/target/email-forward/'
       - name: Build Debug using Docker
         if: ${{ success() || (steps.upload_email_lambda.conclusion == 'success') }}
         id: build_debug

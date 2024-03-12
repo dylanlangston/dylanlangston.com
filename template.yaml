@@ -14,13 +14,9 @@ Parameters:
   ToEmail:
     Type: String
     Description: Email address to forward emails to
-    Default: ""
-    MinLength: 1
   FromEmail:
     Type: String
     Description: Email address to use as the sender
-    Default: ""
-    MinLength: 1
 
 Resources:
   EmailForwarderRole:
@@ -55,7 +51,7 @@ Resources:
     Properties:
       Handler: rust.handler
       Runtime: provided.al2023
-      CodeUri: contact-lambda/target/contact-lambda/bootstrap.zip
+      CodeUri: rust-lambda/target/email-forward/bootstrap.zip
       Timeout: 30
       MemorySize: 256
       Architectures:
@@ -89,7 +85,7 @@ Resources:
   ContactFunction:
     Type: AWS::Serverless::Function 
     Properties:
-      CodeUri: email-forward-lambda/target/email-forward-lambda/bootstrap.zip
+      CodeUri: rust-lambda/target/contact/bootstrap.zip
       Handler: rust.handler
       Runtime: provided.al2023
       Role: !GetAtt ContactFunctionRole.Arn

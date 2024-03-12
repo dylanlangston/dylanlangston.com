@@ -49,12 +49,12 @@ ifeq ($(USE_NODE),1)
 else
 	@bun -b run --cwd ./site test-bun
 endif
-	@make test-contact-lambda
+	@make test-rust-lambda
 
 release: clean build-web build-site  ## Default Release Target. Builds Web Version for publish
 ifeq ($(OPTIMIZE),Debug)
 else
-	@make build-contact-lambda build-email-forward-lambda
+	@make build-rust-lambda
 endif
 
 setup: setup-emscripten setup-bun setup-tests setup-rust # Default Setup Target. Clones git repos, sets up emscripten, sets up nodejs, and sets up rust.
@@ -62,12 +62,12 @@ setup: setup-emscripten setup-bun setup-tests setup-rust # Default Setup Target.
 clean: ## Default Clean Target.
 	@rm -rf ./zig-out/*
 	@rm -rf ./site/build/*
-	@rm -rf ./contact-lambda/target/*
+	@rm -rf ./rust-lambda/target/*
 	@echo Cleaned Output
 
 clean-cache: clean ## Clean the Zig-cache also
 	@rm -rf ./zig-cache/*
-	@cargo clean --manifest-path ./contact-lambda/Cargo.toml || true
+	@cargo clean --manifest-path ./rust-lambda/Cargo.toml || true
 	@echo Cleaned Cache
 
 setup-git-clone: ## Clone git submodules
@@ -98,8 +98,7 @@ endif
 
 setup-rust: ## Setup Rusy Environment
 	@rustup target add aarch64-unknown-linux-gnu
-	@cd ./contact-lambda; cargo fetch; cd ..
-	@cd ./email-forward-lambda; cargo fetch; cd ..
+	@cd ./rust-lambda; cargo fetch; cd ..
 
 build-desktop: ## Build Desktop. Optionally pass in the OPTIMIZE=... argument.
 	@zig build -Doptimize=$(OPTIMIZE) -freference-trace
@@ -150,8 +149,7 @@ release-docker:  ## Builds Web Version for publish using docker.
 	@docker cp site-temp:/root/dylanlangston.com/site/build/ ./site/
 ifeq ($(OPTIMIZE),Debug)
 else
-	@docker cp site-temp:/root/dylanlangston.com/contact-lambda/target/ ./contact-lambda/
-	@docker cp site-temp:/root/dylanlangston.com/email-forward-lambda/target/ ./email-forward-lambda/
+	@docker cp site-temp:/root/dylanlangston.com/rust-lambda/target/ ./rust-lambda/
 endif
 	@docker rm -f site-temp
 
@@ -168,20 +166,13 @@ endif
 update-version: ## Update Version. Optionally pass in the VERSION=1.0.0 argument.
 	@sed -i -r 's/ .version = "([[:digit:]]{1,}\.*){3,4}"/ .version = "$(VERSION)"/g' ./build.zig.zon
 	@sed -i -r 's/"version": "([[:digit:]]{1,}\.*){3,4}"/"version": "$(VERSION)"/g' ./site/package.json
-	@sed -i -r 's/version = "([[:digit:]]{1,}\.*){3,4}"$$/version = "$(VERSION)"/g' ./contact-lambda/Cargo.toml
-	@sed -i -r 's/version = "([[:digit:]]{1,}\.*){3,4}"$$/version = "$(VERSION)"/g' ./email-forward-lambda/Cargo.toml
+	@sed -i -r 's/version = "([[:digit:]]{1,}\.*){3,4}"$$/version = "$(VERSION)"/g' ./rust-lambda/Cargo.toml
 	@echo Updated Version to $(VERSION)
 
-build-contact-lambda: ## Build the Contact API Lambda
-	@cd ./contact-lambda; cargo lambda build --release --target aarch64-unknown-linux-gnu --output-format zip -l ./target
+build-rust-lambda: ## Build the Contact API Lambda
+	@cd ./rust-lambda; cargo lambda build --release --target aarch64-unknown-linux-gnu --output-format zip -l ./target
 
-test-contact-lambda: ## Test the Contact API Lambda
-	@cd ./contact-lambda; cargo test
-	@cd ./contact-lambda; cargo lambda watch -w & sleep 5;
-	@cd ./contact-lambda; cargo lambda invoke contact-lambda --data-file ./TestData.json; pkill cargo-lambda
-
-build-email-forward-lambda: ## Build the Contact API Lambda
-	@cd ./email-forward-lambda; cargo lambda build --release --target aarch64-unknown-linux-gnu --output-format zip -l ./target
-
-test-email-forward-lambda: ## Test the Contact API Lambda
-	@echo TODO
+test-rust-lambda: ## Test the Contact API Lambda
+	@cd ./rust-lambda; cargo test
+	@cd ./rust-lambda; cargo lambda watch -w & sleep 5;
+	@cd ./rust-lambda; cargo lambda invoke "contact" --data-file ./TestData.json; pkill cargo-lambda
