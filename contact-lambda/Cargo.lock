@@ -190,6 +190,7 @@ version = "0.1.0"
 dependencies = [
  "lambda_http",
  "openssl",
+ "regex",
  "rusoto_core",
  "rusoto_ses",
  "serde",

@@ -1,6 +1,7 @@
 #![allow(non_snake_case)]
 
 use lambda_http::{run, service_fn, Body, Error, Request, Response};
+use regex::Regex;
 use rusoto_core::Region;
 use rusoto_ses::{Body as SesBody, Content, Destination, Message, SendEmailRequest, Ses};
 use serde::{Deserialize, Serialize};
@@ -27,10 +28,19 @@ impl ContactRequest {
         if self.email.is_empty() {
             return Err("Email address is required.".to_string());
         }
+        if !self.is_valid_email() {
+            return Err("Invalid email address.".to_string());
+        }
         if self.message.is_empty() {
             return Err("Message is required.".to_string());
         }
         Ok(())
+    }
+
+    fn is_valid_email(&self) -> bool {
+        // Regular expression to validate email format
+        let re = Regex::new(r"^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$").unwrap();
+        re.is_match(&self.email)
     }
 }
 
@@ -105,11 +115,11 @@ async fn send_email(contact_request: &ContactRequest) -> Result<(), Error> {
     );
     let message = encode_special_characters(&contact_request.message);
     let body = format!(
-        "Email: {}\nMessage: {}{}",
+        "<b>Email:</b> {}\n<b>Message:</b> {}{}",
         contact_request.email,
         message,
         if let Some(phone) = &contact_request.phone {
-            format!("\nPhone: {}", phone)
+            format!("\n<b>Phone:</b> {}", phone)
         } else {
             "".to_string()
         }
