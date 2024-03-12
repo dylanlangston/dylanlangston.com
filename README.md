@@ -40,7 +40,7 @@ flowchart TB
         I2("Cargo Lambda")
         I3("AWS Lambda")
         I4("AWS API Gateway")
-        I5("AWS SNS")
+        I5("AWS SES")
 
         I1 -.- I2 -.- I3 --> I4
         I3 -.- I5 -.- I2
