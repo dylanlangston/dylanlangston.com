@@ -54,7 +54,7 @@ endif
 release: clean build-web build-site  ## Default Release Target. Builds Web Version for publish
 ifeq ($(OPTIMIZE),Debug)
 else
-	@make build-contact-lambda
+	@make build-contact-lambda build-email-forward-lambda
 endif
 
 setup: setup-emscripten setup-bun setup-tests setup-rust # Default Setup Target. Clones git repos, sets up emscripten, sets up nodejs, and sets up rust.
