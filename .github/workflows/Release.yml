@@ -81,7 +81,7 @@ jobs:
               fs.mkdirSync(artifactsFolder);
             }
 
-            for (let prefix of ["dylanlangston.com-v", "dylanlangston.com-contact-v"]) {
+            for (let prefix of ["dylanlangston.com-v", "dylanlangston.com-contact-v", "dylanlangston.com-email-v"]) {
               const matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
                 return artifact.name == prefix + "${{ inputs.version }}"
               })[0];
