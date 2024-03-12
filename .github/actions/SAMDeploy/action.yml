@@ -13,6 +13,9 @@ inputs:
   aws-acm-arn:
     description: 'AWS ACM ARN'
     required: true
+  aws-cloudfront-distribution:
+    description: 'AWS Cloudfront Distribution'
+    required: true
 runs:
   using: "composite"
   steps:
@@ -22,6 +25,7 @@ runs:
         echo "::add-mask::${{ inputs.aws-access-key-id }}"
         echo "::add-mask::${{ inputs.aws-secret-access-key }}"
         echo "::add-mask::${{ inputs.aws-acm-arn }}"
+        echo "::add-mask::${{ inputs.aws-cloudfront-distribution }}"
     - name: Setup SAM     
       shell: sh
       run: |
@@ -45,10 +49,15 @@ runs:
         mkdir -p ./contact-lambda/target/contact-lambda
         unzip ./artifacts/dylanlangston.com-v*.zip -d ./site/build
         unzip ./artifacts/dylanlangston.com-contact-v*.zip -d ./contact-lambda/target/contact-lambda
-    - name: Deploy with SAM
+    - name: Deploy Lambda with SAM
       shell: sh
       run: |
         sam deploy --parameter-overrides SslCertificateArn=${{ inputs.aws-acm-arn }}
+    - name: Deploy Site with CLI
+      shell: sh
+      run: |
+        aws s3 cp ./site/build s3://dylanlangston.com/ --recursive --acl public-read
+        aws cloudfront create-invalidation --distribution-id ${{ inputs.aws-cloudfront-distribution }} --paths "/*"
 branding:
   icon: 'server'
   color: 'green'

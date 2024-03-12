@@ -1,6 +1,6 @@
 #![allow(non_snake_case)]
 
-use lambda_http::{run, service_fn, Body, Error, Request, Response};
+use lambda_http::{run, service_fn, Body, Error, Request, Response, StatusCode};
 use rusoto_core::Region;
 use rusoto_ses::{Body as SesBody, Content, Destination, Message, SendEmailRequest, Ses};
 use serde::Deserialize;
@@ -15,6 +15,20 @@ struct ContactRequest {
 }
 
 async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
+    match event.method().as_str() {
+        "POST" => handle_post(event).await,
+        "OPTIONS" => handle_options(),
+        _ => {
+            // Method not allowed
+            Ok(Response::builder()
+                .status(StatusCode::METHOD_NOT_ALLOWED)
+                .body(Body::Empty)
+                .unwrap())
+        }
+    }
+}
+
+async fn handle_post(event: Request) -> Result<Response<Body>, Error> {
     // Deserialize JSON into ContactRequest struct
     let contact_request: ContactRequest = serde_json::from_slice(event.body())?;
 
@@ -28,6 +42,17 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         .expect("Failed to build response");
 
     Ok(resp)
+}
+
+fn handle_options() -> Result<Response<Body>, Error> {
+    // Return CORS headers for OPTIONS request
+    Ok(Response::builder()
+        .status(200)
+        .header("Access-Control-Allow-Origin", "*")
+        .header("Access-Control-Allow-Methods", "POST, OPTIONS")
+        .header("Access-Control-Allow-Headers", "Content-Type")
+        .body(Body::Empty)
+        .unwrap())
 }
 
 async fn send_email(contact_request: &ContactRequest) -> Result<(), Error> {
@@ -68,14 +93,12 @@ async fn send_email(contact_request: &ContactRequest) -> Result<(), Error> {
         ..Default::default()
     };
 
-
     if contact_request.email == "test" {
         // Don't send an email if this is a test
     } else {
         // Send email
         ses_client.send_email(request).await?;
     }
-
 
     Ok(())
 }

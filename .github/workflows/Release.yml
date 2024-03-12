@@ -116,5 +116,6 @@ jobs:
           aws-access-key-id: "${{ secrets.AWS_ACCESS_KEY_ID }}"
           aws-secret-access-key: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
           aws-acm-arn: "${{ secrets.AWS_ACM_ARN }}"
+          aws-cloudfront-distribution: "${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION }}"
           aws-region: 'us-east-1'
             
