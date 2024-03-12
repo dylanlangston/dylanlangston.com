@@ -20,6 +20,13 @@ COPY ./setup-build.sh /root/dylanlangston.com/setup-build.sh
 # Setup Build Environment
 RUN sh ./setup-build.sh
 
+# Cleanup
+RUN rm -rf ./site
+RUN rm -rf ./contact-lambda
+RUN rm -rf ./.gitmodules
+RUN rm -rf ./Makefile
+RUN rm -rf ./setup-build.sh
+
 FROM base as test
 COPY . /root/dylanlangston.com/
 RUN make setup-git-clone build-web test USE_NODE=1
