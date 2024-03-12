@@ -98,7 +98,8 @@ endif
 
 setup-rust: ## Setup Rusy Environment
 	@rustup target add aarch64-unknown-linux-gnu
-	@cd ./contact-lambda; cargo fetch
+	@cd ./contact-lambda; cargo fetch; cd ..
+	@cd ./email-forward-lambda; cargo fetch; cd ..
 
 build-desktop: ## Build Desktop. Optionally pass in the OPTIMIZE=... argument.
 	@zig build -Doptimize=$(OPTIMIZE) -freference-trace
@@ -167,6 +168,7 @@ update-version: ## Update Version. Optionally pass in the VERSION=1.0.0 argument
 	@sed -i -r 's/ .version = "([[:digit:]]{1,}\.*){3,4}"/ .version = "$(VERSION)"/g' ./build.zig.zon
 	@sed -i -r 's/"version": "([[:digit:]]{1,}\.*){3,4}"/"version": "$(VERSION)"/g' ./site/package.json
 	@sed -i -r 's/version = "([[:digit:]]{1,}\.*){3,4}"$$/version = "$(VERSION)"/g' ./contact-lambda/Cargo.toml
+	@sed -i -r 's/version = "([[:digit:]]{1,}\.*){3,4}"$$/version = "$(VERSION)"/g' ./email-forward-lambda/Cargo.toml
 	@echo Updated Version to $(VERSION)
 
 build-contact-lambda: ## Build the Contact API Lambda
@@ -176,3 +178,9 @@ test-contact-lambda: ## Test the Contact API Lambda
 	@cd ./contact-lambda; cargo test
 	@cd ./contact-lambda; cargo lambda watch -w & sleep 5;
 	@cd ./contact-lambda; cargo lambda invoke contact-lambda --data-file ./TestData.json; pkill cargo-lambda
+
+build-email-forward-lambda: ## Build the Contact API Lambda
+	@cd ./email-forward-lambda; cargo lambda build --release --target aarch64-unknown-linux-gnu --output-format zip -l ./target
+
+test-email-forward-lambda: ## Test the Contact API Lambda
+	@echo TODO

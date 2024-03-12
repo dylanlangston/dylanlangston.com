@@ -11,8 +11,61 @@ Parameters:
     Description: Domain name for the API Gateway custom domain
     Default: dylanlangston.com
 
+  ToEmail:
+    Type: String
+    Description: Email address to forward emails to
+    Default: ""
+    MinLength: 1
+  FromEmail:
+    Type: String
+    Description: Email address to use as the sender
+    Default: ""
+    MinLength: 1
+
 Resources:
-  RustFunctionRole:
+  EmailForwarderRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: EmailForwarderRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaBasicExecutionPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: arn:aws:logs:*:*:*
+              - Effect: Allow
+                Action:
+                  - ses:SendEmail
+                Resource: '*'
+
+  EmailForwarderFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: rust.handler
+      Runtime: provided.al2023
+      CodeUri: contact-lambda/target/contact-lambda/bootstrap.zip
+      Timeout: 30
+      MemorySize: 256
+      Environment:
+        Variables:
+          TO_EMAIL: !Ref ToEmail
+          FROM_EMAIL: !Ref FromEmail
+      Role: !GetAtt EmailForwarderRole.Arn
+      FunctionName: EmailForwarder
+
+  ContactFunctionRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -31,13 +84,13 @@ Resources:
                 Action: ses:SendEmail
                 Resource: '*'
 
-  RustFunction:
+  ContactFunction:
     Type: AWS::Serverless::Function 
     Properties:
-      CodeUri: contact-lambda/target/contact-lambda/bootstrap.zip
+      CodeUri: email-forward-lambda/target/email-forward-lambda/bootstrap.zip
       Handler: rust.handler
       Runtime: provided.al2023
-      Role: !GetAtt RustFunctionRole.Arn
+      Role: !GetAtt ContactFunctionRole.Arn
       Architectures:
         - arm64
       Events:
@@ -66,9 +119,13 @@ Resources:
       Stage: Prod
 
 Outputs:
-  RustFunction:
+  EmailForwarderFunction:
     Description: "Lambda Function ARN"
-    Value: !GetAtt RustFunction.Arn
+    Value: !GetAtt EmailForwarderFunction.Arn
+
+  ContactFunction:
+    Description: "Lambda Function ARN"
+    Value: !GetAtt ContactFunction.Arn
 
   ApiUrl:
     Description: "API Gateway URL"
