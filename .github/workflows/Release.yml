@@ -28,7 +28,7 @@ jobs:
   release:
     name: "Release 📦"
     runs-on: ubuntu-latest
-    timeout-minutes: 1
+    timeout-minutes: 10
     permissions:
       packages: read
       contents: write
