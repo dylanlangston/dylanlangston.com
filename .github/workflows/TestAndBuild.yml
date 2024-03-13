@@ -42,6 +42,8 @@ jobs:
           key: docker-${{ runner.os }}-${{ hashFiles('Dockerfile', '.github/workflows/*.yml', '.github/actions/*.yml', 'Makefile', 'setup-build.sh', 'site/bun*', '.gitmodules', 'site/package*.json', 'rust-lambda/*') }}
           target: base
           tag: dylanlangston.com:build
+          dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+          dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Test using Docker
         if: ${{ inputs.should-test }}
         id: test
