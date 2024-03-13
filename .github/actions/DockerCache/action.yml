@@ -17,31 +17,9 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Restore Cache docker image
-      id: cache-restore
-      uses: actions/cache/restore@v4
-      with:
-        path: ${{ inputs.image }}
-        key: ${{ inputs.key }}
-    - name: Load Docker Image
-      if: steps.cache-restore.outputs.cache-hit == 'true'
-      shell: sh
-      run: docker load -i ${{ inputs.image }}
     - name: Build Docker Image
-      if: steps.cache-restore.outputs.cache-hit != 'true'
       shell: sh
-      run: docker build --rm --network host -t ${{ inputs.tag }} --target ${{ inputs.target }} .
-    - name: Save Docker Image
-      if: steps.cache-restore.outputs.cache-hit != 'true'
-      shell: sh
-      run: docker save -o ${{ inputs.image }} ${{ inputs.tag }}
-    - name: Cache Docker Image
-      id: cache-save
-      uses: actions/cache/save@v4
-      if: steps.cache-restore.outputs.cache-hit != 'true'
-      with:
-        path: ${{ inputs.image }}
-        key: ${{ inputs.key }}
+      run: docker build --push --rm --network host -t ${{ inputs.tag }} --target ${{ inputs.target }} . --cache-to type=gha --cache-from type=gha
 branding:
   icon: 'layers'
   color: 'green'
