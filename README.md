@@ -9,7 +9,7 @@ This is the future source code for my personal website. Currently under construc
 title: Architecture Overview
 ---
 flowchart TB
-    subgraph "Static Site"
+    subgraph "Frontend - Static Site"
         direction LR
         S1("Svelte")
         S2("Typescript")
@@ -34,7 +34,7 @@ flowchart TB
         S1 & S2 & S3 & subGraph0 --Bundle--> S4 ==Hosting==> S5 ==CDN==> S6
     end
 
-    subgraph "API"
+    subgraph "Backend - API"
         direction LR
         I1("Rust")
         I2("Cargo Lambda")
