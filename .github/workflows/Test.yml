@@ -33,13 +33,6 @@ jobs:
         uses: actions/checkout@v4
       - name: Checkout Submodules
         run: make setup-git-clone
-      - name: Cache Docker Image
-        if: ${{ inputs.shouldCache }}
-        uses: dylanlangston/dylanlangston.com/.github/actions/DockerCache@main
-        with:
-          key: docker-${{ runner.os }}-${{ hashFiles('Dockerfile', '.github/workflows/*.yml', '.github/actions/*.yml', 'Makefile', 'setup-build.sh', 'site/bun*', '.gitmodules', 'site/package*.json', 'rust-lambda/*') }}
-          target: base
-          tag: dylanlangston.com:build
       - name: Test using Docker
         if: ${{ always() }}
         run: make test-docker VERSION=${{ inputs.version }}

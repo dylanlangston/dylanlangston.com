@@ -35,6 +35,8 @@ jobs:
         uses: actions/checkout@v4
       - name: Checkout Submodules
         run: make setup-git-clone
+      - name: Set Timestamp
+        run: find . -type f -exec touch -t 202303220000 {} +
       - name: Cache Docker Image
         uses: dylanlangston/dylanlangston.com/.github/actions/DockerCache@main
         id: cache
