@@ -41,7 +41,6 @@ jobs:
         with:
           tag: dylanlangston.com:build
           dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
-          dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Test using Docker
         if: ${{ inputs.should-test }}
         id: test
