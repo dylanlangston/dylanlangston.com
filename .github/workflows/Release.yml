@@ -48,16 +48,19 @@ jobs:
             const path = require('path');
 
             const repoName = "${{ github.repository }}".split('/')[1];
-            const existingRelease = await github.rest.repos.getReleaseByTag({
-              owner: "${{ github.repository_owner }}",
-              repo: repoName,
-              tag: "v${{ inputs.version }}"
-            });
+            let existingRelease = undefined;
+            try {
+              existingRelease = await github.rest.repos.getReleaseByTag({
+                owner: "${{ github.repository_owner }}",
+                repo: repoName,
+                tag: "v${{ inputs.version }}"
+              });
+            } catch {}
 
             let releaseId = undefined;
             let uploadUrl = undefined;
 
-            if (existingRelease.status === 200) {
+            if (existingRelease?.status === 200) {
               releaseId = existingRelease.data.id;
               uploadUrl = existingRelease.data.upload_url;
 
