@@ -1,24 +1,14 @@
 name: 'Docker Image Cache'
 description: 'Caching docker image, Loads docker image or build a new one'
 inputs:
-  key:
-    description: 'Cache Key'
-    required: true
-  target:
-    description: 'Dockerimage Target'
-    required: true
   tag:
     description: 'Docker tag'
     required: true
-  image:
-    description: 'Docker image filename'
-    required: true
-    default: './cached-docker-image'
   dockerhub-username:
-    description: 'Docker tag'
+    description: 'Dockerhub Username'
     required: true
   dockerhub-token:
-    description: 'Docker tag'
+    description: 'Dockerhub Token'
     required: true
 runs:
   using: "composite"
@@ -33,14 +23,14 @@ runs:
     - name: Login to Docker Hub
       uses: docker/login-action@v3
       with:
-        username: ${{ inputs.dockerhub-username }}
-        password: ${{ inputs.dockerhub-token }}
+        username: "${{ inputs.dockerhub-username }}"
+        password: "${{ inputs.dockerhub-token }}"
     - name: Build and Push
       uses: docker/build-push-action@v5
       with:
         context: .
         push: true
-        tags: "dylanlangston.com:build"
+        tags: "${{ inputs.tag }}"
         cache-from: type=gha
         cache-to: type=gha,mode=max
 branding:
