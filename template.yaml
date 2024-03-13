@@ -76,6 +76,35 @@ Resources:
       Role: !GetAtt EmailForwarderRole.Arn
       FunctionName: EmailForwarder
 
+  LambdaPermissionForSES:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt EmailForwarderFunction.Arn
+      Principal: ses.amazonaws.com
+      SourceArn: !Sub "arn:aws:ses:${AwsRegion}:${AwsAccountId}:receipt-rule-set/${EmailReceiptRuleSet}/receipt-rule/${EmailReceiptRule}"
+
+  EmailReceiptRuleSet:
+    Type: AWS::SES::ReceiptRuleSet
+    Properties:
+      RuleSetName: ForwardEmails
+
+  EmailReceiptRule:
+    Type: AWS::SES::ReceiptRule
+    Properties:
+      RuleSetName: !Ref EmailReceiptRuleSet
+      Rule:
+        Name: ForwardEmails
+        Enabled: true
+        ScanEnabled: false
+        Recipients:
+          - !Ref DomainName
+        Actions:
+          - S3Action:
+              BucketName: !Ref AwsS3BucketName
+          - LambdaAction:
+              FunctionArn: !GetAtt EmailForwarderFunction.Arn
+
   ContactRole:
     Type: AWS::IAM::Role
     Properties:
