@@ -39,9 +39,8 @@ jobs:
         uses: dylanlangston/dylanlangston.com/.github/actions/DockerCache@main
         id: cache
         with:
+          target: base
           tag: dylanlangston.com:build
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          token: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Test using Docker
         if: ${{ inputs.should-test }}
         id: test
