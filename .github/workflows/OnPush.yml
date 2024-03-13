@@ -40,6 +40,7 @@ jobs:
     if: ${{ success() || needs.Test.result == 'skipped' }}
     uses: dylanlangston/dylanlangston.com/.github/workflows/TestAndBuild.yml@main
     needs: [Initialize]
+    secrets: inherit
     permissions:
       contents: read
     with:
