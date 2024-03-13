@@ -38,7 +38,7 @@ jobs:
       - name: Checkout
         id: checkout
         uses: actions/checkout@v4
-      - name: 'Create Release'
+      - name: 'Create or Update Release'
         uses: actions/github-script@v7
         env:
           INPUT_COMMIT-MESSAGE: ${{ inputs.commit-message }}
@@ -48,20 +48,58 @@ jobs:
             const path = require('path');
 
             const repoName = "${{ github.repository }}".split('/')[1];
-            const releaseResponse = await github.rest.repos.createRelease({
-                body: "**DylanLangston.com - _Prerelease v${{ inputs.version }}_**<br/>" + core.getInput('commit-message', { required: true }),
-                name: "v${{ inputs.version }}",
-                make_latest: "true",
+            const existingRelease = await github.rest.repos.getReleaseByTag({
+              owner: "${{ github.repository_owner }}",
+              repo: repoName,
+              tag: "v${{ inputs.version }}"
+            });
+
+            let releaseId = undefined;
+            let uploadUrl = undefined;
+
+            if (existingRelease.status === 200) {
+              releaseId = existingRelease.data.id;
+              uploadUrl = existingRelease.data.upload_url;
+
+              await github.rest.repos.updateRelease({
                 owner: "${{ github.repository_owner }}",
+                repo: repoName,
+                release_id: releaseId,
+                body: "**DylanLangston.com - _Prerelease v${{ inputs.version }}_**<br/>" + core.getInput('commit-message', { required: true }),
                 prerelease: true,
                 draft: false,
+              });
+
+              const existingAssets = await github.rest.repos.listReleaseAssets({
+                owner: "${{ github.repository_owner }}",
                 repo: repoName,
-                target_commitish: "${{ github.sha }}",
-                tag_name: "v${{ inputs.version }}"
-            });
-            const releaseData = releaseResponse.data;
-            const releaseId = releaseData.id;
-            const uploadUrl = releaseData.upload_url;
+                release_id: releaseId
+              });
+              for (const asset of existingAssets.data) {
+                await github.rest.repos.deleteReleaseAsset({
+                  owner: "${{ github.repository_owner }}",
+                  repo: repoName,
+                  asset_id: asset.id
+                });
+              }
+            } else {
+              const releaseResponse = await github.rest.repos.createRelease({
+                  body: "**DylanLangston.com - _Prerelease v${{ inputs.version }}_**<br/>" + core.getInput('commit-message', { required: true }),
+                  name: "v${{ inputs.version }}",
+                  make_latest: "true",
+                  owner: "${{ github.repository_owner }}",
+                  prerelease: true,
+                  draft: false,
+                  repo: repoName,
+                  target_commitish: "${{ github.sha }}",
+                  tag_name: "v${{ inputs.version }}"
+              });
+              releaseId = releaseResponse.data.id;
+              uploadUrl = releaseResponse.data.upload_url;
+            }
+
+            if (releaseId == undefined) throw new Error("ReleaseID is undefined");
+            if (uploadUrl == undefined) throw new Error("UploadURL is undefined");
 
             const allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
                owner: context.repo.owner,
@@ -78,6 +116,8 @@ jobs:
               const matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
                 return artifact.name == prefix + "${{ inputs.version }}"
               })[0];
+              if (!matchArtifact) continue;
+
               const download = await github.rest.actions.downloadArtifact({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
