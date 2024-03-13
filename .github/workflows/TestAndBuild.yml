@@ -36,12 +36,14 @@ jobs:
       - name: Checkout Submodules
         run: make setup-git-clone
       - name: Cache Docker Image
-        uses: dylanlangston/dylanlangston.com/.github/actions/DockerCache@main
+        uses: docker/build-push-action@v5
         id: cache
         with:
-          key: docker-${{ runner.os }}-${{ hashFiles('Dockerfile', '.github/workflows/*.yml', '.github/actions/*.yml', 'Makefile', 'setup-build.sh', 'site/bun*', '.gitmodules', 'site/package*.json', 'rust-lambda/*') }}
-          target: base
-          tag: dylanlangston.com:build
+          context: .
+          push: true
+          tags: "dylanlangston.com:build"
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
       - name: Test using Docker
         if: ${{ inputs.should-test }}
         id: test
