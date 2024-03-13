@@ -23,7 +23,7 @@ runs:
         tags: "${{ inputs.tag }}"
         target: "${{ inputs.target }}"
         cache-from: type=gha
-        cache-to: type=gha,mode=max
+        cache-to: type=gha
 branding:
   icon: 'layers'
   color: 'green'
