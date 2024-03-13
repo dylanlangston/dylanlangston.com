@@ -19,7 +19,7 @@ runs:
   steps:
     - name: Build Docker Image
       shell: sh
-      run: docker build --push --rm --network host -t ${{ inputs.tag }} --target ${{ inputs.target }} . --cache-to type=gha --cache-from type=gha
+      run: docker buildx build --push -t --network host ${{ inputs.tag }} --target ${{ inputs.target }} --cache-to type=gha,mode=max --cache-from type=gha .
 branding:
   icon: 'layers'
   color: 'green'
