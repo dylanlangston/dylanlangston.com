@@ -17,19 +17,15 @@ COPY ./site/bun.lockb /root/dylanlangston.com/site/bun.lockb
 COPY ./site/bunfig.toml /root/dylanlangston.com/site/bunfig.toml
 COPY ./rust-lambda/Cargo.toml /root/dylanlangston.com/rust-lambda/Cargo.toml
 COPY ./rust-lambda/Cargo.lock /root/dylanlangston.com/rust-lambda/Cargo.lock
-COPY ./rust-lambda/src /root/dylanlangston.com/rust-lambda/src
-
-# Setup Build Environment
-#RUN sh ./setup-build.sh
 
 RUN apt-get update && apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git python3 build-essential pkg-config
 
 # Install ZVM - https://github.com/tristanisham/zvm
 RUN curl --proto '=https' --tlsv1.3 -sSfL https://raw.githubusercontent.com/tristanisham/zvm/master/install.sh | bash
-RUN echo "# ZVM" >> $HOME/.bashrc
-RUN echo export ZVM_INSTALL="$HOME/.zvm" >> $HOME/.bashrc
-RUN echo export PATH="\$PATH:\$ZVM_INSTALL/bin" >> $HOME/.bashrc
-RUN echo export PATH="\$PATH:\$ZVM_INSTALL/self" >> $HOME/.bashrc
+RUN echo "# ZVM" >> $HOME/.bashrc &&\
+ echo export ZVM_INSTALL="$HOME/.zvm" >> $HOME/.bashrc &&\
+ echo export PATH="\$PATH:\$ZVM_INSTALL/bin" >> $HOME/.bashrc &&\
+ echo export PATH="\$PATH:\$ZVM_INSTALL/self" >> $HOME/.bashrc
 
 # Install ZIG
 RUN $HOME/.zvm/self/zvm i master
@@ -39,6 +35,7 @@ RUN $HOME/.zvm/self/zvm i -D=zls master
 
 # Install rust
 RUN curl --proto '=https' --tlsv1.3 -sSfL https://sh.rustup.rs | bash -s -- -y
+RUN rustup target add aarch64-unknown-linux-gnu
 
 # Install Cargo B(inary)Install
 RUN curl --proto '=https' --tlsv1.3 -sSfL https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
@@ -66,7 +63,6 @@ RUN rm -rf ./site/src &&\
  rm -rf ./site/static &&\
  rm -rf ./site/tests &&\
  rm -f ./site/*.* &&\
- rm -rf ./rust-lambda/src &&\
  rm -rf ./.gitmodules &&\
  rm -rf ./Makefile &&\
  rm -rf ./setup-build.sh

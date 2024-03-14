@@ -96,9 +96,8 @@ else
 	@bunx --bun playwright install-deps
 endif
 
-setup-rust: ## Setup Rusy Environment
-	@rustup target add aarch64-unknown-linux-gnu
-##@cd ./rust-lambda; cargo fetch --locked; cd ..
+setup-rust: ## Setup Rust Environment
+	@cd ./rust-lambda; cargo vendor; cd ..
 
 build-desktop: ## Build Desktop. Optionally pass in the OPTIMIZE=... argument.
 	@zig build -Doptimize=$(OPTIMIZE) -freference-trace

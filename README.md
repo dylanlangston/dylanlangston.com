@@ -46,7 +46,7 @@ flowchart TB
         I3 -.- I5 -.- I2
     end
 
-	subGraph1 <-..-> API
+	subGraph1 <-..-> subGraph2
 	
 ```
 
