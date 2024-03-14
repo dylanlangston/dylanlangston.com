@@ -23,6 +23,7 @@ runs:
         tags: "${{ inputs.tag }}"
         target: "${{ inputs.target }}"
         network: host
+        load: true
         cache-from: type=gha
         cache-to: type=gha
 branding:
