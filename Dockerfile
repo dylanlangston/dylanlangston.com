@@ -11,7 +11,6 @@ WORKDIR /root/dylanlangston.com
 COPY ./.gitmodules /root/dylanlangston.com/.gitmodules
 COPY ./Makefile /root/dylanlangston.com/Makefile
 COPY ./emsdk /root/dylanlangston.com/emsdk
-COPY ./setup-build.sh /root/dylanlangston.com/setup-build.sh
 COPY ./site/package.json /root/dylanlangston.com/site/package.json
 COPY ./site/bun.lockb /root/dylanlangston.com/site/bun.lockb
 COPY ./site/bunfig.toml /root/dylanlangston.com/site/bunfig.toml
@@ -64,8 +63,7 @@ RUN rm -rf ./site/src &&\
  rm -rf ./site/tests &&\
  rm -f ./site/*.* &&\
  rm -rf ./.gitmodules &&\
- rm -rf ./Makefile &&\
- rm -rf ./setup-build.sh
+ rm -rf ./Makefile
 
 FROM base as test
 COPY . /root/dylanlangston.com/
