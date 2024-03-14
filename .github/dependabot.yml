@@ -8,6 +8,9 @@ updates:
     directory: "/site"
     schedule:
       interval: "weekly"
+    labels:
+      - ":label: Dependencies"
+      - ":technologist:TypeScript/JavaScript :green_circle:"
   - package-ecosystem: "gitsubmodule"
     open-pull-requests-limit: 3
     commit-message:
@@ -15,6 +18,9 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    labels:
+      - ":label: Dependencies"
+      - ":technologist: Submodules :large_blue_circle:"
   - package-ecosystem: "cargo"
     open-pull-requests-limit: 50
     commit-message:
@@ -22,6 +28,9 @@ updates:
     directory: "/rust-lambda"
     schedule:
       interval: "weekly"
+    labels:
+      - ":label: Dependencies"
+      - ":technologist: Rust :red_circle:"
   - package-ecosystem: "github-actions"
     open-pull-requests-limit: 10
     commit-message:
@@ -29,6 +38,9 @@ updates:
     directory: ./.github/actions/DockerCache
     schedule:
       interval: "weekly"
+    labels:
+      - ":label: Dependencies"
+      - ":technologist: Github Actions :brown_circle:"
   - package-ecosystem: "github-actions"
     open-pull-requests-limit: 10
     commit-message:
@@ -36,6 +48,9 @@ updates:
     directory: ./.github/actions/VersionString
     schedule:
       interval: "weekly"
+    labels:
+      - ":label: Dependencies"
+      - ":technologist: Github Actions :brown_circle:"
   - package-ecosystem: "github-actions"
     open-pull-requests-limit: 10
     commit-message:
@@ -43,6 +58,9 @@ updates:
     directory: ./.github/actions/PopulateBuildSummary
     schedule:
       interval: "weekly"
+    labels:
+      - ":label: Dependencies"
+      - ":technologist: Github Actions :brown_circle:"
   - package-ecosystem: "github-actions"
     open-pull-requests-limit: 10
     commit-message:
@@ -50,6 +68,9 @@ updates:
     directory: ./.github/actions/SAMDeploy
     schedule:
       interval: "weekly"
+    labels:
+      - ":label: Dependencies"
+      - ":technologist: Github Actions :brown_circle:"
   - package-ecosystem: "github-actions"
     open-pull-requests-limit: 10
     commit-message:
@@ -57,3 +78,6 @@ updates:
     directory: ./.github/workflows/
     schedule:
       interval: "weekly"
+    labels:
+      - ":label: Dependencies"
+      - ":technologist: Github Actions :brown_circle:"
