@@ -98,7 +98,7 @@ endif
 
 setup-rust: ## Setup Rusy Environment
 	@rustup target add aarch64-unknown-linux-gnu
-	@cd ./rust-lambda; cargo fetch --frozen; cd ..
+##@cd ./rust-lambda; cargo fetch --locked; cd ..
 
 build-desktop: ## Build Desktop. Optionally pass in the OPTIMIZE=... argument.
 	@zig build -Doptimize=$(OPTIMIZE) -freference-trace
