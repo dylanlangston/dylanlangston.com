@@ -55,15 +55,8 @@ RUN make setup-bun USE_NODE=1
 RUN make setup-tests USE_NODE=1
 RUN make setup-rust USE_NODE=1
 
-RUN apt-get clean && rm -rf /var/cache/apt/* && rm -rf /var/lib/apt/lists/* && rm -rf /tmp/*
-
 # Cleanup
-RUN rm -rf ./site/src &&\
- rm -rf ./site/static &&\
- rm -rf ./site/tests &&\
- rm -f ./site/*.* &&\
- rm -rf ./.gitmodules &&\
- rm -rf ./Makefile
+RUN apt-get clean && rm -rf /var/cache/apt/* && rm -rf /var/lib/apt/lists/* && rm -rf /tmp/*
 
 FROM base as test
 COPY . /root/dylanlangston.com/
