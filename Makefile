@@ -97,7 +97,8 @@ else
 endif
 
 setup-rust: ## Setup Rusy Environment
-	@cd ./rust-lambda; cargo fetch; cd ..
+	@rustup target add aarch64-unknown-linux-gnu
+	@cd ./rust-lambda; cargo fetch --frozen; cd ..
 
 build-desktop: ## Build Desktop. Optionally pass in the OPTIMIZE=... argument.
 	@zig build -Doptimize=$(OPTIMIZE) -freference-trace
@@ -169,11 +170,9 @@ update-version: ## Update Version. Optionally pass in the VERSION=1.0.0 argument
 	@echo Updated Version to $(VERSION)
 
 build-rust-lambda: ## Build the Contact API Lambda
-	@rustup target add aarch64-unknown-linux-gnu
 	@cd ./rust-lambda; cargo lambda build --release --target aarch64-unknown-linux-gnu --output-format zip -l ./target
 
 test-rust-lambda: ## Test the Contact API Lambda
-	@rustup target add aarch64-unknown-linux-gnu
 	@cd ./rust-lambda; cargo test
 	@cd ./rust-lambda; cargo lambda watch -w & sleep 5;
 	@cd ./rust-lambda; cargo lambda invoke "contact" --data-file ./TestData.json; pkill cargo-lambda
