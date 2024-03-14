@@ -143,7 +143,8 @@ develop-docker-stop: ## Stop all docker containers
 	@echo Stopping Docker Container
 
 release-docker:  ## Builds Web Version for publish using docker.
-	@docker build --rm --load --network host -t dylanlangston.com . --target publish --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE) --build-arg PRECOMPRESS_RELEASE=$(PRECOMPRESS_RELEASE)
+	@docker buildx build --rm --load --network host -t dylanlangston.com . --target publish --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE) --build-arg PRECOMPRESS_RELEASE=$(PRECOMPRESS_RELEASE)
+	@docker image prune -f
 	@docker create --name site-temp dylanlangston.com
 	@docker cp site-temp:/root/dylanlangston.com/site/build/ ./site/
 ifeq ($(OPTIMIZE),Debug)
@@ -153,7 +154,8 @@ endif
 	@docker rm -f site-temp
 
 test-docker:  ## clean, setup, and test using docker.
-	@docker build --rm --network host -t dylanlangston.com . --target test --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE)
+	@docker buildx build --rm --network host -t dylanlangston.com . --target test --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE)
+	@docker image prune -f
 
 run-site: build-web ## Run Website
 ifeq ($(USE_NODE),1)
