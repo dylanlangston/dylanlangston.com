@@ -25,7 +25,7 @@ runs:
         network: host
         load: true
         cache-from: type=gha
-        cache-to: type=gha
+        cache-to: type=gha,mode=max
 branding:
   icon: 'layers'
   color: 'green'
