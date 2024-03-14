@@ -22,6 +22,9 @@ runs:
         load: true
         cache-from: type=gha
         cache-to: type=gha,mode=min
+    - name: Prune Unused Images
+      shell: sh
+      run: docker image prune -f
 branding:
   icon: 'layers'
   color: 'green'
