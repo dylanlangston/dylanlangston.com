@@ -53,7 +53,11 @@ RUN apt-get -y install --no-install-recommends nodejs npm
 #curl --proto '=https' --tlsv1.3 -fsSL https://bun.sh/install | bash
 
 # Setup
-RUN make clean-cache setup USE_NODE=1
+RUN make clean-cache USE_NODE=1
+RUN make setup-emscripten USE_NODE=1
+RUN make setup-bun USE_NODE=1
+RUN make setup-tests USE_NODE=1
+RUN make setup-rust USE_NODE=1
 
 RUN apt-get clean && rm -rf /var/cache/apt/* && rm -rf /var/lib/apt/lists/* && rm -rf /tmp/*
 
