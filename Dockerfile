@@ -20,17 +20,52 @@ COPY ./rust-lambda/Cargo.lock /root/dylanlangston.com/rust-lambda/Cargo.lock
 COPY ./rust-lambda/src /root/dylanlangston.com/rust-lambda/src
 
 # Setup Build Environment
-RUN sh ./setup-build.sh
+#RUN sh ./setup-build.sh
+
+RUN apt-get update && apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git python3 build-essential pkg-config
+
+# Install ZVM - https://github.com/tristanisham/zvm
+RUN curl --proto '=https' --tlsv1.3 -sSfL https://raw.githubusercontent.com/tristanisham/zvm/master/install.sh | bash
+RUN echo "# ZVM" >> $HOME/.bashrc
+RUN echo export ZVM_INSTALL="$HOME/.zvm" >> $HOME/.bashrc
+RUN echo export PATH="\$PATH:\$ZVM_INSTALL/bin" >> $HOME/.bashrc
+RUN echo export PATH="\$PATH:\$ZVM_INSTALL/self" >> $HOME/.bashrc
+
+# Install ZIG
+RUN $HOME/.zvm/self/zvm i master
+
+# Install ZLS
+RUN $HOME/.zvm/self/zvm i -D=zls master
+
+# Install rust
+RUN curl --proto '=https' --tlsv1.3 -sSfL https://sh.rustup.rs | bash -s -- -y
+
+# Install Cargo B(inary)Install
+RUN curl --proto '=https' --tlsv1.3 -sSfL https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+
+# Install Cargo Lambda
+RUN $HOME/.cargo/bin/cargo binstall cargo-lambda -y
+
+# Install Node
+RUN apt-get -y install --no-install-recommends nodejs npm
+
+# Install Bun
+#curl --proto '=https' --tlsv1.3 -fsSL https://bun.sh/install | bash
+
+# Setup
+RUN make clean-cache setup USE_NODE=1
+
+RUN apt-get clean && rm -rf /var/cache/apt/* && rm -rf /var/lib/apt/lists/* && rm -rf /tmp/*
 
 # Cleanup
-RUN rm -rf ./site/src
-RUN rm -rf ./site/static
-RUN rm -rf ./site/tests
-RUN rm -f ./site/*.*
-RUN rm -rf ./rust-lambda/src
-RUN rm -rf ./.gitmodules
-RUN rm -rf ./Makefile
-RUN rm -rf ./setup-build.sh
+RUN rm -rf ./site/src &&\
+ rm -rf ./site/static &&\
+ rm -rf ./site/tests &&\
+ rm -f ./site/*.* &&\
+ rm -rf ./rust-lambda/src &&\
+ rm -rf ./.gitmodules &&\
+ rm -rf ./Makefile &&\
+ rm -rf ./setup-build.sh
 
 FROM base as test
 COPY . /root/dylanlangston.com/
