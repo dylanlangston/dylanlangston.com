@@ -97,7 +97,6 @@ else
 endif
 
 setup-rust: ## Setup Rusy Environment
-	@rustup target add aarch64-unknown-linux-gnu
 	@cd ./rust-lambda; cargo fetch; cd ..
 
 build-desktop: ## Build Desktop. Optionally pass in the OPTIMIZE=... argument.
@@ -144,7 +143,7 @@ develop-docker-stop: ## Stop all docker containers
 	@echo Stopping Docker Container
 
 release-docker:  ## Builds Web Version for publish using docker.
-	@docker buildx build --load --network host -t dylanlangston.com . --target publish --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE) --build-arg PRECOMPRESS_RELEASE=$(PRECOMPRESS_RELEASE)
+	@docker buildx build --rm --load --network host -t dylanlangston.com . --target publish --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE) --build-arg PRECOMPRESS_RELEASE=$(PRECOMPRESS_RELEASE)
 	@docker create --name site-temp dylanlangston.com
 	@docker cp site-temp:/root/dylanlangston.com/site/build/ ./site/
 ifeq ($(OPTIMIZE),Debug)
@@ -154,7 +153,7 @@ endif
 	@docker rm -f site-temp
 
 test-docker:  ## clean, setup, and test using docker.
-	@docker buildx build --network host -t dylanlangston.com . --target test --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE)
+	@docker buildx build --rm --network host -t dylanlangston.com . --target test --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE)
 
 run-site: build-web ## Run Website
 ifeq ($(USE_NODE),1)
@@ -170,9 +169,11 @@ update-version: ## Update Version. Optionally pass in the VERSION=1.0.0 argument
 	@echo Updated Version to $(VERSION)
 
 build-rust-lambda: ## Build the Contact API Lambda
+	@rustup target add aarch64-unknown-linux-gnu
 	@cd ./rust-lambda; cargo lambda build --release --target aarch64-unknown-linux-gnu --output-format zip -l ./target
 
 test-rust-lambda: ## Test the Contact API Lambda
+	@rustup target add aarch64-unknown-linux-gnu
 	@cd ./rust-lambda; cargo test
 	@cd ./rust-lambda; cargo lambda watch -w & sleep 5;
 	@cd ./rust-lambda; cargo lambda invoke "contact" --data-file ./TestData.json; pkill cargo-lambda
