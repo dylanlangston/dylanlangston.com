@@ -143,14 +143,7 @@ develop-docker-stop: ## Stop all docker containers
 	@echo Stopping Docker Container
 
 release-docker:  ## Builds Web Version for publish using docker.
-	@docker buildx build --rm --load --network host -t dylanlangston.com . --target publish --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE) --build-arg PRECOMPRESS_RELEASE=$(PRECOMPRESS_RELEASE)
-	@docker create --name site-temp dylanlangston.com
-	@docker cp site-temp:/root/dylanlangston.com/site/build/ ./site/
-ifeq ($(OPTIMIZE),Debug)
-else
-	@docker cp site-temp:/root/dylanlangston.com/rust-lambda/target/ ./rust-lambda/
-endif
-	@docker rm -f site-temp
+	@docker buildx build --rm --network host -t dylanlangston.com . --target publish --output type=local,dest=./ --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE) --build-arg PRECOMPRESS_RELEASE=$(PRECOMPRESS_RELEASE)
 
 test-docker:  ## clean, setup, and test using docker.
 	@docker buildx build --rm --network host --allow=network.host -t dylanlangston.com . --target test --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE)

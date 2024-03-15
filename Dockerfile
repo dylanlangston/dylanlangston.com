@@ -9,13 +9,13 @@ WORKDIR /root/dylanlangston.com
 
 # Copy only the files we absolutely need
 COPY ./.gitmodules /root/dylanlangston.com/.gitmodules
-COPY ./Makefile /root/dylanlangston.com/Makefile
 COPY ./emsdk /root/dylanlangston.com/emsdk
 COPY ./site/package.json /root/dylanlangston.com/site/package.json
 COPY ./site/bun.lockb /root/dylanlangston.com/site/bun.lockb
 COPY ./site/bunfig.toml /root/dylanlangston.com/site/bunfig.toml
 COPY ./rust-lambda/Cargo.toml /root/dylanlangston.com/rust-lambda/Cargo.toml
 COPY ./rust-lambda/Cargo.lock /root/dylanlangston.com/rust-lambda/Cargo.lock
+COPY ./Makefile /root/dylanlangston.com/Makefile
 
 RUN apt-get update && apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git python3 build-essential pkg-config
 
@@ -49,11 +49,7 @@ RUN apt-get -y install --no-install-recommends nodejs npm
 #curl --proto '=https' --tlsv1.3 -fsSL https://bun.sh/install | bash
 
 # Setup
-RUN make clean-cache USE_NODE=1
-RUN make setup-emscripten USE_NODE=1
-RUN make setup-bun USE_NODE=1
-RUN make setup-tests USE_NODE=1
-RUN make setup-rust USE_NODE=1
+RUN make clean-cache setup USE_NODE=1
 
 # Cleanup
 RUN apt-get clean && rm -rf /var/cache/apt/* && rm -rf /var/lib/apt/lists/* && rm -rf /tmp/*
@@ -68,7 +64,7 @@ FROM base AS develop
 EXPOSE 5173
 CMD ["make", "develop", "USE_NODE=1"]
 
-FROM base AS publish
+FROM base AS build
 COPY . /root/dylanlangston.com/
 ARG VERSION
 RUN test -n "$VERSION"
@@ -77,6 +73,12 @@ RUN test -n "$OPTIMIZE"
 ARG PRECOMPRESS_RELEASE='0'
 RUN test -n "$PRECOMPRESS_RELEASE"
 RUN make setup-git-clone update-version VERSION=$VERSION release OPTIMIZE=$OPTIMIZE USE_NODE=1 PRECOMPRESS_RELEASE=$PRECOMPRESS_RELEASE
+
+# Export files
+FROM scratch AS publish
+COPY --from=build /root/dylanlangston.com/site/build/ /site/build
+COPY --from=build /root/dylanlangston.com/rust-lambda/target*/contact* /rust-lambda/target/contact
+COPY --from=build /root/dylanlangston.com/rust-lambda/target*/email-forward* /rust-lambda/target/email-forward
 
 # Default Stage is the Base stage
 FROM base as default
