@@ -4,6 +4,7 @@
 	import Typewriter from '../components/typewriter.svelte';
 	import { onMount } from 'svelte';
 	import { Environment } from '../lib/Common';
+	import { fade, blur, fly, slide, scale, crossfade } from 'svelte/transition';
 
 	let shouldAnimateTitle: boolean = true;
 
@@ -49,7 +50,7 @@
 								><Typewriter disabled={!shouldAnimateTitle} phrase={'Hello World,'} /></span
 							>
 							<br />
-							<span class="italic text-xl md:text-3xl lg:text-4xl"
+							<span class="italic text-xl md:text-3xl lg:text-5xl"
 								><Typewriter
 									disabled={!shouldAnimateTitle}
 									delay={2000}
@@ -66,11 +67,20 @@
 				class="rounded-full glass round-full w-36 h-36 md:h-44 md:w-44 lg:h-56 lg:w-56 mr-auto my-0"
 			>
 				{#await profilePicture}
-					<UserIcon class="rounded-full aspect-square p-2 lg:p-4 w-full h-full" />
+					<div out:fade|local={{ duration: 50 }} title={"Loading..."}>
+						<UserIcon class="rounded-full aspect-square p-2 lg:p-4 w-full h-full" />
+					</div>
 				{:then src}
-					<img {src} alt="" class="rounded-full aspect-square p-2 lg:p-4 w-full h-full" />
+					<img
+						{src}
+						alt=""
+						class="rounded-full aspect-square p-2 lg:p-4 w-full h-full"
+						in:fade|local={{ duration: 250, delay: 50 }}
+					/>
 				{:catch error}
-					<UserIcon class="rounded-full aspect-square p-2 lg:p-4 w-full h-full" />
+					<div in:fade|local={{ duration: 0, delay: 50 }} title={error}>
+						<UserIcon class="rounded-full aspect-square p-2 lg:p-4 w-full h-full" />
+					</div>
 				{/await}
 			</div>
 		</div>
