@@ -83,7 +83,7 @@
 			{/if}
 		</div>
 		<ul class="items-stretch hidden space-x-3 md:flex">
-			<li class="flex">
+			<!-- <li class="flex">
 				<Ripple classList={'flex h-full'} escapeParent={true}>
 					<a
 						rel="noopener noreferrer"
@@ -92,7 +92,7 @@
 						>About</a
 					>
 				</Ripple>
-			</li>
+			</li> -->
 			<li class="flex">
 				<Ripple classList={'flex h-full'} escapeParent={true}>
 					<a
@@ -137,13 +137,13 @@
 			in:slide|local={{ duration: 250 }}
 			out:slide|local={{ duration: 250 }}
 		>
-			<Ripple color={'currentColor'}>
+			<!-- <Ripple color={'currentColor'}>
 				<a
 					href="/about"
 					class="flex items-center rounded-md px-3 py-2 text-sm hover:shadow-md hover:bg-rainbow transition-colors duration-300"
 					>About</a
 				>
-			</Ripple>
+			</Ripple> -->
 			<Ripple color={'currentColor'}>
 				<a
 					href="/contact"
