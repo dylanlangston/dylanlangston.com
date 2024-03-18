@@ -167,8 +167,8 @@
 				</StatusContainer>
 			</main>
 		</noscript>
-		<div class="jsonly absolute top-1/2 left-1/2" out:animateOut={{ key }}>
-			<div class="loader"></div>
+		<div class="jsonly absolute top-0 left-0 w-screen h-screen flex align-center animate-[fade-in_5s]">
+			<div class="loader m-auto" class:invisible={loaded} out:animateOut={{ key }}></div>
 		</div>
 	{/if}
 </div>
