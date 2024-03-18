@@ -34,7 +34,7 @@
 <header class="p-1 glass px-4 md:px-8">
 	<nav class="container flex justify-between h-16 mx-auto content-center text-center">
 		<div class="flex items-center">
-			<Ripple classList="flex h-full" escapeParent={true}>
+			<Ripple classList="text-xl flex h-full font-medium leading-loose" escapeParent={true}>
 				<a rel="noopener noreferrer" href="/" aria-label="Back to homepage"> Dylan Langston.com </a>
 			</Ripple>
 		</div>

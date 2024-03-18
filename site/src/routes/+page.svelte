@@ -94,14 +94,14 @@
 				</h3>
 				<hr class="h-0.5 bg-black dark:bg-white border-transparent rounded-lg" />
 				<br />
-				<p class="text-center text-lg">
+				<p class="text-center text-lg text-gray-900 dark:text-gray-200">
 					Hey there! Welcome to my corner of the web! I'm Dylan Langston, your friendly neighborhood
 					Full Stack Developer with a passion for crafting awesome software and exploring the great
 					outdoors. When I'm not busy coding up a storm, you can probably find me hiking through
 					nature trails or on a casual gaming adventure.
 				</p>
 				<br />
-				<h4 class="text-lg">What I'm All About:</h4>
+				<h4 class="text-lg font-medium leading-loose">What I'm All About:</h4>
 				<ul class="space-y-4">
 					<li class="flex gap-4">
 						<div class="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100">
@@ -109,7 +109,7 @@
 						</div>
 						<div class="flex-1">
 							<h4 class="text-base font-medium leading-loose">Building Cool Stuff</h4>
-							<p class="text-gray-500">
+							<p class="text-gray-900 dark:text-gray-200">
 								From slick user interfaces to powerful backend systems, I love turning ideas into
 								reality through code.
 							</p>
@@ -121,7 +121,7 @@
 						</div>
 						<div class="flex-1">
 							<h4 class="text-base font-medium leading-loose">Problem Solving, FTW!</h4>
-							<p class="text-gray-500">
+							<p class="text-gray-900 dark:text-gray-200">
 								I thrive on cracking tough tech puzzles and finding creative solutions that make
 								life easier.
 							</p>
@@ -133,7 +133,7 @@
 						</div>
 						<div class="flex-1">
 							<h4 class="text-base font-medium leading-loose">Teamwork Makes the Dream Work</h4>
-							<p class="text-gray-500">
+							<p class="text-gray-900 dark:text-gray-200">
 								Collaboration is key! I dig working with others to bring projects to life.
 							</p>
 						</div>
@@ -144,7 +144,7 @@
 						</div>
 						<div class="flex-1">
 							<h4 class="text-base font-medium leading-loose">Never Stop Learning</h4>
-							<p class="text-gray-500">
+							<p class="text-gray-900 dark:text-gray-200">
 								In the fast-paced world of tech, there's always something new to discover. I'm all
 								about staying ahead of the curve.
 							</p>
