@@ -149,7 +149,7 @@
 			</div>
 		</div>
 		{#if !$mobile && !$accessibilityRequested && !$contrastRequested}
-			<ContextMenu/>
+			<!-- <ContextMenu/> -->
 			<MouseCursor />
 		{/if}
 	{:else}
