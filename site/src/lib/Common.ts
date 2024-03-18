@@ -179,6 +179,12 @@ export class Environment {
 			document.body.classList.add('light');
 		}
     };
+
+    public static firstLoadMainPage: boolean = true;
+}
+
+export function sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 (<any>globalThis).saveFileFromMEMFSToDisk = (memoryFSname: string, localFSname: string) => {

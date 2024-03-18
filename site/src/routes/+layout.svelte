@@ -138,7 +138,7 @@
 					in:blur|local={{ duration: 250, delay: 50, opacity: 0.25 }}
 				>
 					<div class="overflow-x-auto h-full">
-						<div class="flex h-full">
+						<div class="flex h-full justify-center">
 							<slot />
 						</div>
 					</div>
