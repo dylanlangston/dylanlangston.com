@@ -58,6 +58,11 @@
 
 			if (response.ok) {
 				alert('Message sent successfully!');
+				firstName = "";
+				lastName = "";
+				email = "";
+				phone = "";
+				message = "";
 			} else {
 				alert('Failed to send message. Please try again later.');
 				console.error(response.statusText);
