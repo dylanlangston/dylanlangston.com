@@ -31,21 +31,10 @@ Resources:
     Type: 'AWS::S3::Bucket'
     Properties:
       BucketName: !Ref AwsS3BucketName
+      AccessControl: PublicRead
       WebsiteConfiguration:
         IndexDocument: index.html
         ErrorDocument: 404.html
-
-  BucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: !Ref SiteBucket
-      PolicyDocument:
-        Statement:
-          - Sid: AllowPublicReadGetObject
-            Effect: Allow
-            Principal: "*"
-            Action: "s3:GetObject"
-            Resource: !Sub "arn:aws:s3:::${SiteBucket}/*"
 
   SiteDistribution:
     Type: 'AWS::CloudFront::Distribution'
