@@ -31,7 +31,6 @@ Resources:
     Type: 'AWS::S3::Bucket'
     Properties:
       BucketName: !Ref AwsS3BucketName
-      AccessControl: PublicRead
       WebsiteConfiguration:
         IndexDocument: index.html
         ErrorDocument: 404.html
