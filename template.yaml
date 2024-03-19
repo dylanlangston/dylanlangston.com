@@ -55,7 +55,7 @@ Resources:
                   - s3:GetObject
                   - ses:SendRawEmail
                 Resource: 
-                  - !Sub "arn:aws:s3:::${AwsS3BucketName}/*"
+                  - !Sub "arn:aws:s3:::${AwsS3BucketName}-mail/*"
                   - !Sub "arn:aws:ses:${AwsRegion}:${AwsAccountId}:identity/${FromEmail}"
                   - !Sub "arn:aws:ses:${AwsRegion}:${AwsAccountId}:identity/${ToEmail}"
 
@@ -101,7 +101,7 @@ Resources:
           - !Ref DomainName
         Actions:
           - S3Action:
-              BucketName: !Ref AwsS3BucketName
+              BucketName: !Sub "${AwsS3BucketName}-mail"
           - LambdaAction:
               FunctionArn: !GetAtt EmailForwarderFunction.Arn
 
