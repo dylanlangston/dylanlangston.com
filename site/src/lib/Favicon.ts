@@ -5,8 +5,8 @@ export class Favicon {
 	private faviconAnimation: number;
 	private darkModeSubscription: Unsubscriber;
 
-	private faviconSize = 64;
-	private faviconRadius = 40;
+	private faviconSize = 32;
+	private faviconRadius = 20;
 
 	private hue = Math.floor(Math.random() * 360);
 	private darkMode = false;
@@ -55,7 +55,7 @@ export class Favicon {
 
 	constructor(canvasElement: HTMLCanvasElement | OffscreenCanvas) {
 
-		const link: HTMLLinkElement | null = document.querySelector("link[rel~='icon']");
+		const icon: HTMLLinkElement | null = document.querySelector("link[rel~='icon']");
 		const faviconCanvas: HTMLCanvasElement = document.createElement('canvas');
 		faviconCanvas.style.background = "transparent";
 		faviconCanvas.width = this.faviconSize;
@@ -63,7 +63,6 @@ export class Favicon {
 		const faviconContext = faviconCanvas!.getContext('2d');
 
 		this.roundCorners(faviconContext!);
-
 
 		let lastFrame = performance.now();
 		let currentFrameCount = 0;
@@ -97,7 +96,7 @@ export class Favicon {
 			this.copyCanvas(faviconContext!, canvasElement);
 
 			// Set Favicon to canvas
-			link!.href = faviconCanvas.toDataURL('image/png');
+			icon!.href = faviconCanvas.toDataURL('image/png');
 
 			this.faviconAnimation = requestAnimationFrame(faviconUpdate);
 		};
