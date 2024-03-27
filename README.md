@@ -3,6 +3,15 @@
   <strong>The source code for my personal website. <u>🚧 Currently under construction. 🚧</u></strong>
 </p>
 
+<p align="center">
+  <a href="https://ziglang.org/download"><img alt="Zig" src="https://img.shields.io/badge/Zig-Master-fd9930.svg"></a>
+  <a href="https://www.raylib.com/"><img alt="Zig" src="https://img.shields.io/badge/raylib-Master-%23FFF.svg"></a>
+  <a href="https://github.com/dylanlangston/dylanlangston.com/actions/workflows/OnPush.yml"><img alt="GitHub Workflow CI/CD" src="https://img.shields.io/github/actions/workflow/status/dylanlangston/dylanlangston.com/OnPush.yml?label=CI%2FCD"></a>
+  <a href="https://github.com/dylanlangston/dylanlangston.com/blob/main/LICENSE"><img alt="GitHub License" src="https://img.shields.io/github/license/dylanlangston/dylanlangston.com?label=License"></a>
+  <a href="https://github.com/dylanlangston/dylanlangston.com/releases/latest"><img alt="Latest Build" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.github.com%2Frepos%2Fdylanlangston%2Fdylanlangston.com%2Freleases&query=%24%5B%3A1%5D.tag_name&label=Latest%20Build&color=%234c1"></a>
+  <a href="https://api.github.com/repos/dylanlangston/dylanlangston.com"><img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/dylanlangston/dylanlangston.com?label=Repo%20Size"></a>
+</p>
+
 ## Overview 👀
 
 My personal website is built with a modern tech stack to ensure performance and flexibility. It utilizes the following technologies:
@@ -110,9 +119,17 @@ flowchart LR
 
 ```
 
+### Dev Environment 💻
+This repository includes a *[devcontainer.json](.devcontainer/devcontainer.json)* to get up and running quickly with a full-featured development environment in the cloud![^local-development]
+
+[![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=flat&label=GitHub+Codespaces&message=Open&color=lightgrey&logo=github)](https://codespaces.new/dylanlangston/dylanlangston.com)
+[![Open in Dev Container](https://img.shields.io/static/v1?style=flat&label=Dev+Container&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/dylanlangston/dylanlangston.com)
+
 ## Credits 🙌
 
 The website design and development is the singular effort of [@dylanlangston](https://github.com/dylanlangston). Closed for contributions but feel free to fork or open an issue if you have a question!
 
 ## License 📜
 This tool is licensed under the [MIT License](https://opensource.org/licenses/MIT). See the [`LICENSE`](LICENSE) file for details.
+
+[^local-development]: For local development check out [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) and [DevPod](https://devpod.sh/).
