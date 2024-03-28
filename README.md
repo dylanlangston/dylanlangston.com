@@ -15,7 +15,7 @@
 ## Overview 👀
 
 My personal website is built with a modern tech stack to ensure performance and flexibility. It utilizes the following technologies:
-- [💻 Zig](https://ziglang.org/) and [🎮 raylib](https://www.raylib.com/) for client-side rendering.
+- [🇿 Zig](https://ziglang.org/) and [🎮 raylib](https://www.raylib.com/) for client-side rendering.
 - [🌐 Emscripten](https://emscripten.org/) for compiling to [🕸️ WebAssembly](https://webassembly.org/).
 - [🛠️ Binaryen](https://github.com/WebAssembly/binaryen) for optimizing WebAssembly.
 - [🦀 Rust](https://www.rust-lang.org/) for backend logic utilizing [🔢 AWS Lambda](https://aws.amazon.com/lambda/).
