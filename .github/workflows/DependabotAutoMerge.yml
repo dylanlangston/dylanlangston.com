@@ -46,39 +46,14 @@ jobs:
     steps:
       - name: Enable auto-merge for Dependabot PRs
         run: |
-          COMMAND='gh pr merge --auto --merge "$PR_URL"'
-          MAX_TRIES=5
-          INITIAL_SLEEP=5
-          MAX_SLEEP=30
-          TRIES=0
-
-          generate_sleep_time() {
-              local min_sleep=$1
-              local max_sleep=$2
-              echo $(( min_sleep + RANDOM % (max_sleep - min_sleep + 1) ))
-          }
-
-          while true; do
-              $COMMAND
-              if [ $? -eq 0 ]; then
-                  echo "Pull request merged successfully."
-                  break
-              else
-                  TRIES=$((TRIES+1))
-                  if [ $TRIES -eq $MAX_TRIES ]; then
-                      echo "Maximum number of tries reached. Giving up."
-                      exit 1
-                  else
-                      echo "Merge failed. Retrying..."
-                      sleep_time=$(generate_sleep_time $INITIAL_SLEEP $MAX_SLEEP)
-                      echo "Sleeping for $sleep_time seconds before retrying..."
-                      sleep $sleep_time
-                      INITIAL_SLEEP=$((INITIAL_SLEEP * 2))
-                      if [ $INITIAL_SLEEP -gt $MAX_SLEEP ]; then
-                          INITIAL_SLEEP=$MAX_SLEEP
-                      fi
-                  fi
-              fi
+          for i in $(seq 1 5); do
+            if gh pr merge --auto --merge "$PR_URL"; then
+              break
+            elif [ $? -eq 1 ]; then
+              sleep $(shuf -i 5-15 -n 1)
+            else
+              exit 1
+            fi
           done
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
