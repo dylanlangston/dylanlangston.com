@@ -514,9 +514,9 @@ checksum = "4271d37baee1b8c7e4b708028c57d816cf9d2434acb33a549475f78c181f6253"
 
 [[package]]
 name = "h2"
-version = "0.3.24"
+version = "0.3.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bb2c4422095b67ee78da96fbb51a4cc413b3b25883c7717ff7ca1ab31022c9c9"
+checksum = "81fe527a889e1532da5c525686d96d4c2e74cdd345badf8dfef9f6b39dd5f5e8"
 dependencies = [
  "bytes",
  "fnv",
@@ -793,7 +793,7 @@ dependencies = [
  "http-body 1.0.0",
  "http-body-util",
  "hyper 1.2.0",
- "lambda_runtime 0.11.1",
+ "lambda_runtime",
  "mime",
  "percent-encoding",
  "pin-project-lite",
@@ -820,7 +820,7 @@ dependencies = [
  "http-serde",
  "hyper 1.2.0",
  "hyper-util",
- "lambda_runtime_api_client 0.11.0",
+ "lambda_runtime_api_client",
  "pin-project",
  "serde",
  "serde_json",
@@ -830,55 +830,6 @@ dependencies = [
  "tower",
  "tower-layer",
  "tracing",
-]
-
-[[package]]
-name = "lambda_runtime"
-version = "0.11.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "276c835f2217fac810a97f2ed8eabfe9be71afe4f3ffd8671b05cb528e95ff8a"
-dependencies = [
- "async-stream",
- "base64 0.21.7",
- "bytes",
- "futures",
- "http 1.1.0",
- "http-body 1.0.0",
- "http-body-util",
- "http-serde",
- "hyper 1.2.0",
- "hyper-util",
- "lambda_runtime_api_client 0.11.0",
- "pin-project",
- "serde",
- "serde_json",
- "serde_path_to_error",
- "tokio",
- "tokio-stream",
- "tower",
- "tower-layer",
- "tracing",
-]
-
-[[package]]
-name = "lambda_runtime_api_client"
-version = "0.10.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1364cd67281721d2a9a4444ba555cf4d74a195e647061fa4ccac46e6f5c3b0ae"
-dependencies = [
- "bytes",
- "futures-channel",
- "futures-util",
- "http 1.1.0",
- "http-body 1.0.0",
- "http-body-util",
- "hyper 1.2.0",
- "hyper-util",
- "tokio",
- "tower",
- "tower-service",
- "tracing",
- "tracing-subscriber",
 ]
 
 [[package]]
@@ -1373,7 +1324,7 @@ version = "0.1.0"
 dependencies = [
  "env_logger",
  "lambda_http",
- "lambda_runtime 0.11.1",
+ "lambda_runtime",
  "log",
  "openssl",
  "regex",
