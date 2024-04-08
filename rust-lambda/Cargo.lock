@@ -833,34 +833,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "lambda_runtime"
-version = "0.11.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "276c835f2217fac810a97f2ed8eabfe9be71afe4f3ffd8671b05cb528e95ff8a"
-dependencies = [
- "async-stream",
- "base64 0.21.7",
- "bytes",
- "futures",
- "http 1.1.0",
- "http-body 1.0.0",
- "http-body-util",
- "http-serde",
- "hyper 1.2.0",
- "hyper-util",
- "lambda_runtime_api_client 0.11.0",
- "pin-project",
- "serde",
- "serde_json",
- "serde_path_to_error",
- "tokio",
- "tokio-stream",
- "tower",
- "tower-layer",
- "tracing",
-]
-
-[[package]]
 name = "lambda_runtime_api_client"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
