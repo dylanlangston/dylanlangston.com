@@ -4,7 +4,7 @@
 FROM bitnami/minideb:latest as base
 USER root
 
-ENV PATH="/root/.bun/bin/:/root/.zvm/self/:/root/.zvm/bin:/root/.cargo/bin:$PATH"
+ENV PATH="/root/.bun/bin/:/root/.zvm/self/:/root/.zvm/bin:/root/.cargo/bin:/root/.nvm/:$PATH"
 WORKDIR /root/dylanlangston.com
 
 # Copy only the files we absolutely need
