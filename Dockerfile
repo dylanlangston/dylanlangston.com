@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # Using Debian Latest
-FROM debian:stable-slim as base
+FROM bitnami/minideb:latest as base
 USER root
 
 ENV PATH="/root/.bun/bin/:/root/.zvm/self/:/root/.zvm/bin:/root/.cargo/bin:$PATH"
