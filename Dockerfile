@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1
+# syntax=docker/dockerfile:1.3.1
 
 # Using Minideb Latest
 FROM bitnami/minideb:latest as base
