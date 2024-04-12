@@ -6,7 +6,7 @@ USER root
 
 ENV NODE_VERSION 20
 
-ENV PATH="/root/.bun/bin/:/root/.zvm/self/:/root/.zvm/bin:/root/.cargo/bin:/root/.nvm/v$NODE_VERSION/bin:$PATH"
+ENV PATH="/root/.bun/bin/:/root/.zvm/self/:/root/.zvm/bin:/root/.cargo/bin:$PATH"
 WORKDIR /root/dylanlangston.com
 
 # Copy only the files we absolutely need
@@ -49,11 +49,10 @@ RUN curl --proto '=https' --tlsv1.3 -sSfL https://raw.githubusercontent.com/carg
 RUN $HOME/.cargo/bin/cargo binstall cargo-lambda -y
 
 # Install Node
-RUN curl -proto '=https' --tlsv1.3 -sSfL -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash \
-    && . /root/.nvm/nvm.sh \
-    && nvm install $NODE_VERSION \
-    && nvm alias default $NODE_VERSION \
-    && nvm use default
+RUN mkdir -p /etc/apt/keyrings; \
+    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg; \
+    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list; \
+    apt-get update && apt-get install -y nodejs npm;
 
 # Install Bun
 #curl --proto '=https' --tlsv1.3 -fsSL https://bun.sh/install | bash
