@@ -4,7 +4,9 @@
 FROM bitnami/minideb:latest as base
 USER root
 
-ENV PATH="/root/.bun/bin/:/root/.zvm/self/:/root/.zvm/bin:/root/.cargo/bin:/root/.nvm/:$PATH"
+ENV NODE_VERSION 20
+
+ENV PATH="/root/.bun/bin/:/root/.zvm/self/:/root/.zvm/bin:/root/.cargo/bin:/root/.nvm/v$NODE_VERSION/bin:$PATH"
 WORKDIR /root/dylanlangston.com
 
 # Copy only the files we absolutely need
@@ -47,7 +49,6 @@ RUN curl --proto '=https' --tlsv1.3 -sSfL https://raw.githubusercontent.com/carg
 RUN $HOME/.cargo/bin/cargo binstall cargo-lambda -y
 
 # Install Node
-ENV NODE_VERSION 20
 RUN curl -proto '=https' --tlsv1.3 -sSfL -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash \
     && . /root/.nvm/nvm.sh \
     && nvm install $NODE_VERSION \
