@@ -23,7 +23,7 @@ RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
     --mount=target=/var/cache/apt,type=cache,sharing=locked \
     rm -f /etc/apt/apt.conf.d/docker-clean \
     && apt-get update  \
-    && apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git python3 build-essential pkg-config
+    && apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git python3 build-essential pkg-config gpg
 
 # Install ZVM - https://github.com/tristanisham/zvm
 RUN curl --proto '=https' --tlsv1.3 -sSfL https://raw.githubusercontent.com/tristanisham/zvm/master/install.sh | bash
