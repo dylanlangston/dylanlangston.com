@@ -47,8 +47,12 @@ RUN curl --proto '=https' --tlsv1.3 -sSfL https://raw.githubusercontent.com/carg
 RUN $HOME/.cargo/bin/cargo binstall cargo-lambda -y
 
 # Install Node
-RUN curl -proto '=https' --tlsv1.3 -sSfL -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-RUN nvm install 20
+ENV NODE_VERSION 20
+RUN curl -proto '=https' --tlsv1.3 -sSfL -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash \
+    && . /root/.nvm/nvm.sh \
+    && nvm install $NODE_VERSION \
+    && nvm alias default $NODE_VERSION \
+    && nvm use default
 
 # Install Bun
 #curl --proto '=https' --tlsv1.3 -fsSL https://bun.sh/install | bash
