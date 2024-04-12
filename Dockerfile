@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
-# Using Debian Latest
-FROM debian:stable-slim as base
+# Using Minideb Latest
+FROM bitnami/minideb:latest as base
 USER root
 
 ENV NODE_VERSION 20
@@ -49,7 +49,9 @@ RUN curl --proto '=https' --tlsv1.3 -sSfL https://raw.githubusercontent.com/carg
 RUN $HOME/.cargo/bin/cargo binstall cargo-lambda -y
 
 # Install Node
-RUN apt-get -y install --no-install-recommends nodejs npm
+RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
+    --mount=target=/var/cache/apt,type=cache,sharing=locked \
+    apt-get -y install --no-install-recommends nodejs npm
 
 # Install Bun
 #curl --proto '=https' --tlsv1.3 -fsSL https://bun.sh/install | bash
@@ -58,7 +60,9 @@ RUN apt-get -y install --no-install-recommends nodejs npm
 RUN make clean-cache setup USE_NODE=1
 
 # Cleanup
-RUN apt-get clean && rm -rf /var/cache/apt/* && rm -rf /var/lib/apt/lists/* && rm -rf /tmp/*
+RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
+    --mount=target=/var/cache/apt,type=cache,sharing=locked \
+    apt-get clean && rm -rf /var/cache/apt/* && rm -rf /var/lib/apt/lists/* && rm -rf /tmp/*
 
 RUN echo "Base Docker Image Build"
 
