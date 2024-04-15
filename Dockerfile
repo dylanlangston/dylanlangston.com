@@ -21,13 +21,7 @@ COPY ./rust-lambda/Cargo.toml /root/dylanlangston.com/rust-lambda/Cargo.toml
 COPY ./rust-lambda/Cargo.lock /root/dylanlangston.com/rust-lambda/Cargo.lock
 COPY ./Makefile /root/dylanlangston.com/Makefile
 
-RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
-    --mount=target=/var/cache/apt,type=cache,sharing=locked \
-    apt-get update
-
-RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
-    --mount=target=/var/cache/apt,type=cache,sharing=locked \
-    apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git python3 build-essential pkg-config
+RUN apt-get update && apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git python3 build-essential pkg-config
 
 # Install ZVM - https://github.com/tristanisham/zvm
 RUN curl --proto '=https' --tlsv1.3 -sSfL https://raw.githubusercontent.com/tristanisham/zvm/master/install.sh | bash
@@ -53,9 +47,7 @@ RUN curl --proto '=https' --tlsv1.3 -sSfL https://raw.githubusercontent.com/carg
 RUN $HOME/.cargo/bin/cargo binstall cargo-lambda -y
 
 # Install Node
-RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
-    --mount=target=/var/cache/apt,type=cache,sharing=locked \
-    apt-get -y install --no-install-recommends nodejs npm
+RUN apt-get -y install --no-install-recommends nodejs npm
 
 # Install Bun
 #curl --proto '=https' --tlsv1.3 -fsSL https://bun.sh/install | bash
@@ -64,9 +56,7 @@ RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
 RUN make clean-cache setup USE_NODE=1
 
 # Cleanup
-RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
-    --mount=target=/var/cache/apt,type=cache,sharing=locked \
-    rm -rf /var/lib/apt/lists/* && rm -rf /tmp/*
+RUN apt-get clean && rm -rf /var/cache/apt/* && rm -rf /var/lib/apt/lists/* && rm -rf /tmp/*
 
 RUN echo "Base Docker Image Build"
 
