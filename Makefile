@@ -146,7 +146,7 @@ release-docker:  ## Builds Web Version for publish using docker.
 	@docker buildx build --rm --network host -t dylanlangston.com . --target publish --output type=local,dest=./ --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE) --build-arg PRECOMPRESS_RELEASE=$(PRECOMPRESS_RELEASE)
 
 test-docker:  ## clean, setup, and test using docker.
-	@docker buildx build --rm --network host --allow=network.host -t dylanlangston.com . --target test --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE)
+	@docker buildx build --rm --network host -t dylanlangston.com . --target test --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE)
 
 run-site: build-web ## Run Website
 ifeq ($(USE_NODE),1)
