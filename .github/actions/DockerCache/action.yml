@@ -22,9 +22,9 @@ runs:
         load: true
         cache-from: type=gha
         cache-to: type=gha,mode=min
-    - name: Prune dangling build cache
-      shell: sh
-      run: docker buildx prune -f
+    # - name: Prune dangling build cache
+    #   shell: sh
+    #   run: docker buildx prune -f
 branding:
   icon: 'layers'
   color: 'green'
