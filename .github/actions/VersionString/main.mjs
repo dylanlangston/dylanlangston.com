@@ -2,8 +2,10 @@ import { js_common } from '../js_common.mjs';
 
 function parseDate(input) {
     let date;
-    if (!isNaN(input)) {
-        date = new Date(parseInt(input));
+    if (!input) {
+        date = new Date();
+    } else if (!isNaN(input)) {
+        date = new Date(parseInt(input) * 1000);
     } else {
         date = new Date(input);
     }
