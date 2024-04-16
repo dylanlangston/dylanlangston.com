@@ -8,8 +8,7 @@ on:
     inputs:
       startTimestamp:
         description: 'Start Timestamp (unix)'
-        required: true
-        default: "${{ github.event.before }}"
+        required: false
         type: number
 
 permissions:
