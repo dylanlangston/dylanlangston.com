@@ -1,7 +1,24 @@
 import { js_common } from '../js_common.mjs';
 
+function parseDate(dateString) {
+    if (!dateString) {
+        return null;
+    }
+    
+    if (!isNaN(dateString)) {
+        return new Date(parseInt(dateString));
+    }
+    
+    const isoRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,3})?Z?$/;
+    if (isoRegex.test(dateString)) {
+        return new Date(dateString);
+    }
+    
+    return null;
+}
+
 const time = process.env.INPUT_TIME;
-const date = new Date(time);
+const date = parseDate(time);
 
 function pad(value) {
     return new String(value).padStart(2, "0")
