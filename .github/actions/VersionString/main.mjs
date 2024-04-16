@@ -1,20 +1,13 @@
 import { js_common } from '../js_common.mjs';
 
-function parseDate(dateString) {
-    if (!dateString) {
-        return null;
+function parseDate(input) {
+    let date;
+    if (!isNaN(input)) {
+        date = new Date(parseInt(input));
+    } else {
+        date = new Date(input);
     }
-    
-    if (!isNaN(dateString)) {
-        return new Date(parseInt(dateString));
-    }
-    
-    const isoRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,3})?Z?$/;
-    if (isoRegex.test(dateString)) {
-        return new Date(dateString);
-    }
-    
-    return null;
+    return date;
 }
 
 const time = process.env.INPUT_TIME;
