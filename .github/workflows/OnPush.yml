@@ -6,11 +6,11 @@ on:
     
   workflow_dispatch:
     inputs:
-      startTime:
-        description: 'Start Time'
-        required: false
-        default: ''
-        type: string
+      startTimestamp:
+        description: 'Start Timestamp (unix)'
+        required: true
+        default: ${{ github.event.before }}
+        type: number
 
 permissions:
   packages: read
