@@ -39,7 +39,7 @@ jobs:
         uses: dylanlangston/dylanlangston.com/.github/actions/VersionString@main
         id: get_version
         with:
-          time: ${{ inputs.startTime || github.event.head_commit.timestamp }}
+          time: ${{ inputs.startTimestamp || github.event.head_commit.timestamp }}
   TestAndBuild:
     name: "Step 1️⃣"
     if: ${{ success() || needs.Test.result == 'skipped' }}
