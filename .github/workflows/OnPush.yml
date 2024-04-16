@@ -5,6 +5,12 @@ on:
     branches: ["main"]
     
   workflow_dispatch:
+    inputs:
+      startTime:
+        description: 'Start Time'
+        required: false
+        default: ''
+        type: string
 
 permissions:
   packages: read
@@ -34,7 +40,7 @@ jobs:
         uses: dylanlangston/dylanlangston.com/.github/actions/VersionString@main
         id: get_version
         with:
-          time: ${{ github.event.head_commit.timestamp }}
+          time: ${{ github.event.workflow_dispatch.inputs.startTime || github.event.head_commit.timestamp }}
   TestAndBuild:
     name: "Step 1️⃣"
     if: ${{ success() || needs.Test.result == 'skipped' }}
