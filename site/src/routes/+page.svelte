@@ -21,6 +21,8 @@
 	});
 
 	async function getGitHubProfilePicture(username: string): Promise<string> {
+		if (Environment.githubProfilePicture) return Environment.githubProfilePicture;
+
 		const response = await fetch(`https://api.github.com/users/${username}`, {
 			cache: 'default'
 		});
@@ -28,7 +30,11 @@
 			throw new Error(`Failed to fetch GitHub profile: ${response.statusText}`);
 		}
 		const userData = await response.json();
-		return userData.avatar_url;
+		const profilePictureURL = userData.avatar_url;
+		const profilePicture = await fetch(profilePictureURL);
+		Environment.githubProfilePicture = globalThis.URL.createObjectURL(await profilePicture.blob());
+
+		return Environment.githubProfilePicture!;
 	}
 
 	let profilePicture = getGitHubProfilePicture('dylanlangston');
@@ -55,6 +61,7 @@
 									disabled={!shouldAnimateTitle}
 									delay={2000}
 									phrase={"I'm Dylan Langston"}
+									stopBlinking={false}
 								/></span
 							>
 						</h1>

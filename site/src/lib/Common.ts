@@ -181,6 +181,9 @@ export class Environment {
     };
 
     public static firstLoadMainPage: boolean = true;
+
+    public static githubProfilePicture: string | undefined = undefined;
+
 }
 
 export function sleep(ms: number): Promise<void> {

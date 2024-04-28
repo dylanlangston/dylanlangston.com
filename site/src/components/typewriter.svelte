@@ -8,6 +8,7 @@
 	export let delay: number = 0;
 	export let rate: number = 150;
 	export let disabled: boolean = false;
+	export let stopBlinking: boolean = true;
 	let typedChar = '';
 	let index = 0;
 	let typewriter: number;
@@ -32,7 +33,27 @@
 </script>
 
 {#if !$accessibilityRequested && !disabled}
-	{typedChar}
+	{typedChar} 
+	{#if index > 0 && (index < phrase.length || !stopBlinking)}
+		<span class="blink">|</span>
+	{/if}
 {:else}
 	{phrase}
+	{#if !stopBlinking}
+		<span class="blink">|</span>
+	{/if}
 {/if}
+
+<style>
+	.blink {
+		animation: blinking-cursor 300ms infinite alternate;
+	}
+	@keyframes blinking-cursor {
+		0%, 50% {
+			opacity: 0;
+		}
+		51%, 100% {
+			opacity: 1;
+		}
+	}
+</style>
