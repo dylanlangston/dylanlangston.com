@@ -159,7 +159,7 @@
 					display: none;
 				}
 			</style>
-			<main class="flex-1">
+			<main class="absolute flex top-0 bottom-0 left-0 right-0 items-center justify-center pointer-events-none">
 				<StatusContainer>
 					<svelte:fragment slot="status-slot">
 						<h1>This site requires JavaScript.<br />Please enable to continue.</h1>

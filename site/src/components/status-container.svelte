@@ -8,7 +8,6 @@
 <div
 	in:fade={{ delay: 250, duration: 300 }}
 	out:fade
-	class="absolute flex top-0 bottom-0 left-0 right-0 items-center justify-center pointer-events-none -z-50"
 >
 	<Panel>
 		<svelte:fragment>
