@@ -1,5 +1,6 @@
 const std = @import("std");
 const builtin = @import("builtin");
+const raylib_build = @import("raylib");
 
 const raylibStandardOptions = .{
     .raudio = true,
@@ -249,9 +250,7 @@ pub fn get_configured_raylib(
     target: std.Build.ResolvedTarget,
     optimize: std.builtin.OptimizeMode,
 ) *std.Build.Step.Compile {
-    const raylib = b.dependency("raylib", .{
-        .target = target,
-        .optimize = optimize,
+    const raylib = try raylib_build.addRaylib(b, target, optimize, .{
         .raudio = raylibStandardOptions.raudio,
         .rmodels = raylibStandardOptions.rmodels,
         .rshapes = raylibStandardOptions.rshapes,
@@ -262,7 +261,7 @@ pub fn get_configured_raylib(
         .shared = raylibStandardOptions.shared,
     });
 
-    const raylib_artifact = raylib.artifact("raylib");
-    define_macros(&raylib_artifact.root_module);
-    return raylib_artifact;
+    define_macros(&raylib.root_module);
+
+    return raylib;
 }

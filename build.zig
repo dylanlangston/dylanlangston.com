@@ -86,8 +86,6 @@ fn configure(b: *std.Build, t: std.Build.ResolvedTarget, o: std.builtin.Optimize
         c,
     );
 
-    c.addIncludePath(.{ .path = "raylib/src" });
-    c.addIncludePath(.{ .path = "raygui/src" });
     c.addIncludePath(.{ .path = "./emsdk/upstream/emscripten/cache/sysroot/include/" });
 
     c.linkLibrary(raylib_artifact);
@@ -182,7 +180,7 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
         "-sUSE_GLFW=3",
         // "-sFULL_ES3=1",
         "-sEXIT_RUNTIME=1",
-        "-sFILESYSTEM=0",
+        if (debugging_wasm) "-sFILESYSTEM=1" else "-sFILESYSTEM=0",
         //"-sBUILD_AS_WORKER=1",
         "-sABORT_ON_WASM_EXCEPTIONS=0",
         //"-sASYNCIFY",

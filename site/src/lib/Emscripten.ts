@@ -31,34 +31,29 @@ interface ICustomEmscriptenModule {
 
 	locateFile(url: string, scriptDirectory: string): string;
 
-	instantiateWasm(
+	instantiateWasm?(
 		imports: WebAssembly.Imports,
 		successCallback: (module: WebAssembly.Instance) => void
 	): WebAssembly.Exports;
 }
 
 class CustomEmscriptenModule implements ICustomEmscriptenModule {
-	public instantiateWasm(
+	public instantiateWasm = Environment.Dev ? undefined : (
 		imports: WebAssembly.Imports,
 		successCallback: (module: WebAssembly.Instance) => void
-	): WebAssembly.Exports {
-		fetch((<EmscriptenModule>(<any>this)).wasmBinaryFile(), { credentials: 'same-origin', cache: 'default' }).then((response) => {
+	): WebAssembly.Exports => {
+		fetch('/dylanlangston.com.wasm', { credentials: 'same-origin', cache: 'default' }).then((response) => {
+			// Override CWD
+			imports.env.__syscall_getcwd = (buf: any, size: any) => {
+				return -28;
+			};
+
 			var result = WebAssembly.instantiateStreaming(response, imports);
 			var clonedResponsePromise = response.clone().arrayBuffer();
 
-			// Override CWD
-			imports.env.__syscall_getcwd = (buf: any, size: any) => {
-				return "/";
-			};
-
 			return result.then((instantiationResult) => {
-				const module: EmscriptenModule = <any>this;
 
 				clonedResponsePromise.then((arrayBufferResult) => {
-					if (module.WasmOffsetConverter) {
-						module.setWasmOffsetConverter = new module.WasmOffsetConverter(new Uint8Array(arrayBufferResult), instantiationResult.module);
-						module.loadSymbols();
-					}
 					successCallback(instantiationResult.instance);
 				}, (err) => this.printErr(`failed to initialize offset-converter: ${err}`));
 			}, (err) => this.printErr(`wasm streaming compile failed: ${err}`));
@@ -82,7 +77,7 @@ class CustomEmscriptenModule implements ICustomEmscriptenModule {
 	public onRuntimeInitialized(): void {
 	}
 
-	public locateFile(url: string, scriptDirectory: string): string {
+	public locateFile = (url: string, scriptDirectory: string): string => {
 		if (Environment.Dev) {
 			return "/" + url;
 		}
@@ -92,19 +87,18 @@ class CustomEmscriptenModule implements ICustomEmscriptenModule {
 		return file;
 	}
 
-	public print(t: string): void {
+	public print = (t: string): void => {
 		globalThis.console.log(t);
 	}
 
-	public printErr(text: string): void {
-		text = Array.prototype.slice.call(arguments).join(' ');
+	public printErr = (text: string): void => {
 		globalThis.console.error(text);
 	}
 
 	public get statusMessage(): string {
 		return get(CustomEmscriptenModule.statusMessage);
 	}
-	public setStatus(e: string): void {
+	public setStatus = (e: string): void => {
 		CustomEmscriptenModule.setStatus(e);
 	}
 
@@ -112,7 +106,7 @@ class CustomEmscriptenModule implements ICustomEmscriptenModule {
 	public static setStatus(e: string): void {
 		if (e == '') return;
 		CustomEmscriptenModule.statusMessage.set(e);
-		
+
 		console.log(e);
 	}
 }
