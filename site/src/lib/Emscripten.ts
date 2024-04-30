@@ -31,36 +31,14 @@ interface ICustomEmscriptenModule {
 
 	locateFile(url: string, scriptDirectory: string): string;
 
-	instantiateWasm?(
+	instantiateWasm: ((
 		imports: WebAssembly.Imports,
 		successCallback: (module: WebAssembly.Instance) => void
-	): WebAssembly.Exports;
+	) => WebAssembly.Exports) | undefined;
 }
 
 class CustomEmscriptenModule implements ICustomEmscriptenModule {
-	public instantiateWasm = Environment.Dev ? undefined : (
-		imports: WebAssembly.Imports,
-		successCallback: (module: WebAssembly.Instance) => void
-	): WebAssembly.Exports => {
-		fetch('/dylanlangston.com.wasm', { credentials: 'same-origin', cache: 'default' }).then((response) => {
-			// Override CWD
-			imports.env.__syscall_getcwd = (buf: any, size: any) => {
-				return -28;
-			};
-
-			var result = WebAssembly.instantiateStreaming(response, imports);
-			var clonedResponsePromise = response.clone().arrayBuffer();
-
-			return result.then((instantiationResult) => {
-
-				clonedResponsePromise.then((arrayBufferResult) => {
-					successCallback(instantiationResult.instance);
-				}, (err) => this.printErr(`failed to initialize offset-converter: ${err}`));
-			}, (err) => this.printErr(`wasm streaming compile failed: ${err}`));
-		});
-
-		return {};
-	}
+	public instantiateWasm = undefined;
 
 	requestFullscreen?: (lockPointer: boolean, resizeCanvas: boolean) => void;
 

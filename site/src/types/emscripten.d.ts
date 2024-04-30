@@ -40,10 +40,10 @@ interface EmscriptenModule {
 
 	destroy(object: object): void;
 	getPreloadedPackage(remotePackageName: string, remotePackageSize: number): ArrayBuffer;
-	instantiateWasm(
+	instantiateWasm: ((
 		imports: WebAssembly.Imports,
 		successCallback: (module: WebAssembly.Instance) => void
-	): WebAssembly.Exports;
+	) => WebAssembly.Exports) | undefined;
 	locateFile(url: string, scriptDirectory: string): string;
 	onCustomMessage(event: MessageEvent): void;
 
