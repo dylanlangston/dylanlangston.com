@@ -180,7 +180,7 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
         "-sUSE_GLFW=3",
         // "-sFULL_ES3=1",
         "-sEXIT_RUNTIME=1",
-        "-sFILESYSTEM=1",
+        "-sFILESYSTEM=0",
         //"-sBUILD_AS_WORKER=1",
         "-sABORT_ON_WASM_EXCEPTIONS=0",
         //"-sASYNCIFY",

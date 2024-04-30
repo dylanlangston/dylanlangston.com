@@ -40,10 +40,10 @@ interface EmscriptenModule {
 
 	destroy(object: object): void;
 	getPreloadedPackage(remotePackageName: string, remotePackageSize: number): ArrayBuffer;
-	instantiateWasm: ((
+	instantiateWasm: (
 		imports: WebAssembly.Imports,
 		successCallback: (module: WebAssembly.Instance) => void
-	) => WebAssembly.Exports) | undefined;
+	) => WebAssembly.Exports;
 	locateFile(url: string, scriptDirectory: string): string;
 	onCustomMessage(event: MessageEvent): void;
 
@@ -83,7 +83,7 @@ interface EmscriptenModule {
 	_free(ptr: number): void;
 
 	WasmOffsetConverter?: WasmOffsetConverter;
-	setWasmOffsetConverter: (wasmOffsetConverter: WasmOffsetConverter) => void;
+	instantiateAsync: (imports: WebAssembly.Imports, successCallback: (module: WebAssembly.Instance) => void) => Promise<void>;
 	loadSymbols: () => void;
 
 	abort: (msg: string) => void;
