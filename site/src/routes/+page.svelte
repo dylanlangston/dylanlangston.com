@@ -59,7 +59,7 @@
 							<span class="italic text-xl md:text-3xl lg:text-5xl"
 								><Typewriter
 									disabled={!shouldAnimateTitle}
-									delay={2000}
+									delay={1200}
 									phrase={"I'm Dylan Langston"}
 									stopBlinking={false}
 								/></span

@@ -6,7 +6,7 @@
 
 	export let phrase: string;
 	export let delay: number = 0;
-	export let rate: number = 150;
+	export let rate: number = 100;
 	export let disabled: boolean = false;
 	export let stopBlinking: boolean = true;
 	let typedChar = '';
@@ -33,27 +33,24 @@
 </script>
 
 {#if !$accessibilityRequested && !disabled}
-	{typedChar} 
-	{#if index > 0 && (index < phrase.length || !stopBlinking)}
-		<span class:blink={index == phrase.length}>|</span>
-	{/if}
+	{typedChar}{#if index > 0 && (index < phrase.length || !stopBlinking)}<span class="cursor" class:blink={index == phrase.length} aria-hidden="true">|</span>{/if}
 {:else}
-	{phrase}
-	{#if !stopBlinking}
-		<span class="blink">|</span>
-	{/if}
+	{phrase}{#if !stopBlinking}<span class="cursor blink" aria-hidden="true">|</span>{/if}
 {/if}
 
 <style>
+	.cursor {
+		display: inline-flex;
+		font-weight: 400;
+		@apply not-italic;
+	}
 	.blink {
-		animation: blinking-cursor 300ms infinite alternate;
+		animation: blinking-cursor 0.7s infinite;
+		opacity: 1;
 	}
 	@keyframes blinking-cursor {
-		0%, 50% {
+		50% {
 			opacity: 0;
-		}
-		51%, 100% {
-			opacity: 1;
 		}
 	}
 </style>
