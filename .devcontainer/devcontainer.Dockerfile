@@ -45,7 +45,7 @@ RUN $HOME/.zvm/self/zvm i master
 RUN $HOME/.zvm/self/zvm i -D=zls master
 
 # Install rust
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
+RUN curl --proto '=https' --tlsv1.3 -sSf https://sh.rustup.rs | bash -s -- -y
 RUN $HOME/.cargo/bin/rustup target add aarch64-unknown-linux-gnu
 
 # Install Cargo B(inary)Install
