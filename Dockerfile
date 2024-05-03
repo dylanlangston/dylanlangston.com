@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.3.1
 
 # Using Minideb Latest
-FROM bitnami/minideb:latest as base
+FROM debian:stable-slim as base
 USER root
 
 RUN rm -f /etc/apt/apt.conf.d/docker-clean
@@ -21,7 +21,7 @@ COPY ./rust-lambda/Cargo.toml /root/dylanlangston.com/rust-lambda/Cargo.toml
 COPY ./rust-lambda/Cargo.lock /root/dylanlangston.com/rust-lambda/Cargo.lock
 COPY ./Makefile /root/dylanlangston.com/Makefile
 
-RUN apt-get update && apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git python3 build-essential pkg-config
+RUN apt-get update && apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git python3 build-essential pkg-config netcat-traditional
 
 # Install ZVM - https://github.com/tristanisham/zvm
 RUN curl --proto '=https' --tlsv1.3 -sSfL https://raw.githubusercontent.com/tristanisham/zvm/master/install.sh | bash
@@ -53,10 +53,10 @@ RUN apt-get -y install --no-install-recommends nodejs npm
 #curl --proto '=https' --tlsv1.3 -fsSL https://bun.sh/install | bash
 
 # Setup
-RUN make clean-cache setup USE_NODE=1
+RUN make setup USE_NODE=1
 
 # Cleanup
-RUN apt-get clean && rm -rf /var/cache/apt/* && rm -rf /var/lib/apt/lists/* && rm -rf /tmp/*
+RUN make clean-cache && apt-get clean && rm -rf /var/cache/apt/* && rm -rf /var/lib/apt/lists/* && rm -rf /tmp/*
 
 RUN echo "Base Docker Image Build"
 

@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/devcontainers/base:debian as base
 
 # Install General Dependencies
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-     && apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git python3 glslang-tools nodejs npm awscli pkg-config
+     && apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git python3 glslang-tools nodejs npm awscli pkg-config netcat-traditional
 
 # Install Docker
 RUN install -m 0755 -d /etc/apt/keyrings \
