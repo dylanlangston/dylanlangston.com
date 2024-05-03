@@ -140,6 +140,7 @@ Resources:
       Handler: rust.handler
       Runtime: provided.al2023
       Role: !GetAtt ContactRole.Arn
+      FunctionName: ContactMe
       Architectures:
         - arm64
       Environment:
