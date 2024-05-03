@@ -166,5 +166,6 @@ build-rust-lambda: ## Build the Contact API Lambda
 
 test-rust-lambda: ## Test the Contact API Lambda
 	@cd ./rust-lambda; cargo test
-	@cd ./rust-lambda; cargo lambda watch -w & timeout 30 bash -c 'while ! nc -z localhost 9000; do sleep 1; done';
+	@cd ./rust-lambda; cargo lambda watch -w &
+	@timeout 30 bash -c 'while ! nc -z localhost 9000; do sleep 1; done' || (pkill cargo-lambda && exit 1);
 	@cd ./rust-lambda; cargo lambda invoke "contact" --data-file ./TestData.json; pkill cargo-lambda
