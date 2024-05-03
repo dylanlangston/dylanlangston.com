@@ -14,6 +14,9 @@ RUN install -m 0755 -d /etc/apt/keyrings \
      tee /etc/apt/sources.list.d/docker.list > /dev/null \
      && apt-get update && apt-get -y install --no-install-recommends docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
+# Allow vscode user to run docker commands without sudo
+RUN usermod -aG docker vscode
+
 # Install AWS SAM CLI
 RUN curl -L "https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip" -o sam.zip
 RUN unzip sam.zip -d ./sam
