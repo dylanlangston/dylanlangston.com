@@ -35,7 +35,7 @@
 {#if !$accessibilityRequested && !disabled}
 	{typedChar} 
 	{#if index > 0 && (index < phrase.length || !stopBlinking)}
-		<span class="blink">|</span>
+		<span class:blink={index == phrase.length}>|</span>
 	{/if}
 {:else}
 	{phrase}
