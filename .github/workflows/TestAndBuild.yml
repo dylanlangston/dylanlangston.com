@@ -74,6 +74,7 @@ jobs:
         if: ${{ success() || (steps.upload_email_lambda.conclusion == 'success') }}
         id: build_debug
         run: |
+          rm -rf ./rust-lambda/target
           mv ./site/build/ ${TMPDIR:-/tmp}/site-release
           make clean release-docker VERSION=${{ inputs.version }}
           mv ${TMPDIR:-/tmp}/site-release/ ./site/build/release
