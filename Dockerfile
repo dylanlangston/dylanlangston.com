@@ -4,10 +4,6 @@
 FROM debian:stable-slim as base
 USER root
 
-RUN rm -f /etc/apt/apt.conf.d/docker-clean
-
-ENV NODE_VERSION 20
-
 ENV PATH="/root/.bun/bin/:/root/.zvm/self/:/root/.zvm/bin:/root/.cargo/bin:$PATH"
 WORKDIR /root/dylanlangston.com
 

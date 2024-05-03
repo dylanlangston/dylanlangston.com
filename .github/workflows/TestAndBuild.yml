@@ -48,7 +48,10 @@ jobs:
       - name: Build Release using Docker
         if: ${{ success() || (steps.test.conclusion == 'skipped' && steps.cache.conclusion == 'success') }}
         id: build
-        run: make release-docker VERSION=${{ inputs.version }} OPTIMIZE='ReleaseFast' PRECOMPRESS_RELEASE=1
+        run: |
+          ls -lR ./
+          echo $(ls -lR ./ | sha1sum)
+          make release-docker VERSION=${{ inputs.version }} OPTIMIZE='ReleaseFast' PRECOMPRESS_RELEASE=1
       - name: Upload Release artifact
         if: ${{ success() || steps.build.conclusion == 'success' }}
         id: upload
@@ -76,6 +79,8 @@ jobs:
         run: |
           rm -rf ./rust-lambda/target
           mv ./site/build/ ${TMPDIR:-/tmp}/site-release
+          ls -lR ./
+          echo $(ls -lR ./ | sha1sum)
           make clean release-docker VERSION=${{ inputs.version }}
           mv ${TMPDIR:-/tmp}/site-release/ ./site/build/release
       - name: Upload GitGub Pages artifact
