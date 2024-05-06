@@ -51,6 +51,8 @@ RUN apt-get -y install --no-install-recommends nodejs npm
 # Setup
 RUN make setup USE_NODE=1
 
+RUN make setup-emscripten
+
 # Cleanup
 RUN make clean-cache && apt-get clean && rm -rf /var/cache/apt/* && rm -rf /var/lib/apt/lists/* && rm -rf /tmp/*
 
