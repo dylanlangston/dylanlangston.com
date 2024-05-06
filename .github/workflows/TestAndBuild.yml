@@ -44,11 +44,17 @@ jobs:
       - name: Test using Docker
         if: ${{ inputs.should-test }}
         id: test
-        run: make test-docker VERSION=${{ inputs.version }}
+        run: |
+          ls -lR ./
+          echo $(ls -lR ./ | sha1sum)
+          make test-docker VERSION=${{ inputs.version }}
       - name: Build Release using Docker
         if: ${{ success() || (steps.test.conclusion == 'skipped' && steps.cache.conclusion == 'success') }}
         id: build
-        run: make release-docker VERSION=${{ inputs.version }} OPTIMIZE='ReleaseFast' PRECOMPRESS_RELEASE=1 OUTPUT_DIR='${{ runner.temp }}/release'
+        run: |
+          ls -lR ./
+          echo $(ls -lR ./ | sha1sum)
+          make release-docker VERSION=${{ inputs.version }} OPTIMIZE='ReleaseFast' PRECOMPRESS_RELEASE=1 OUTPUT_DIR='${{ runner.temp }}/release'
       - name: Upload Release artifact
         if: ${{ success() || steps.build.conclusion == 'success' }}
         id: upload
@@ -81,4 +87,4 @@ jobs:
         id: upload-compressed
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '${{ runner.temp }}debug/site/build'
+          path: '${{ runner.temp }}/debug/site/build'
