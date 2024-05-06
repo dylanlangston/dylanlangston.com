@@ -48,37 +48,37 @@ jobs:
       - name: Build Release using Docker
         if: ${{ success() || (steps.test.conclusion == 'skipped' && steps.cache.conclusion == 'success') }}
         id: build
-        run: make release-docker VERSION=${{ inputs.version }} OPTIMIZE='ReleaseFast' PRECOMPRESS_RELEASE=1 OUTPUT_DIR='/tmp/'
+        run: make release-docker VERSION=${{ inputs.version }} OPTIMIZE='ReleaseFast' PRECOMPRESS_RELEASE=1 OUTPUT_DIR='${{ runner.temp }}'
       - name: Upload Release artifact
         if: ${{ success() || steps.build.conclusion == 'success' }}
         id: upload
         uses: actions/upload-artifact@v4
         with:
           name: dylanlangston.com-v${{ inputs.version }}
-          path: '/tmp/site/build'
+          path: '${{ runner.temp }}/site/build'
       - name: Upload Contact Lambda artifact
         if: ${{ success() || steps.upload.conclusion == 'success' }}
         id: upload_contact_lambda
         uses: actions/upload-artifact@v4
         with:
           name: dylanlangston.com-contact-v${{ inputs.version }}
-          path: '/tmp/rust-lambda/target/contact/'
+          path: '${{ runner.temp }}/rust-lambda/target/contact/'
       - name: Upload Email Forward Lambda artifact
         if: ${{ success() || steps.upload_contact_lambda.conclusion == 'success' }}
         id: upload_email_lambda
         uses: actions/upload-artifact@v4
         with:
           name: dylanlangston.com-email-v${{ inputs.version }}
-          path: '/tmp/rust-lambda/target/email-forward/'
+          path: '${{ runner.temp }}/rust-lambda/target/email-forward/'
       - name: Build Debug using Docker
         if: ${{ success() || (steps.upload_email_lambda.conclusion == 'success') }}
         id: build_debug
         run: |
-          mv /tmp/site/build/ /tmp/site/build/release
-          make clean release-docker VERSION=${{ inputs.version }} OUTPUT_DIR='/tmp/'
+          mv ${{ runner.temp }}/site/build/ ${{ runner.temp }}/site/build/release
+          make clean release-docker VERSION=${{ inputs.version }} OUTPUT_DIR='${{ runner.temp }}'
       - name: Upload GitGub Pages artifact
         if: ${{ success() || steps.build_debug.conclusion == 'success' }}
         id: upload-compressed
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '/tmp/site/build'
+          path: '${{ runner.temp }}/site/build'
