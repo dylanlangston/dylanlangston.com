@@ -45,15 +45,11 @@ jobs:
         if: ${{ inputs.should-test }}
         id: test
         run: |
-          ls -lR ./
-          echo $(ls -lR ./ | sha1sum)
           make test-docker VERSION=${{ inputs.version }}
       - name: Build Release using Docker
         if: ${{ success() || (steps.test.conclusion == 'skipped' && steps.cache.conclusion == 'success') }}
         id: build
         run: |
-          ls -lR ./
-          echo $(ls -lR ./ | sha1sum)
           make release-docker VERSION=${{ inputs.version }} OPTIMIZE='ReleaseFast' PRECOMPRESS_RELEASE=1 OUTPUT_DIR='${{ runner.temp }}/release'
       - name: Upload Release artifact
         if: ${{ success() || steps.build.conclusion == 'success' }}
@@ -80,8 +76,6 @@ jobs:
         if: ${{ success() || (steps.upload_email_lambda.conclusion == 'success') }}
         id: build_debug
         run: |
-          ls -lR ./
-          echo $(ls -lR ./ | sha1sum)
           make release-docker VERSION=${{ inputs.version }} OUTPUT_DIR='${{ runner.temp }}/debug'
           mv ${{ runner.temp }}/release/site/build/ ${{ runner.temp }}/debug/site/build/release
       - name: Upload GitGub Pages artifact
