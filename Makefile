@@ -80,7 +80,8 @@ setup-git-clone: ## Clone git submodules
 
 setup-emscripten: ## Install and Activate Emscripten
 # Source: https://emscripten.org/docs/getting_started/downloads.html#installation-instructions-using-the-emsdk-recommended
-	@cd emsdk;./emsdk install latest --shallow;./emsdk activate latest;source ./emsdk_env.sh
+	$(eval EMSDK_VERSION=$(shell cat ./emsdk/emscripten-releases-tags.json | jq -r '.releases | to_entries | .[0].value'))
+	@cd emsdk;./emsdk install $(EMSDK_VERSION) --shallow;./emsdk activate $(EMSDK_VERSION);source ./emsdk_env.sh
 
 setup-bun: ## BUN Install
 ifeq ($(USE_NODE),1)
