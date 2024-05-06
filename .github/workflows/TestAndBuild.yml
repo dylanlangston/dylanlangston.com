@@ -45,8 +45,12 @@ jobs:
         if: ${{ inputs.should-test }}
         id: test
         run: make test-docker VERSION=${{ inputs.version }}
-      - name: Build Release using Docker
+      - name: Record Source Timestamps
         if: ${{ success() || (steps.test.conclusion == 'skipped' && steps.cache.conclusion == 'success') }}
+        id: timestamps
+        run: find . -maxdepth 1 -type d -exec stat -c "%n %Y %Z" {} + > /tmp/timestamps.txt
+      - name: Build Release using Docker
+        if: ${{ success() || steps.timestamps.conclusion == 'success' }}
         id: build
         run: |
           ls -lR ./
@@ -73,11 +77,21 @@ jobs:
         with:
           name: dylanlangston.com-email-v${{ inputs.version }}
           path: '${{ github.workspace }}/rust-lambda/target/email-forward/'
+      - name: Restore Timestamps
+        if: ${{ success() || steps.upload_email_lambda.conclusion == 'success' }}
+        id: restore_timestamps
+        run: |
+          while read -r line; do
+              name=$(echo "$line" | cut -d ' ' -f 1)
+              atime=$(echo "$line" | cut -d ' ' -f 2)
+              mtime=$(echo "$line" | cut -d ' ' -f 3)
+              touch -a -t "$atime" "$name"
+              touch -m -t "$mtime" "$name"
+          done < /tmp/timestamps.txt
       - name: Build Debug using Docker
-        if: ${{ success() || (steps.upload_email_lambda.conclusion == 'success') }}
+        if: ${{ success() || (steps.restore_timestamps.conclusion == 'success') }}
         id: build_debug
         run: |
-          rm -rf ./rust-lambda/target
           mv ./site/build/ ${TMPDIR:-/tmp}/site-release
           ls -lR ./
           echo $(ls -lR ./ | sha1sum)
