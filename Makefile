@@ -47,7 +47,7 @@ else
 	@bash ./watch.sh USE_NODE=0
 endif
 
-test: clean setup-emscripten  ## Default Test Target.
+test: clean ## Default Test Target.
 	@zig build test
 ifeq ($(USE_NODE),1)
 	@npm run test --prefix ./site
@@ -56,7 +56,7 @@ else
 endif
 	@make test-rust-lambda
 
-release: clean setup-emscripten build-web build-site  ## Default Release Target. Builds Web Version for publish
+release: clean build-web build-site  ## Default Release Target. Builds Web Version for publish
 ifeq ($(OPTIMIZE),Debug)
 else
 	@make build-rust-lambda
@@ -110,7 +110,7 @@ build-desktop: ## Build Desktop. Optionally pass in the OPTIMIZE=... argument.
 run-desktop: ## Run the build desktop binary
 	@./zig-out/bin/dylanlangston.com
 
-build-web: ## Build Web. Optionally pass in the OPTIMIZE=... argument.
+build-web:  setup-emscripten ## Build Web. Optionally pass in the OPTIMIZE=... argument.
 # Want to try get this working maybe, but it will need a custom platform I think:
 # zig build -Dtarget=wasm64-freestanding -Doptimize=$(OPTIMIZE) -Dcpu=mvp+atomics+bulk_memory 
 	@zig build -Dtarget=wasm32-emscripten -Dcpu=mvp+simd128+relaxed_simd+bulk_memory+nontrapping_fptoint -Doptimize=$(OPTIMIZE) -freference-trace
