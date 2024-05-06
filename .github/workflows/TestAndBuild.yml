@@ -75,7 +75,7 @@ jobs:
         id: build_debug
         run: |
           make release-docker VERSION=${{ inputs.version }} OUTPUT_DIR='${{ runner.temp }}/debug'
-          mv ${{ runner.temp }}release/site/build/ ${{ runner.temp }}debug/site/build/release
+          mv ${{ runner.temp }}/release/site/build/ ${{ runner.temp }}/debug/site/build/release
       - name: Upload GitGub Pages artifact
         if: ${{ success() || steps.build_debug.conclusion == 'success' }}
         id: upload-compressed
