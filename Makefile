@@ -10,6 +10,11 @@ ifeq ($(VERSION),)
 	VERSION = $(shell echo 1.$(shell echo $(shell date +"%y%m%d") | sed 's/^0*//').$(shell echo $(shell date +"%H%M%S") | sed 's/^0*//'))
 endif
 
+# Set default output folder
+ifeq ($(OUTPUT_DIR),)
+	OUTPUT_DIR = './'
+endif
+
 # Specify if nodejs should be used instead of bun
 ifeq ($(USE_NODE),)
 	USE_NODE = 1
@@ -143,7 +148,7 @@ develop-docker-stop: ## Stop all docker containers
 	@echo Stopping Docker Container
 
 release-docker:  ## Builds Web Version for publish using docker.
-	@docker buildx build --rm --network host --progress=plain --allow=network.host -t dylanlangston.com . --target publish --output type=local,dest=./ --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE) --build-arg PRECOMPRESS_RELEASE=$(PRECOMPRESS_RELEASE)
+	@docker buildx build --rm --network host --progress=plain --allow=network.host -t dylanlangston.com . --target publish --output type=local,dest=$(OUTPUT_DIR) --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE) --build-arg PRECOMPRESS_RELEASE=$(PRECOMPRESS_RELEASE)
 
 test-docker:  ## clean, setup, and test using docker.
 	@docker buildx build --rm --network host --progress=plain --allow=network.host -t dylanlangston.com . --target test --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE)

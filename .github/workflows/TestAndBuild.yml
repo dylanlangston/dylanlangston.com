@@ -45,61 +45,40 @@ jobs:
         if: ${{ inputs.should-test }}
         id: test
         run: make test-docker VERSION=${{ inputs.version }}
-      - name: Record Source Timestamps
-        if: ${{ success() || (steps.test.conclusion == 'skipped' && steps.cache.conclusion == 'success') }}
-        id: timestamps
-        run: find . -maxdepth 1 -type d -exec stat -c "%n %Y %Z" {} + > /tmp/timestamps.txt
       - name: Build Release using Docker
-        if: ${{ success() || steps.timestamps.conclusion == 'success' }}
+        if: ${{ success() || (steps.test.conclusion == 'skipped' && steps.cache.conclusion == 'success') }}
         id: build
-        run: |
-          ls -lR ./
-          echo $(ls -lR ./ | sha1sum)
-          make release-docker VERSION=${{ inputs.version }} OPTIMIZE='ReleaseFast' PRECOMPRESS_RELEASE=1
+        run: make release-docker VERSION=${{ inputs.version }} OPTIMIZE='ReleaseFast' PRECOMPRESS_RELEASE=1 OUTPUT_DIR='/tmp/'
       - name: Upload Release artifact
         if: ${{ success() || steps.build.conclusion == 'success' }}
         id: upload
         uses: actions/upload-artifact@v4
         with:
           name: dylanlangston.com-v${{ inputs.version }}
-          path: '${{ github.workspace }}/site/build'
+          path: '/tmp/site/build'
       - name: Upload Contact Lambda artifact
         if: ${{ success() || steps.upload.conclusion == 'success' }}
         id: upload_contact_lambda
         uses: actions/upload-artifact@v4
         with:
           name: dylanlangston.com-contact-v${{ inputs.version }}
-          path: '${{ github.workspace }}/rust-lambda/target/contact/'
+          path: '/tmp/rust-lambda/target/contact/'
       - name: Upload Email Forward Lambda artifact
         if: ${{ success() || steps.upload_contact_lambda.conclusion == 'success' }}
         id: upload_email_lambda
         uses: actions/upload-artifact@v4
         with:
           name: dylanlangston.com-email-v${{ inputs.version }}
-          path: '${{ github.workspace }}/rust-lambda/target/email-forward/'
-      - name: Restore Timestamps
-        if: ${{ success() || steps.upload_email_lambda.conclusion == 'success' }}
-        id: restore_timestamps
-        run: |
-          while read -r line; do
-              name=$(echo "$line" | cut -d ' ' -f 1)
-              atime=$(echo "$line" | cut -d ' ' -f 2)
-              mtime=$(echo "$line" | cut -d ' ' -f 3)
-              touch -a -t "$atime" "$name"
-              touch -m -t "$mtime" "$name"
-          done < /tmp/timestamps.txt
+          path: '/tmp/rust-lambda/target/email-forward/'
       - name: Build Debug using Docker
-        if: ${{ success() || (steps.restore_timestamps.conclusion == 'success') }}
+        if: ${{ success() || (steps.upload_email_lambda.conclusion == 'success') }}
         id: build_debug
         run: |
-          mv ./site/build/ ${TMPDIR:-/tmp}/site-release
-          ls -lR ./
-          echo $(ls -lR ./ | sha1sum)
-          make clean release-docker VERSION=${{ inputs.version }}
-          mv ${TMPDIR:-/tmp}/site-release/ ./site/build/release
+          mv /tmp/site/build/ /tmp/site/build/release
+          make clean release-docker VERSION=${{ inputs.version }} OUTPUT_DIR='/tmp/'
       - name: Upload GitGub Pages artifact
         if: ${{ success() || steps.build_debug.conclusion == 'success' }}
         id: upload-compressed
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '${{ github.workspace }}/site/build'
+          path: '/tmp/site/build'
