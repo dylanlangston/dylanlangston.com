@@ -62,7 +62,7 @@ else
 	@make build-rust-lambda
 endif
 
-setup: setup-emscripten setup-bun setup-tests setup-rust # Default Setup Target. Clones git repos, sets up emscripten, sets up nodejs, and sets up rust.
+setup: setup-emscripten setup-bun setup-tests # Default Setup Target. Clones git repos, sets up emscripten, sets up nodejs, and sets up rust.
 
 clean: ## Default Clean Target.
 	@rm -rf ./zig-out/*
@@ -102,7 +102,7 @@ else
 endif
 
 setup-rust: ## Setup Rust Environment
-	@cd ./rust-lambda; cargo vendor --no-delete; cd ..
+	@cd ./rust-lambda; cargo vendor; cd ..
 
 build-desktop: ## Build Desktop. Optionally pass in the OPTIMIZE=... argument.
 	@zig build -Doptimize=$(OPTIMIZE) -freference-trace
