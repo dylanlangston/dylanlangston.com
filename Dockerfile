@@ -58,7 +58,7 @@ RUN echo "Base Docker Image Build"
 
 FROM base as test
 COPY . /root/dylanlangston.com/
-RUN make setup-git-clone build-web test USE_NODE=1
+RUN make build-web test USE_NODE=1
 
 FROM base AS develop
 EXPOSE 5173
@@ -72,7 +72,7 @@ ARG OPTIMIZE='Debug'
 RUN test -n "$OPTIMIZE"
 ARG PRECOMPRESS_RELEASE='0'
 RUN test -n "$PRECOMPRESS_RELEASE"
-RUN make setup-git-clone update-version VERSION=$VERSION release OPTIMIZE=$OPTIMIZE USE_NODE=1 PRECOMPRESS_RELEASE=$PRECOMPRESS_RELEASE
+RUN make update-version VERSION=$VERSION release OPTIMIZE=$OPTIMIZE USE_NODE=1 PRECOMPRESS_RELEASE=$PRECOMPRESS_RELEASE
 
 # Export files
 FROM scratch AS publish
