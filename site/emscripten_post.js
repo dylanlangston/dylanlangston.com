@@ -7,7 +7,7 @@ Module['instantiateAsync'] = async function(info, receiveInstance) {
 		return "/";
 	};
 
-    await instantiateAsync(wasmBinary, wasmBinaryFile, info, (result) => receiveInstance(result['instance']));
+    await instantiateAsync(wasmBinary, findWasmBinary(), info, (result) => receiveInstance(result['instance']));
 }
 moduleArg['instantiateAsync'] = Module['instantiateAsync'];
 Module['loadSymbols'] = () => getSourceMapPromise().then(receiveSourceMapJSON);
