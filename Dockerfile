@@ -54,8 +54,6 @@ RUN make setup USE_NODE=1
 # Cleanup
 RUN make clean-cache && apt-get clean && rm -rf /var/cache/apt/* && rm -rf /var/lib/apt/lists/* && rm -rf /tmp/*
 
-RUN echo "Base Docker Image Build"
-
 FROM base as test
 COPY . /root/dylanlangston.com/
 RUN make build-web test USE_NODE=1
