@@ -62,7 +62,7 @@ else
 	@make build-rust-lambda
 endif
 
-setup: setup-bun setup-playwright setup-rust # Default Setup Target. Sets up emscripten, nodejs, playwright, and rust.
+setup: setup-emscripten setup-bun setup-playwright setup-rust # Default Setup Target. Sets up emscripten, nodejs, playwright, and rust.
 
 clean: ## Default Clean Target.
 	@rm -rf ./zig-out/*
@@ -80,7 +80,7 @@ setup-git-clone: ## Clone git submodules
 
 setup-emscripten: ## Install and Activate Emscripten
 # Source: https://emscripten.org/docs/getting_started/downloads.html#installation-instructions-using-the-emsdk-recommended
-	@cd emsdk;./emsdk install latest;./emsdk activate latest;source ./emsdk_env.sh
+	@cd emsdk;./emsdk install latest --shallow;./emsdk activate latest;source ./emsdk_env.sh
 
 setup-bun: ## BUN Install
 ifeq ($(USE_NODE),1)
@@ -110,7 +110,7 @@ build-desktop: ## Build Desktop. Optionally pass in the OPTIMIZE=... argument.
 run-desktop: ## Run the build desktop binary
 	@./zig-out/bin/dylanlangston.com
 
-build-web:  setup-emscripten ## Build Web. Optionally pass in the OPTIMIZE=... argument.
+build-web: ## Build Web. Optionally pass in the OPTIMIZE=... argument.
 # Want to try get this working maybe, but it will need a custom platform I think:
 # zig build -Dtarget=wasm64-freestanding -Doptimize=$(OPTIMIZE) -Dcpu=mvp+atomics+bulk_memory 
 	@zig build -Dtarget=wasm32-emscripten -Dcpu=mvp+simd128+relaxed_simd+bulk_memory+nontrapping_fptoint -Doptimize=$(OPTIMIZE) -freference-trace
