@@ -47,7 +47,7 @@ else
 	@bash ./watch.sh USE_NODE=0
 endif
 
-test: clean ## Default Test Target. clean, setup, and test
+test: clean ## Default Test Target.
 	@zig build test
 ifeq ($(USE_NODE),1)
 	@npm run test --prefix ./site
@@ -62,7 +62,7 @@ else
 	@make build-rust-lambda
 endif
 
-setup: setup-emscripten setup-bun setup-tests # Default Setup Target. Clones git repos, sets up emscripten, sets up nodejs, and sets up rust.
+setup: setup-emscripten setup-bun setup-playwright setup-rust # Default Setup Target. Sets up emscripten, nodejs, playwright, and rust.
 
 clean: ## Default Clean Target.
 	@rm -rf ./zig-out/*
@@ -92,7 +92,7 @@ endif
 setup-docker: ## Docker Compose
 	@docker compose build
 
-setup-tests: ## Setup Playwright
+setup-playwright: ## Setup Playwright
 ifeq ($(USE_NODE),1)
 	@npx --yes playwright install
 	@npx --yes playwright install-deps
