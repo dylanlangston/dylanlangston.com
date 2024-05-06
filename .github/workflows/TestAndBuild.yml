@@ -80,6 +80,8 @@ jobs:
         if: ${{ success() || (steps.upload_email_lambda.conclusion == 'success') }}
         id: build_debug
         run: |
+          ls -lR ./
+          echo $(ls -lR ./ | sha1sum)
           make release-docker VERSION=${{ inputs.version }} OUTPUT_DIR='${{ runner.temp }}/debug'
           mv ${{ runner.temp }}/release/site/build/ ${{ runner.temp }}/debug/site/build/release
       - name: Upload GitGub Pages artifact
