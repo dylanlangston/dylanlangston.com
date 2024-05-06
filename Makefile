@@ -47,7 +47,7 @@ else
 	@bash ./watch.sh USE_NODE=0
 endif
 
-test: clean ## Default Test Target.
+test: clean setup-emscripten  ## Default Test Target.
 	@zig build test
 ifeq ($(USE_NODE),1)
 	@npm run test --prefix ./site
@@ -56,13 +56,13 @@ else
 endif
 	@make test-rust-lambda
 
-release: clean build-web build-site  ## Default Release Target. Builds Web Version for publish
+release: clean setup-emscripten build-web build-site  ## Default Release Target. Builds Web Version for publish
 ifeq ($(OPTIMIZE),Debug)
 else
 	@make build-rust-lambda
 endif
 
-setup: setup-emscripten setup-bun setup-playwright setup-rust # Default Setup Target. Sets up emscripten, nodejs, playwright, and rust.
+setup: setup-bun setup-playwright setup-rust # Default Setup Target. Sets up emscripten, nodejs, playwright, and rust.
 
 clean: ## Default Clean Target.
 	@rm -rf ./zig-out/*
@@ -148,10 +148,10 @@ develop-docker-stop: ## Stop all docker containers
 	@echo Stopping Docker Container
 
 release-docker:  ## Builds Web Version for publish using docker.
-	@docker buildx build --progress=plain -t dylanlangston.com . --target publish --output type=local,dest=$(OUTPUT_DIR) --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE) --build-arg PRECOMPRESS_RELEASE=$(PRECOMPRESS_RELEASE)
+	@docker build --progress=plain -t dylanlangston.com . --target publish --output type=local,dest=$(OUTPUT_DIR) --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE) --build-arg PRECOMPRESS_RELEASE=$(PRECOMPRESS_RELEASE)
 
 test-docker:  ## clean, setup, and test using docker.
-	@docker buildx build --progress=plain -t dylanlangston.com . --target test --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE)
+	@docker build --progress=plain --allow=network.host -t dylanlangston.com . --target test --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE)
 
 run-site: build-web ## Run Website
 ifeq ($(USE_NODE),1)
