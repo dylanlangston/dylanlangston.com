@@ -74,7 +74,7 @@ jobs:
         if: ${{ success() || (steps.upload_email_lambda.conclusion == 'success') }}
         id: build_debug
         run: |
-          make clean release-docker VERSION=${{ inputs.version }} OUTPUT_DIR='${{ runner.temp }}/debug'
+          make release-docker VERSION=${{ inputs.version }} OUTPUT_DIR='${{ runner.temp }}/debug'
           mv ${{ runner.temp }}release/site/build/ ${{ runner.temp }}debug/site/build/release
       - name: Upload GitGub Pages artifact
         if: ${{ success() || steps.build_debug.conclusion == 'success' }}
