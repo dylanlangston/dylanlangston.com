@@ -62,7 +62,7 @@ else
 	@make build-rust-lambda
 endif
 
-setup: setup-bun setup-playwright setup-rust # Default Setup Target. Sets up emscripten, nodejs, playwright, and rust.
+setup: setup-emscripten setup-bun setup-playwright setup-rust # Default Setup Target. Sets up emscripten, nodejs, playwright, and rust.
 
 clean: ## Default Clean Target.
 	@rm -rf ./zig-out/*
@@ -80,8 +80,7 @@ setup-git-clone: ## Clone git submodules
 
 setup-emscripten: ## Install and Activate Emscripten
 # Source: https://emscripten.org/docs/getting_started/downloads.html#installation-instructions-using-the-emsdk-recommended
-	$(eval EMSDK_VERSION=$(shell cat ./emsdk/emscripten-releases-tags.json | jq -r '.releases | to_entries | .[0].value'))
-	@cd emsdk;./emsdk install $(EMSDK_VERSION) --shallow;./emsdk activate $(EMSDK_VERSION);source ./emsdk_env.sh
+	@if [ ! -f "./emsdk/upstream/emscripten/emcc" ]; then cd emsdk;./emsdk install latest --shallow;./emsdk activate latest;source ./emsdk_env.sh; fi
 
 setup-bun: ## BUN Install
 ifeq ($(USE_NODE),1)
