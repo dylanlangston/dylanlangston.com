@@ -48,7 +48,10 @@ jobs:
       - name: Build Release using Docker
         if: ${{ success() || (steps.test.conclusion == 'skipped' && steps.cache.conclusion == 'success') }}
         id: build
-        run: make release-docker VERSION=${{ inputs.version }} OPTIMIZE='ReleaseFast' PRECOMPRESS_RELEASE=1 OUTPUT_DIR='${{ runner.temp }}'
+        run: |
+          ls -lR ./
+          echo $(ls -lR ./ | sha1sum)
+          make release-docker VERSION=${{ inputs.version }} OPTIMIZE='ReleaseFast' PRECOMPRESS_RELEASE=1 OUTPUT_DIR='${{ runner.temp }}'
       - name: Upload Release artifact
         if: ${{ success() || steps.build.conclusion == 'success' }}
         id: upload
@@ -74,6 +77,8 @@ jobs:
         if: ${{ success() || (steps.upload_email_lambda.conclusion == 'success') }}
         id: build_debug
         run: |
+          ls -lR ./
+          echo $(ls -lR ./ | sha1sum)
           mv ${{ runner.temp }}/site/build/ ${{ runner.temp }}/site/release
           make clean release-docker VERSION=${{ inputs.version }} OUTPUT_DIR='${{ runner.temp }}'
           mv ${{ runner.temp }}/site/release/ ${{ runner.temp }}/site/build/release
