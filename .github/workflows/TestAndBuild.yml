@@ -74,8 +74,9 @@ jobs:
         if: ${{ success() || (steps.upload_email_lambda.conclusion == 'success') }}
         id: build_debug
         run: |
-          mv ${{ runner.temp }}/site/build/ ${{ runner.temp }}/site/build/release
+          mv ${{ runner.temp }}/site/build/ ${{ runner.temp }}/site/release
           make clean release-docker VERSION=${{ inputs.version }} OUTPUT_DIR='${{ runner.temp }}'
+          mv ${{ runner.temp }}/site/release/ ${{ runner.temp }}/site/build/release
       - name: Upload GitGub Pages artifact
         if: ${{ success() || steps.build_debug.conclusion == 'success' }}
         id: upload-compressed
