@@ -1,8 +1,7 @@
 import { EmscriptenInitialize } from '$lib/Emscripten';
 import { AudioEventType, IPCMessage, IPCMessageType, type IPCMessageDataType } from '$lib/IPCMessage';
-import { Environment } from "$lib/Common";
-import { IPCProxy } from './IPCProxy';
-import { WorkerDOM } from './WorkerDOM';
+import { IPCProxy } from '$lib/IPCProxy';
+import { WorkerDOM } from '$lib/WorkerDOM';
 
 // Define all events here
 // The rest of this file should be boilerplate code...
@@ -39,7 +38,6 @@ eventHandlers[IPCMessageType.EventHandlerCallback] = (message) => {
         eventHandler.event.target = self.document.getCanvas();
     }
     
-    //if (Environment.Dev) console.debug(eventHandler);
     const func = IPCProxy.Get(eventHandler.id);
     if (func) {
         func(eventHandler.event);

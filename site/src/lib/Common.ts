@@ -1,4 +1,4 @@
-import { BrowserDetector } from 'browser-dtector';
+import BrowserDetector from 'browser-dtector';
 import { readable, writable, get } from 'svelte/store';
 
 export const sanitizeEvent = <T>(e: any, n: number = 0): T => {

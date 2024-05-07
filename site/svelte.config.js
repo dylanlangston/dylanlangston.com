@@ -22,7 +22,6 @@ const config = {
 	],
 
 	extensions: ['.svelte', '.md'],
-
 	kit: {
 		adapter: adapter({
 			pages: 'build',
@@ -30,7 +29,11 @@ const config = {
 			fallback: '404.html',
 			precompress: shouldPrecompress(),
 			strict: true
-		})
+		}),
+		alias: {
+			'$components': 'src/components/',
+			'$import': 'src/import/',
+		}
 	},
 
 	prerender: {

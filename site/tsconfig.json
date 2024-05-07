@@ -1,6 +1,7 @@
 {
 	"extends": "./.svelte-kit/tsconfig.json",
 	"compilerOptions": {
+		"module": "ESNext",
 		"allowJs": true,
 		"checkJs": false,
 		"esModuleInterop": true,
@@ -9,7 +10,7 @@
 		"skipLibCheck": true,
 		"sourceMap": true,
 		"strict": true,
-		"moduleResolution": "bundler",
+		"moduleResolution": "Bundler",
 		"lib": ["esnext", "dom", "webworker" ],
 	}
 	// Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias

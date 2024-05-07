@@ -12,7 +12,7 @@
 		sanitizeEvent,
 		useMediaQuery
 	} from '$lib/Common';
-	import StatusContainer from '../components/status-container.svelte';
+	import StatusContainer from '$components/status-container.svelte';
 	import { Favicon } from '$lib/Favicon';
 	import type { Unsubscriber } from 'svelte/store';
 

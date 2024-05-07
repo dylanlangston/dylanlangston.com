@@ -1,9 +1,9 @@
 <script lang="ts">
-	import Panel from '../components/panel.svelte';
+	import Panel from '$components/panel.svelte';
 	import { BookOpenIcon, ToolIcon, UserIcon, UsersIcon, ZapIcon } from 'svelte-feather-icons';
-	import Typewriter from '../components/typewriter.svelte';
+	import Typewriter from '$components/typewriter.svelte';
 	import { onMount } from 'svelte';
-	import { Environment } from '../lib/Common';
+	import { Environment } from '$lib/Common';
 	import { fade, blur, fly, slide, scale, crossfade } from 'svelte/transition';
 
 	let shouldAnimateTitle: boolean = true;

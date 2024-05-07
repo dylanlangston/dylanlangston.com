@@ -1,6 +1,6 @@
 import type { MiniAudio as IMiniAudio, MiniAudioDevice } from "../types/miniaudio";
-import { IPCProxy } from "./IPCProxy";
-import { AudioEventType, IPCMessage } from "./IPCMessage";
+import { IPCProxy } from "$lib/IPCProxy";
+import { AudioEventType, IPCMessage } from "$lib/IPCMessage";
 
 // Minimum implementation of the DOM needed to make Emscripten run from our web worker
 export namespace WorkerDOM {

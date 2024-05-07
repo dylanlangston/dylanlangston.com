@@ -1,21 +1,21 @@
 <script lang="ts">
-	import Header from '../components/header.svelte';
-	import Footer from '../components/footer.svelte';
+	import Header from '$components/header.svelte';
+	import Footer from '$components/footer.svelte';
 
-	import Emscripten from '../components/emscripten.svelte';
+	import Emscripten from '$components/emscripten.svelte';
 
 	import { partytownSnippet } from '@builder.io/partytown/integration';
 
 	import { page } from '$app/stores';
-	import StatusContainer from '../components/status-container.svelte';
-	import MouseCursor from '../components/mouse-cursor.svelte';
+	import StatusContainer from '$components/status-container.svelte';
+	import MouseCursor from '$components/mouse-cursor.svelte';
 
 	import { onMount } from 'svelte';
 	import { fade, blur, fly, slide, scale, crossfade } from 'svelte/transition';
 	import { quintOut, bounceInOut, backOut, elasticOut } from 'svelte/easing';
 	import { readable, writable, get } from 'svelte/store';
 	import { Environment, useMediaQuery } from '$lib/Common';
-	import ContextMenu from '../components/context-menu.svelte';
+	import ContextMenu from '$components/context-menu.svelte';
 
 	const key = 'main';
 	const [send, receive] = crossfade({
@@ -105,15 +105,32 @@
 		function gtag() {
 			dataLayer.push(arguments);
 		}
-		//gtag('consent', 'default', {
-		//	'ad_storage': 'denied',
-		//	'ad_user_data': 'denied',
-		//	'ad_personalization': 'denied',
-		//	'analytics_storage': 'denied'
-		//});
+		// Denied by default
+		gtag('consent', 'default', {
+			'ad_storage': 'denied',
+			'ad_user_data': 'denied',
+			'ad_personalization': 'denied',
+			'analytics_storage': 'denied',
+			'wait_for_update': 500
+		});
 		gtag('js', new Date());
-
 		gtag('config', 'G-VXRC4ZZ8Q9');
+
+		// Grant access
+		function allConsentGranted() {
+			gtag('consent', 'update', {
+			  'ad_user_data': 'granted',
+			  'ad_personalization': 'granted',
+			  'ad_storage': 'granted',
+			  'analytics_storage': 'granted'
+			});
+		}
+
+		// setTimeout(() => {
+		// 	if (confirm("Allow cookies?")) {
+		// 		allConsentGranted();
+		// 	}
+		// });
 	</script>
 </svelte:head>
 

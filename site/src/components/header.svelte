@@ -2,7 +2,7 @@
 	import { fade, blur, fly, slide, scale } from 'svelte/transition';
 	import { readable, writable, get } from 'svelte/store';
 
-	import Ripple from './ripple.svelte';
+	import Ripple from '$components/ripple.svelte';
 	import { Environment, useMediaQuery } from '$lib/Common';
 
 	import { onMount } from 'svelte';

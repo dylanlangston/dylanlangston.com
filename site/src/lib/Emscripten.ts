@@ -1,6 +1,6 @@
 import { writable, get } from 'svelte/store';
-import emscriptenModuleFactory from '../import/emscripten';
-import { Environment } from './Common';
+import emscriptenModuleFactory from '$import/emscripten';
+import { Environment } from '$lib/Common';
 
 export const EmscriptenModule: (canvas: HTMLCanvasElement | OffscreenCanvas) =>
 	ICustomEmscriptenModule = (canvas: HTMLCanvasElement | OffscreenCanvas) => new CustomEmscriptenModule(canvas);

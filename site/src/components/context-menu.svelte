@@ -7,7 +7,7 @@ Inspired from: Context Menu https://svelte.dev/repl/3a33725c3adb4f57b46b597f9dad
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import Ripple from './ripple.svelte';
+	import Ripple from '$components/ripple.svelte';
 	import { blur, fade, slide } from 'svelte/transition';
 
 	// pos is cursor position when right click occur

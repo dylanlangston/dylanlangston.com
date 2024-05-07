@@ -1,4 +1,4 @@
-import { hash } from "./Common";
+import { hash } from "$lib/Common";
 
 export enum IPCMessageType {
     Initialize,

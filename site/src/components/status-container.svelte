@@ -2,7 +2,7 @@
 	import { fade, blur, fly, slide, scale } from 'svelte/transition';
 	export let status: string | undefined = undefined;
 
-	import Panel from './panel.svelte';
+	import Panel from '$components/panel.svelte';
 </script>
 
 <div

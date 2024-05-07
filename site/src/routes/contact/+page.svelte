@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Panel from '../../components/panel.svelte';
-	import Ripple from '../../components/ripple.svelte';
-	import { sleep } from '../../lib/Common';
+	import Panel from '$components/panel.svelte';
+	import Ripple from '$components/ripple.svelte';
+	import { sleep } from '$lib/Common';
 	import { pushState } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
@@ -85,8 +85,9 @@
 			<form on:submit={handleSubmit} on:change={handleChange} class="space-y-5" class:opacity-40={submitting}>
 				<div class="flex flex-col items-center gap-y-5 gap-x-6 [&>*]:w-full sm:flex-row">
 					<div>
-						<label class="font-medium"> First name </label>
+						<label for="firstName" class="font-medium"> First name </label>
 						<input
+							id="firstName"
 							type="text"
 							required
 							bind:value={firstName}
@@ -97,8 +98,9 @@
 						/>
 					</div>
 					<div>
-						<label class="font-medium"> Last name </label>
+						<label for="lastName" class="font-medium"> Last name </label>
 						<input
+							id="lastName"
 							type="text"
 							required
 							bind:value={lastName}
@@ -110,8 +112,9 @@
 					</div>
 				</div>
 				<div>
-					<label class="font-medium"> Email </label>
+					<label for="email" class="font-medium"> Email </label>
 					<input
+						id="email"
 						type="email"
 						required
 						bind:value={email}
@@ -122,8 +125,9 @@
 					/>
 				</div>
 				<div>
-					<label class="font-medium"> Phone number (optional) </label>
+					<label for="phone" class="font-medium"> Phone number (optional) </label>
 					<input
+						id="phone"
 						type="tel"
 						placeholder="+1 234-567-8901"
 						pattern="\+?([0-9]{1}[- ])?[0-9]{3}[- ][0-9]{3}[- ][0-9]{4}"
@@ -135,8 +139,9 @@
 					/>
 				</div>
 				<div>
-					<label class="font-medium"> Message </label>
+					<label for="message" class="font-medium"> Message </label>
 					<textarea
+						id="message"
 						required
 						bind:value={message}
 						disabled={submitting}

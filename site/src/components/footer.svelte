@@ -1,6 +1,6 @@
 <script>
 	import { MailIcon, LinkedinIcon, GithubIcon } from 'svelte-feather-icons';
-	import Ripple from './ripple.svelte';
+	import Ripple from '$components/ripple.svelte';
 </script>
 
 <footer class="p-1 glass px-4 md:px-8">

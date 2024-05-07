@@ -1,7 +1,7 @@
 <script>
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
-	import StatusContainer from '../components/status-container.svelte';
+	import StatusContainer from '$components/status-container.svelte';
 
 	onMount(() => {
 		document.title = 'Error' + ($page.error?.message ? ' - ' + $page.error.message : '');

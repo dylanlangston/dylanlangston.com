@@ -1,5 +1,5 @@
 import type { Unsubscriber } from "svelte/store";
-import { Environment } from "./Common";
+import { Environment } from "$lib/Common";
 
 export class Favicon {
 	private faviconAnimation: number;

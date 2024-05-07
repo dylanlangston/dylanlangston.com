@@ -1,4 +1,4 @@
-import { hash } from "./Common";
+import { hash } from "$lib/Common";
 
 // Essentially just a hash map
 export class IPCProxy {
