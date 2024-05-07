@@ -62,7 +62,7 @@ else
 	@make build-rust-lambda
 endif
 
-setup: setup-bun setup-playwright setup-rust # Default Setup Target. Sets up emscripten, nodejs, playwright, and rust.
+setup: setup-emscripten setup-bun setup-playwright setup-rust # Default Setup Target. Sets up emscripten, nodejs, playwright, and rust.
 
 clean: ## Default Clean Target.
 	@rm -rf ./zig-out/*
@@ -81,6 +81,7 @@ setup-git-clone: ## Clone git submodules
 setup-emscripten: ## Install and Activate Emscripten
 # Source: https://emscripten.org/docs/getting_started/downloads.html#installation-instructions-using-the-emsdk-recommended
 	@if [ -f "./emsdk/upstream/emscripten/emcc" ]; then ./emsdk/upstream/emscripten/emcc --check; else cd emsdk;./emsdk install latest --shallow;./emsdk activate latest;source ./emsdk_env.sh; fi
+	@rm -fr ./emsdk/upstream/emscripten/tests
 
 setup-bun: ## BUN Install
 ifeq ($(USE_NODE),1)
@@ -94,15 +95,16 @@ setup-docker: ## Docker Compose
 
 setup-playwright: ## Setup Playwright
 ifeq ($(USE_NODE),1)
-	@npx --yes playwright install
-	@npx --yes playwright install-deps
+	@npx --prefix ./site --yes playwright install-deps
+	@npx --prefix ./site --yes playwright install
 else
-	@bunx --bun playwright install
-	@bunx --bun playwright install-deps
+	@cd ./site; bunx --bun playwright install-deps
+	@cd ./site; bunx --bun playwright install
 endif
 
 setup-rust: ## Setup Rust Environment
 	@cd ./rust-lambda; cargo vendor; cd ..
+	@rm -rf ~/.cargo/registry
 
 build-desktop: ## Build Desktop. Optionally pass in the OPTIMIZE=... argument.
 	@zig build -Doptimize=$(OPTIMIZE) -freference-trace
