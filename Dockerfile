@@ -50,11 +50,21 @@ RUN apt-get -y install --no-install-recommends nodejs npm
 
 # Setup
 RUN make setup USE_NODE=1
-RUN make setup-emscripten
-RUN curl "https://example.com/"
+RUN make setup-emscripten \
+&& rm -fr ./emsdk/upstream/emscripten/tests
 
 # Cleanup
-RUN make clean-cache && apt-get clean && rm -rf /var/cache/apt/* && rm -rf /var/lib/apt/lists/* && rm -rf /tmp/*
+RUN make clean-cache \
+&& apt-get -y clean \
+&& apt-get -y autoclean \
+&& apt-get -y autoremove \
+&& rm -rf /var/cache/apt/* \
+&& rm -rf /var/lib/apt/lists/* \
+&& rm -rf /var/cache/debconf/*-old \
+&& rm -rf /usr/share/doc/* \
+&& rm -rf /usr/share/man/?? \
+&& rm -rf /usr/share/man/??_* \
+&& rm -rf /tmp/*
 
 FROM base as test
 COPY . /root/dylanlangston.com/
