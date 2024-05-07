@@ -19,6 +19,10 @@ COPY ./Makefile /root/dylanlangston.com/Makefile
 
 RUN apt-get update && apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git python3 build-essential pkg-config netcat-traditional
 
+# Emscripten
+RUN make setup-emscripten \
+&& rm -fr ./emsdk/upstream/emscripten/tests
+
 # Install ZVM - https://github.com/tristanisham/zvm
 RUN curl --proto '=https' --tlsv1.3 -sSfL https://raw.githubusercontent.com/tristanisham/zvm/master/install.sh | bash
 RUN echo "# ZVM" >> $HOME/.bashrc &&\
@@ -50,8 +54,6 @@ RUN apt-get -y install --no-install-recommends nodejs npm
 
 # Setup
 RUN make setup USE_NODE=1
-RUN make setup-emscripten \
-&& rm -fr ./emsdk/upstream/emscripten/tests
 
 # Cleanup
 RUN make clean-cache \
