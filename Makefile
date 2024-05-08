@@ -101,7 +101,7 @@ else
 endif
 
 setup-rust: ## Setup Rust Environment
-	@cd ./rust-lambda; cargo vendor --no-delete; cd ..
+	@cd ./rust-lambda; cargo fetch; cd ..
 
 build-desktop: ## Build Desktop. Optionally pass in the OPTIMIZE=... argument.
 	@zig build -Doptimize=$(OPTIMIZE) -freference-trace
