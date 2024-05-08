@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.3.1
 
 # Using Minideb Latest
-FROM debian:stable-slim as base
+FROM debian:stable-slim as install
 USER root
 
 ENV PATH="/root/.bun/bin/:/root/.zvm/self/:/root/.zvm/bin:/root/.cargo/bin:$PATH"
@@ -38,6 +38,8 @@ RUN apt-get -y install --no-install-recommends nodejs npm
 # Install Bun
 #curl --proto '=https' --tlsv1.3 -fsSL https://bun.sh/install | bash
 
+FROM install as setup
+
 # Copy only the files we absolutely need
 COPY ./emsdk /root/dylanlangston.com/emsdk
 COPY ./site/package.json /root/dylanlangston.com/site/package.json
@@ -49,7 +51,7 @@ COPY ./rust-lambda/Cargo.lock /root/dylanlangston.com/rust-lambda/Cargo.lock
 COPY ./Makefile /root/dylanlangston.com/Makefile
 
 # Setup
-RUN --mount=type=cache make setup USE_NODE=1
+RUN make setup USE_NODE=1
 
 # Cleanup
 RUN make clean-cache \
@@ -64,9 +66,11 @@ RUN make clean-cache \
 && rm -rf /usr/share/man/??_* \
 && rm -rf /tmp/*
 
+FROM setup as base
+
 FROM base as test
 COPY . /root/dylanlangston.com/
-RUN make build-web test USE_NODE=1
+RUN --network=host make build-web test USE_NODE=1
 
 FROM base AS develop
 EXPOSE 5173
