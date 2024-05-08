@@ -49,9 +49,9 @@ COPY ./rust-lambda/Cargo.lock /root/dylanlangston.com/rust-lambda/Cargo.lock
 COPY ./Makefile /root/dylanlangston.com/Makefile
 
 # Setup
+RUN make setup-playwright USE_NODE=1
 RUN make setup-emscripten USE_NODE=1
 RUN make setup-bun USE_NODE=1
-RUN make setup-playwright USE_NODE=1
 RUN make setup-rust USE_NODE=1
 
 # Cleanup
