@@ -14,7 +14,12 @@ test('index page has expected layout', async ({ page }, testinfo) => {
 	});
 });
 
-test('raylib loaded successfully', async ({ page }, testInfo: TestInfo) => {
+test('raylib loaded successfully', async ({ page, browser }, testInfo: TestInfo) => {
+	if (browser.browserType().name() != 'chromium') {
+		testInfo.skip(true, "Not supported in non-chromium browsers due to webgl limitations");
+		return;
+	}
+
 	const waitForConsoleMessage = async (page: Page, searchString: string, timeout: number): Promise<ConsoleMessage> =>
 		new Promise<ConsoleMessage>((resolve, reject) => {
 			const timeoutId = setTimeout(() => {
