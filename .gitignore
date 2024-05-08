@@ -5,3 +5,4 @@
 !.vscode/tasks.json
 zig-cache/
 zig-out/
+site/test-results/
