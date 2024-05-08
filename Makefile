@@ -95,9 +95,9 @@ setup-docker: ## Docker Compose
 
 setup-playwright: ## Setup Playwright
 ifeq ($(USE_NODE),1)
-	@npx --prefix ./site --yes playwright install --with-deps
+	@npx --prefix ./site --yes playwright install
 else
-	@cd ./site; bunx --bun playwright install --with-deps
+	@cd ./site; bunx --bun playwright install
 endif
 
 setup-rust: ## Setup Rust Environment
