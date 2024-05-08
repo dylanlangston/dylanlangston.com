@@ -56,7 +56,6 @@ RUN make setup-playwright USE_NODE=1
 
 # Cleanup
 RUN make clean-cache \
-&& apt-get update \
 && apt-get -y clean \
 && apt-get -y autoclean \
 && apt-get -y autoremove \
