@@ -52,11 +52,11 @@ RUN apt-get -y install --no-install-recommends nodejs npm
 RUN make setup-rust USE_NODE=1
 RUN make setup-emscripten USE_NODE=1
 RUN make setup-bun USE_NODE=1
-RUN npx playwright mark-docker-image dylanlangston.com:latest
 RUN make setup-playwright USE_NODE=1
 
 # Cleanup
 RUN make clean-cache \
+&& apt-get update \
 && apt-get -y clean \
 && apt-get -y autoclean \
 && apt-get -y autoremove \
