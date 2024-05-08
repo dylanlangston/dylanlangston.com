@@ -101,7 +101,7 @@ else
 endif
 
 setup-rust: ## Setup Rust Environment
-	@cd ./rust-lambda; cargo vendor; cd ..
+	@cd ./rust-lambda; cargo vendor --frozen --no-delete; cd ..
 	@rm -rf ~/.cargo/registry
 
 build-desktop: ## Build Desktop. Optionally pass in the OPTIMIZE=... argument.
