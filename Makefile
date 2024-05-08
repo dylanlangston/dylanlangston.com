@@ -47,7 +47,7 @@ else
 	@bash ./watch.sh USE_NODE=0
 endif
 
-test: clean ## Default Test Target.
+test: clean setup-playwright ## Default Test Target.
 	@zig build test
 ifeq ($(USE_NODE),1)
 	@npm run test --prefix ./site
@@ -95,9 +95,9 @@ setup-docker: ## Docker Compose
 
 setup-playwright: ## Setup Playwright
 ifeq ($(USE_NODE),1)
-	@npx --prefix ./site --yes playwright install
+	@npx --prefix ./site --yes playwright install --with-deps
 else
-	@cd ./site; bunx --bun playwright install
+	@cd ./site; bunx --bun playwright install --with-deps
 endif
 
 setup-rust: ## Setup Rust Environment
