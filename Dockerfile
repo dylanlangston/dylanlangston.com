@@ -39,14 +39,14 @@ RUN apt-get -y install --no-install-recommends nodejs npm
 #curl --proto '=https' --tlsv1.3 -fsSL https://bun.sh/install | bash
 
 # Copy only the files we absolutely need
-COPY --link=true ./emsdk /root/dylanlangston.com/emsdk
-COPY --link=true ./site/package.json /root/dylanlangston.com/site/package.json
-COPY --link=true ./site/package-lock.json /root/dylanlangston.com/site/package-lock.json
-COPY --link=true ./site/bun.lockb /root/dylanlangston.com/site/bun.lockb
-COPY --link=true ./site/bunfig.toml /root/dylanlangston.com/site/bunfig.toml
-COPY --link=true ./rust-lambda/Cargo.toml /root/dylanlangston.com/rust-lambda/Cargo.toml
-COPY --link=true ./rust-lambda/Cargo.lock /root/dylanlangston.com/rust-lambda/Cargo.lock
-COPY --link=true ./Makefile /root/dylanlangston.com/Makefile
+COPY ./emsdk /root/dylanlangston.com/emsdk
+COPY ./site/package.json /root/dylanlangston.com/site/package.json
+COPY ./site/package-lock.json /root/dylanlangston.com/site/package-lock.json
+COPY ./site/bun.lockb /root/dylanlangston.com/site/bun.lockb
+COPY ./site/bunfig.toml /root/dylanlangston.com/site/bunfig.toml
+COPY ./rust-lambda/Cargo.toml /root/dylanlangston.com/rust-lambda/Cargo.toml
+COPY ./rust-lambda/Cargo.lock /root/dylanlangston.com/rust-lambda/Cargo.lock
+COPY ./Makefile /root/dylanlangston.com/Makefile
 
 # Setup
 RUN --mount=type=cache make setup USE_NODE=1
