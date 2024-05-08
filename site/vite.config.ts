@@ -26,7 +26,6 @@ export default defineConfig({
 	},
 	build: {
 		rollupOptions: {
-			external: ['browser-dtector'],
 			output: {
 				globals: {
 					'browser-dtector': 'BrowserDetector'
