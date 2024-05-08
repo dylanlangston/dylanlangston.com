@@ -1,0 +1,7 @@
+:root {
+    --Rainbow: hsl(50, 30%, 50%) !important;
+}
+
+body > div.contents > div.w-full.h-full.cursor-none > div > div:nth-child(1) > canvas {
+    visibility: hidden;
+}

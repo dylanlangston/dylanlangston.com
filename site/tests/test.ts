@@ -1,6 +1,15 @@
 import { expect, test } from '@playwright/test';
 
-test('index page has expected h3', async ({ page }) => {
+test('index page has expected layout', async ({ page }, testinfo) => {
 	await page.goto('/');
-	await expect(page.getByRole('heading', { name: 'Full Stack Developer & Outdoor Enthusiast' })).toBeVisible();
+	page.waitForLoadState("domcontentloaded");
+
+	await expect(page.getByRole('heading', { name: "I'm Dylan Langston" })).toBeVisible({
+		timeout: 5000
+	});
+
+	await expect(page).toHaveScreenshot({
+		fullPage: true,
+		stylePath: ['tests/background-mask.css']
+	});
 });
