@@ -157,10 +157,10 @@ develop-docker-stop: ## Stop all docker containers
 	@echo Stopping Docker Container
 
 release-docker:  ## Builds Web Version for publish using docker.
-	@docker build -rm --progress=plain -t dylanlangston.com . --target publish --output type=local,dest=$(OUTPUT_DIR) --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE) --build-arg PRECOMPRESS_RELEASE=$(PRECOMPRESS_RELEASE)
+	@docker build --rm --progress=plain -t dylanlangston.com . --target publish --output type=local,dest=$(OUTPUT_DIR) --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE) --build-arg PRECOMPRESS_RELEASE=$(PRECOMPRESS_RELEASE)
 
 test-docker:  ## clean, setup, and test using docker.
-	@docker build -rm --progress=plain --network=host -t dylanlangston.com . --target test --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE)
+	@docker build --rm --progress=plain --network=host -t dylanlangston.com . --target test --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE)
 
 run-site: build-web ## Run Website
 ifeq ($(USE_NODE),1)
@@ -180,6 +180,6 @@ build-rust-lambda: ## Build the Contact API Lambda
 
 test-rust-lambda: ## Test the Contact API Lambda
 	@cd ./rust-lambda; cargo test
-	@cd ./rust-lambda; cargo lambda watch -w &
-	@timeout 30 bash -c 'while ! nc -z localhost 9000; do sleep 1; done' || (pkill cargo-lambda && exit 1);
-	@cd ./rust-lambda; cargo lambda invoke "contact" --data-file ./TestData.json; pkill cargo-lambda
+	@cd ./rust-lambda; cargo lambda watch -w -a 127.0.0.1 -p 9999 &
+	@timeout 30 bash -c 'while ! nc -z 127.0.0.1 9999; do sleep 1; done' || (pkill cargo-lambda && exit 1);
+	@cd ./rust-lambda; cargo lambda invoke -a 127.0.0.1 -p 9999 "contact" --data-file ./TestData.json; pkill cargo-lambda
