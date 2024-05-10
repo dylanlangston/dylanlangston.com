@@ -4,6 +4,14 @@
 FROM debian:stable-slim as base
 USER root
 
+ARG DEBIAN_FRONTEND=noninteractive
+ARG TZ=America/New_York
+
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+
 ENV PATH="/root/.bun/bin/:/root/.zvm/self/:/root/.zvm/bin:/root/.cargo/bin:$PATH"
 WORKDIR /root/dylanlangston.com
 
@@ -49,10 +57,7 @@ RUN apt-get -y install --no-install-recommends nodejs npm
 #curl --proto '=https' --tlsv1.3 -fsSL https://bun.sh/install | bash
 
 # Setup
-RUN make setup-rust USE_NODE=1
-RUN make setup-emscripten USE_NODE=1
-RUN make setup-bun USE_NODE=1
-#RUN make setup-playwright USE_NODE=1
+RUN make setup USE_NODE=1
 
 # Cleanup
 RUN make clean-cache \
