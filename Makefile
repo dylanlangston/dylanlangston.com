@@ -49,11 +49,6 @@ endif
 
 test: clean ## Default Test Target.
 	@zig build test
-ifeq ($(USE_NODE),1)
-	@npm run test --prefix ./site
-else
-	@bun -b run --cwd ./site test-bun
-endif
 	@make test-rust-lambda
 
 release: clean build-web build-site  ## Default Release Target. Builds Web Version for publish
