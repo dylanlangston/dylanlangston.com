@@ -17,7 +17,7 @@ Parameters:
     Type: String
     Description: Email address to use as the sender
   AwsS3BucketName:
-    Type: String
+    Type: String 
     Description: Name of the S3 bucket
   AwsRegion:
     Type: String
@@ -27,6 +27,30 @@ Parameters:
     Description: AWS account ID
 
 Resources:
+  SiteBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Ref AwsS3BucketName
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: false
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: false
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+
+  BucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      Bucket: !Ref SiteBucket
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal: '*'
+            Action: 's3:GetObject'
+            Resource: !Sub "arn:aws:s3:::${AwsS3BucketName}/*"
+
   EmailForwarderRole:
     Type: AWS::IAM::Role
     Properties:
@@ -184,3 +208,7 @@ Outputs:
   ApiUrl:
     Description: "API Gateway URL"
     Value: !Sub "https://api.${DomainName}/contact"
+
+  S3URL:
+    Value: !GetAtt SiteBucket.RegionalDomainName
+    Description: URL for website hosted on S3
