@@ -10,6 +10,10 @@ on:
         description: 'Start Timestamp (unix)'
         required: false
         type: number
+      releaseNotes:
+        description: 'Release Notes'
+        required: true
+        type: string
 
 permissions:
   packages: read
@@ -72,5 +76,5 @@ jobs:
       contents: write
     with:
       version: ${{ needs.Initialize.outputs.version }}
-      commit-message: ${{ github.event.head_commit.message }}
+      commit-message: ${{ inputs.releaseNotes || github.event.head_commit.message }}
       runId: ${{ github.run_id }}
