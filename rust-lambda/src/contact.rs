@@ -1,9 +1,13 @@
 #![allow(non_snake_case)]
 
+use aws_config::meta::region::RegionProviderChain;
+use aws_config::BehaviorVersion;
+use aws_sdk_sesv2::{
+    types::{Body as ses_Body, Content, Destination, EmailContent, Message},
+    Client,
+};
 use lambda_http::{run, service_fn, Body, Error, Request, Response};
 use regex::Regex;
-use rusoto_core::Region;
-use rusoto_ses::{Body as SesBody, Content, Destination, Message, SendEmailRequest, Ses};
 use serde::{Deserialize, Serialize};
 use std::env;
 
@@ -39,7 +43,9 @@ impl ContactRequest {
     }
 
     fn is_valid_email(&self) -> bool {
-        if &self.email == "test" { return true; }
+        if &self.email == "test" {
+            return true;
+        }
         // Regular expression to validate email format
         let re = Regex::new(r"^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$").unwrap();
         re.is_match(&self.email)
@@ -52,10 +58,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         "OPTIONS" => handle_options(),
         _ => {
             // Method not allowed
-            Ok(Response::builder()
-                .status(405)
-                .body(Body::Empty)
-                .unwrap())
+            Ok(Response::builder().status(405).body(Body::Empty).unwrap())
         }
     }
 }
@@ -108,14 +111,18 @@ fn handle_options() -> Result<Response<Body>, Error> {
 
 async fn send_email(contact_request: &ContactRequest) -> Result<(), Error> {
     // Initialize SES client
-    let ses_client = rusoto_ses::SesClient::new(Region::default());
+    let region_provider = RegionProviderChain::default_provider().or_else("us-east-1");
+    let config = aws_config::defaults(BehaviorVersion::latest())
+        .region(region_provider)
+        .load()
+        .await;
+    let ses_client = Client::new(&config);
 
     // Construct email message
     let subject = format!(
         "Contact Request - {} {}",
         contact_request.first_name, contact_request.last_name
     );
-
     let body_text = format!(
         "{}\nEmail: {}\nMessage: {}",
         if let Some(phone) = &contact_request.phone {
@@ -126,7 +133,6 @@ async fn send_email(contact_request: &ContactRequest) -> Result<(), Error> {
         contact_request.email,
         contact_request.message
     );
-    
     let html_message = encode_special_characters(&contact_request.message);
     let body_html = format!(
         "{}<br/><b>Email:</b> {}<br/><b>Message:</b> {}",
@@ -138,42 +144,34 @@ async fn send_email(contact_request: &ContactRequest) -> Result<(), Error> {
         contact_request.email,
         html_message
     );
-
     let from_address = env::var("FromEmail").expect("FromEmail environment variable not set");
     let to_address = env::var("ToEmail").expect("ToEmail environment variable not set");
-    
-    // Construct SES request
-    let request = SendEmailRequest {
-        destination: Destination {
-            to_addresses: Some(vec![to_address]),
-            ..Default::default()
-        },
-        message: Message {
-            body: SesBody {
-                text: Some(Content {
-                    data: body_text,
-                    charset: Some("UTF-8".to_string()),
-                }),
-                html: Some(Content {
-                    data: body_html,
-                    charset: Some("UTF-8".to_string()),
-                }),
-            },
-            subject: Content {
-                data: subject,
-                charset: Some("UTF-8".to_string()),
-            },
-        },
-        source: from_address,
-        reply_to_addresses: Some(vec![contact_request.email.clone()]),
-        ..Default::default()
-    };
 
     if contact_request.email == "test" {
         // Don't send an email if this is a test
     } else {
-        // Send email
-        ses_client.send_email(request).await?;
+        ses_client
+            .send_email()
+            .content(
+                EmailContent::builder()
+                    .simple(
+                        Message::builder()
+                            .subject(Content::builder().data(subject).build()?)
+                            .body(
+                                ses_Body::builder()
+                                    .text(Content::builder().data(body_text).build()?)
+                                    .html(Content::builder().data(body_html).build()?)
+                                    .build(),
+                            )
+                            .build(),
+                    )
+                    .build(),
+            )
+            .destination(Destination::builder().to_addresses(to_address).build())
+            .from_email_address(from_address)
+            .reply_to_addresses(contact_request.email.clone())
+            .send()
+            .await?;
     }
 
     Ok(())
