@@ -10,6 +10,8 @@ ARG TZ=America/New_York
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
 
+ENV PLAYWRIGHT_BROWSERS_PATH=/root/ms-playwright
+
 ENV PATH="/root/.bun/bin/:/root/.zvm/self/:/root/.zvm/bin:/root/.cargo/bin:$PATH"
 WORKDIR /root/dylanlangston.com
 

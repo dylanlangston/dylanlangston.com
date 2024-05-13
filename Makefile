@@ -93,13 +93,11 @@ endif
 setup-docker: ## Docker Compose
 	@docker compose build
 
-setup-playwright: export PLAYWRIGHT_BROWSERS_PATH=${shell pwd}/playwright
-
 setup-playwright: ## Setup Playwright
 ifeq ($(USE_NODE),1)
-	@npx --prefix ./site --yes playwright install --with-deps;
+	@npm exec --prefix ./site --no -- playwright install --with-deps;
 else
-	@cd ./site; bunx --bun playwright install --with-deps;
+	@bun --bun --cwd ./site playwright install --with-deps;
 endif
 
 setup-rust: ## Setup Rust Environment
@@ -130,12 +128,12 @@ endif
 else
 ifeq ($(OPTIMIZE),Debug)
 else
-	@cd ./site; bunx --bun binaryen ./static/dylanlangston.com.wasm -all --post-emscripten --low-memory-unused -tnh --converge -Oz --flatten --rereloop -Oz -Oz -o ./static/dylanlangston.com.wasm; cd ../
+	@cd ./site; bun exec -b ./node_modules/binaryen/bin/wasm-opt ./static/dylanlangston.com.wasm -all --post-emscripten --low-memory-unused -tnh --converge -Oz --flatten --rereloop -Oz -Oz -o ./static/dylanlangston.com.wasm; cd ../
 endif
 ifeq ($(PRECOMPRESS_RELEASE),1)
-	@bun -b run --cwd ./site build -- -- --precompress
+	@bun run -b --cwd ./site build -- -- --precompress
 else
-	@bun -b run --cwd ./site build
+	@bun run -b --cwd ./site build
 endif
 endif
 	
