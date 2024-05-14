@@ -66,6 +66,7 @@ RUN apt-get -y install --no-install-recommends nodejs npm
 
 # Install Playwright Browsers
 COPY --from=mcr.microsoft.com/playwright:latest /ms-playwright /root/ms-playwright
+COPY --from=mcr.microsoft.com/playwright:latest /usr/lib/x86_64-linux-gnu/libic*.so** /usr/lib/x86_64-linux-gnu/
 
 # Setup
 RUN make setup USE_NODE=1
