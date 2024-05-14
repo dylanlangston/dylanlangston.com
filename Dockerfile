@@ -65,8 +65,8 @@ RUN apt-get -y install --no-install-recommends nodejs npm
 #curl --proto '=https' --tlsv1.3 -fsSL https://bun.sh/install | bash
 
 # Setup
-RUN make setup-playwright USE_NODE=1
 RUN make setup USE_NODE=1
+RUN make setup-playwright USE_NODE=1
 
 # Cleanup
 RUN make clean-cache \
