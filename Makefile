@@ -62,7 +62,7 @@ else
 	@make build-rust-lambda
 endif
 
-setup: setup-emscripten setup-bun setup-rust # Default Setup Target. Sets up emscripten, nodejs, playwright, and rust.
+setup: setup-emscripten setup-bun setup-playwright setup-rust # Default Setup Target. Sets up emscripten, nodejs, playwright, and rust.
 
 clean: ## Default Clean Target.
 	@rm -rf ./zig-out/*
