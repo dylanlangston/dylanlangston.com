@@ -54,8 +54,8 @@ chat_session = model.start_chat(
 def lambda_handler(event, context):
     if event["httpMethod"] == "OPTIONS":
         allowed_origins = [
-            "http://dylanlangston.com",
-            "http://testing.dylanlangston.com",
+            "https://dylanlangston.com",
+            "https://testing.dylanlangston.com",
         ]
         request_origin = event["headers"].get("Origin", "")
 
