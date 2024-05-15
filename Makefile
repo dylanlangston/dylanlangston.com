@@ -178,5 +178,6 @@ test-rust-lambda: ## Test the Contact API Lambda
 	@cd ./rust-lambda; cargo lambda invoke -a 127.0.0.1 -p 9999 "contact" --data-file ./TestData.json; pkill cargo-lambda
 
 build-python-lambda: setup-python ## Package the Chat Lambda
-	@rm -f ./python-lambda/chat.zip
-	@cd ./python-lambda/package;zip -r ../chat.zip .;cd ../src; zip ../chat.zip ./chat.py
+	@rm -f ./python-lambda/build/chat.zip
+	@mkdir -p ./python-lambda/build/
+	@cd ./python-lambda/package;zip -r ../build/chat.zip .;cd ../src; zip ../build/chat.zip ./chat.py
