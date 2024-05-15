@@ -153,7 +153,7 @@ Resources:
                   - logs:CreateLogStream
                   - logs:PutLogEvents
                 Resource: 
-                  - !Sub "arn:aws:logs:${AwsRegion}:${AwsAccountId}:log-group:/aws/lambda/ContactFunction:*"
+                  - !Sub "arn:aws:logs:${AwsRegion}:${AwsAccountId}:log-group:/aws/lambda/ContactMe:*"
               - Effect: Allow
                 Action: ses:SendEmail
                 Resource: 
@@ -207,7 +207,7 @@ Resources:
                   - logs:CreateLogStream
                   - logs:PutLogEvents
                 Resource: 
-                  - !Sub "arn:aws:logs:${AwsRegion}:${AwsAccountId}:log-group:/aws/lambda/ChatFunction:*"
+                  - !Sub "arn:aws:logs:${AwsRegion}:${AwsAccountId}:log-group:/aws/lambda/Chat:*"
 
   ChatFunction:
     Type: AWS::Serverless::Function
