@@ -45,7 +45,7 @@ class CustomEmscriptenModule implements ICustomEmscriptenModule {
 		setTimeout(async () => {
 			const mod: IEmscripten = <any>this;
 			await mod.instantiateAsync(imports, successCallback);
-			mod.loadSymbols();
+			if (mod.loadSymbols) mod.loadSymbols();
 		});
 		
 		return {};
