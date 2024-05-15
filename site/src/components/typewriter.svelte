@@ -45,7 +45,7 @@
 	{phrase}{#if !stopBlinking}<span class="cursor blink" aria-hidden="true">|</span>{/if}
 {/if}
 
-<style>
+<style lang="postcss">
 	.cursor {
 		display: inline-flex;
 		font-weight: 400;

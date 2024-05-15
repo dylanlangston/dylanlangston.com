@@ -2,6 +2,7 @@
 	import Typewriter from '$components/typewriter.svelte';
 	import { fade, blur, fly, slide, scale, crossfade } from 'svelte/transition';
 	import { quintOut, bounceInOut, backOut, elasticOut } from 'svelte/easing';
+	import { Environment } from '$lib/Common';
 
 	export let messages: { text: string; user: string }[] = [];
 	export let isSending = false;
@@ -40,6 +41,8 @@
 		return slide(node, { duration: 250, axis: 'x' });
 	}
 
+	const darkMode = Environment.darkMode;
+
 	function onAnimating(active: boolean) {
 		if (animating) animating(active);
 	}
@@ -50,6 +53,7 @@
 		<div
 			in:animateMessage={{ messageUser: message.user }}
 			class="message rounded-xl p-4"
+			class:dark={$darkMode}
 			class:sys-message={message.user === 'sys'}
 			class:user-message={message.user === 'user'}
 			class:bot-message={message.user === 'bot'}
@@ -75,6 +79,7 @@
 			in:slide={{ duration: 250, delay: 100, axis: 'x' }}
 			out:blur={{ duration: 150 }}
 			class="message bot-message rounded-xl p-4"
+			class:dark={$darkMode}
 		>
 			<div class="block w-[100px]">
 				<span class="chatbot-loader"></span>
@@ -83,16 +88,14 @@
 	{/if}
 </div>
 
-<style>
+<style lang="postcss">
 	.message {
-		overflow-x: auto;
-		overflow-y: hidden;
-		max-width: 90%;
-		padding: 10px;
-		margin-bottom: 10px;
-		border-radius: 10px;
-		backdrop-filter: blur(10px);
-		border: 1px solid rgba(255, 255, 255, 0.18);
+		border-color: rgba(0,0,0, 0.5);
+		@apply border shadow-sm rounded-lg max-w-[90%] p-3 mb-3 overflow-x-auto overflow-y-hidden backdrop-blur-lg;
+	}
+
+	.dark {
+		border-color: rgba(255,255,255, 0.5);
 	}
 
 	.sys-message {
