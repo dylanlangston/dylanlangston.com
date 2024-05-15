@@ -65,9 +65,11 @@ runs:
         mkdir -p ./site/build
         mkdir -p ./rust-lambda/target/contact
         mkdir -p ./rust-lambda/target/email-forward
+        mkdir -p ./python-lambda/build
         unzip ./artifacts/dylanlangston.com-v*.zip -d ./site/build
         unzip ./artifacts/dylanlangston.com-contact-v*.zip -d ./rust-lambda/target/contact
         unzip ./artifacts/dylanlangston.com-email-v*.zip -d ./rust-lambda/target/email-forward
+        unzip ./artifacts/dylanlangston.com-chat-v*.zip -d ./python-lambda/build
     - name: Deploy Lambda with SAM
       shell: sh
       run: |
