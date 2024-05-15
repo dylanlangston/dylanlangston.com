@@ -38,49 +38,59 @@
 
 	let chatArea: HTMLDivElement | undefined;
 
-	async function sendMessage() {
-		if (inputText.trim() === '' || isSending) return;
+    async function sendMessage() {
+        if (inputText.trim() === '' || isSending) return;
 
-		const text = inputText.trim();
-		inputText = '';
+        const text = inputText.trim();
+        inputText = '';
 
-		// Add user's message to the chat
-		messages = [...messages, { text: text, user: MsgUserType.user }];
-		setTimeout(() => chatArea?.scrollTo(0, chatArea.scrollHeight));
-		isSending = true;
+        // Add user's message to the chat
+        messages = [...messages, { text: text, user: MsgUserType.user }];
+        setTimeout(() => chatArea?.scrollTo(0, chatArea.scrollHeight));
+        isSending = true;
 
-		await new Promise(r => setTimeout(r, Math.random() * 2000));
+        try {
+            const response = await fetch('https://api.dylanlangston.com/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ "Message": text })
+            });
 
-		try {
-			messages = [
-				...messages,
-				{ text: "I'm a bot... ".repeat(Math.random() * 18 + 2), user: MsgUserType.bot }
-			];
-		} catch (er) {
-			messages = [
-				...messages,
-				{ text: 'An error occured! Please try again.', user: MsgUserType.system }
-			];
-			console.error(er);
-		}
+            if (response.ok) {
+                const data = await response.json();
+                messages = [
+                    ...messages,
+                    { text: data.Message, user: MsgUserType.bot }
+                ];
+            } else {
+                throw new Error('Failed to send message');
+            }
+        } catch (er) {
+            messages = [
+                ...messages,
+                { text: 'An error occurred! Please try again.', user: MsgUserType.system }
+            ];
+            console.error(er);
+        }
 
-		setTimeout(() => chatArea?.scrollTo(0, chatArea.scrollHeight));
-		isSending = false;
-	}
+        setTimeout(() => chatArea?.scrollTo(0, chatArea.scrollHeight));
+        isSending = false;
+    }
 
-	onMount(() => {
-		messages = [{ text: 'Welcome! How can I assist you?', user: MsgUserType.bot }];
+    onMount(() => {
+        messages = [{ text: "Hey there, I'm Dylan Langston's digital twin. I can answer some questions about Dylan's background and experience as a .NET/C# Developer. What can I help you with today?", user: MsgUserType.bot }];
+    });
 
-	});
+    function handleKeyPress(event: KeyboardEvent) {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault(); // Prevents adding a new line
 
-	function handleKeyPress(event: KeyboardEvent) {
-		if (event.key === 'Enter' && !event.shiftKey) {
-			event.preventDefault(); // Prevents adding a new line
-
-			if (isAnimating || isSending || inputText == '') return;
-			sendMessage();
-		}
-	}
+            if (isAnimating || isSending || inputText == '') return;
+            sendMessage();
+        }
+    }
 </script>
 
 <Panel>
