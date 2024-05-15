@@ -42,7 +42,7 @@ pub fn build(b: *std.Build) !void {
     }
 
     const exe_unit_tests = b.addTest(.{
-        .root_source_file = .{ .path = "zig/src/main.zig" },
+        .root_source_file = b.path("zig/src/main.zig"),
         .target = target,
         .optimize = optimize,
     });
@@ -86,7 +86,7 @@ fn configure(b: *std.Build, t: std.Build.ResolvedTarget, o: std.builtin.Optimize
         c,
     );
 
-    c.addIncludePath(.{ .path = "./emsdk/upstream/emscripten/cache/sysroot/include/" });
+    c.addIncludePath(b.path("./emsdk/upstream/emscripten/cache/sysroot/include/"));
 
     c.linkLibrary(raylib_artifact);
 
@@ -97,7 +97,7 @@ fn configure(b: *std.Build, t: std.Build.ResolvedTarget, o: std.builtin.Optimize
 fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.builtin.OptimizeMode, raylib_artifact: *std.Build.Step.Compile) !void {
     const lib = b.addStaticLibrary(.{
         .name = name,
-        .root_source_file = .{ .path = "zig/src/main.zig" },
+        .root_source_file = b.path("zig/src/main.zig"),
         // Zig building to emscripten doesn't work, because the Zig standard library
         // is missing some things in the C system. "std/c.zig" is missing fd_t,
         // which causes compilation to fail. So build to wasi instead, until it gets
@@ -256,32 +256,24 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
 
     // Copy output to the svelte import folder
     const writeFiles = b.addWriteFiles();
-    _ = writeFiles.addCopyFileToSource(std.Build.LazyPath{
-        .path = emccOutputDir ++ name ++ ".js",
-    }, b.pathJoin(&[_][]const u8{
+    _ = writeFiles.addCopyFileToSource(b.path(emccOutputDir ++ name ++ ".js"), b.pathJoin(&[_][]const u8{
         "site",
         "src",
         "import",
         "emscripten.js",
     }));
-    _ = writeFiles.addCopyFileToSource(std.Build.LazyPath{
-        .path = emccOutputDir ++ name ++ ".wasm",
-    }, b.pathJoin(&[_][]const u8{
+    _ = writeFiles.addCopyFileToSource(b.path(emccOutputDir ++ name ++ ".wasm"), b.pathJoin(&[_][]const u8{
         "site",
         "static",
         name ++ ".wasm",
     }));
     if (debugging_wasm) {
-        _ = writeFiles.addCopyFileToSource(std.Build.LazyPath{
-            .path = emccOutputDir ++ name ++ ".wasm.map",
-        }, b.pathJoin(&[_][]const u8{
+        _ = writeFiles.addCopyFileToSource(b.path(emccOutputDir ++ name ++ ".wasm.map"), b.pathJoin(&[_][]const u8{
             "site",
             "static",
             name ++ ".wasm.map",
         }));
-        _ = writeFiles.addCopyFileToSource(std.Build.LazyPath{
-            .path = emccOutputDir ++ name ++ ".js.symbols",
-        }, b.pathJoin(&[_][]const u8{
+        _ = writeFiles.addCopyFileToSource(b.path(emccOutputDir ++ name ++ ".js.symbols"), b.pathJoin(&[_][]const u8{
             "site",
             "src",
             "import",
@@ -328,7 +320,7 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
 fn build_desktop(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.builtin.OptimizeMode, raylib_artifact: *std.Build.Step.Compile) !void {
     const exe = b.addExecutable(.{
         .name = name,
-        .root_source_file = .{ .path = "zig/src/main.zig" },
+        .root_source_file = b.path("zig/src/main.zig"),
         .target = target,
         .optimize = optimize,
     });

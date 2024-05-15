@@ -121,9 +121,7 @@ inline fn embedFiles(
     });
     for (names.items) |name| {
         module.addAnonymousImport(name, .{
-            .root_source_file = .{
-                .path = name,
-            },
+            .root_source_file = b.path(name),
         });
     }
     c.root_module.addImport(module_name, module);

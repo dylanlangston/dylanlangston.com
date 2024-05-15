@@ -152,31 +152,23 @@ pub inline fn importViews(
         .root_source_file = file.dupe(b),
     });
     module.addAnonymousImport("ViewImport", .{
-        .root_source_file = .{
-            .path = b.pathJoin(&[_][]const u8{
-                "./zig", "src", viewPath, viewPath ++ ".zig",
-            }),
-        },
+        .root_source_file = b.path(b.pathJoin(&[_][]const u8{
+            "./zig", "src", viewPath, viewPath ++ ".zig",
+        })),
     });
     module.addAnonymousImport("ViewModelImport", .{
-        .root_source_file = .{
-            .path = b.pathJoin(&[_][]const u8{
-                "./zig", "src", viewModelPath, viewModelPath ++ ".zig",
-            }),
-        },
+        .root_source_file = b.path(b.pathJoin(&[_][]const u8{
+            "./zig", "src", viewModelPath, viewModelPath ++ ".zig",
+        })),
     });
     for (viewNames.items) |name| {
         module.addAnonymousImport(name, .{
-            .root_source_file = .{
-                .path = name,
-            },
+            .root_source_file = b.path(name),
         });
     }
     for (viewModelNames.items) |name| {
         module.addAnonymousImport(name, .{
-            .root_source_file = .{
-                .path = name,
-            },
+            .root_source_file = b.path(name),
         });
     }
     c.root_module.addImport(module_name, module);
