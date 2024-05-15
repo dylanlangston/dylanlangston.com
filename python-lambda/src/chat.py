@@ -101,8 +101,15 @@ def lambda_handler(event, context):
 
     message = body["Message"]
 
-    gemini_response = chat_session.send_message(message).text
-
+    try:
+        gemini_response = chat_session.send_message(message).text
+    except Exception as e:
+        return {
+            "statusCode": 500,
+            "body": json.dumps({"Error": str(e)}),
+            "headers": {"Content-Type": "application/json"},
+        }
+    
     return {
         "statusCode": 200,
         "body": json.dumps({"Message": gemini_response}),
