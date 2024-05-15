@@ -215,7 +215,7 @@ Resources:
       Handler: chat.lambda_handler
       Runtime: python3.12
       Role: !GetAtt ChatFunctionRole.Arn
-      CodeUri: python-lambda/src/chat.py
+      CodeUri: python-lambda/chat.zip
       Timeout: 30
       MemorySize: 128
       FunctionName: Chat

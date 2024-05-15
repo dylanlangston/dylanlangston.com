@@ -59,10 +59,10 @@ endif
 release: clean build-web build-site  ## Default Release Target. Builds Web Version for publish
 ifeq ($(OPTIMIZE),Debug)
 else
-	@make build-rust-lambda
+	@make build-rust-lambda build-python-lambda
 endif
 
-setup: setup-emscripten setup-bun setup-rust # Default Setup Target. Sets up emscripten, nodejs, playwright, and rust.
+setup: setup-emscripten setup-bun setup-rust setup-python # Default Setup Target. Sets up emscripten, nodejs, playwright, and rust.
 
 clean: ## Default Clean Target.
 	@rm -rf ./zig-out/*
@@ -102,6 +102,9 @@ endif
 
 setup-rust: ## Setup Rust Environment
 	@cd ./rust-lambda; cargo fetch; cd ..
+
+setup-python: ## Setup Python Environment
+	@python3 -m pip install -r ./python-lambda/src/dependencies.txt --target ./python-lambda/package
 
 build-desktop: ## Build Desktop. Optionally pass in the OPTIMIZE=... argument.
 	@zig build -Doptimize=$(OPTIMIZE) -freference-trace
@@ -165,7 +168,7 @@ update-version: ## Update Version. Optionally pass in the VERSION=1.0.0 argument
 	@sed -i -r 's/version = "([[:digit:]]{1,}\.*){3,4}"$$/version = "$(VERSION)"/g' ./rust-lambda/Cargo.toml
 	@echo Updated Version to $(VERSION)
 
-build-rust-lambda: ## Build the Contact API Lambda
+build-rust-lambda: ## Build the Contact API and EmailForward Lambda
 	@cd ./rust-lambda; cargo lambda build --release --target aarch64-unknown-linux-gnu --output-format zip -l ./target
 
 test-rust-lambda: ## Test the Contact API Lambda
@@ -173,3 +176,7 @@ test-rust-lambda: ## Test the Contact API Lambda
 	@cd ./rust-lambda; cargo lambda watch -w -a 127.0.0.1 -p 9999 &
 	@timeout 30 bash -c 'while ! nc -z 127.0.0.1 9999; do sleep 1; done' || (pkill cargo-lambda && exit 1);
 	@cd ./rust-lambda; cargo lambda invoke -a 127.0.0.1 -p 9999 "contact" --data-file ./TestData.json; pkill cargo-lambda
+
+build-python-lambda: setup-python ## Package the Chat Lambda
+	@rm -f ./python-lambda/chat.zip
+	@cd ./python-lambda/package;zip -r ../chat.zip .;cd ../src; zip ../chat.zip ./chat.py
