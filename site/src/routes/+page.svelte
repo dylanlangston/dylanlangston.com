@@ -48,23 +48,28 @@
 			<Panel marginAuto={true} paddingY={false}>
 				<svelte:fragment>
 					<div class="mx-1 sm:mx-4 flex flex-row animate-background">
-						<h1
-							class="my-1 md:my-2 lg:my-4 text-2xl md:text-4xl lg:text-5xl text-gray-900 dark:text-white"
+						<a
+							rel="noopener noreferrer"
+							href="/chat"
 						>
-							<span
-								class="drop-shadow-lg font-extrabold bg-clip-text bg-gradient-to-r to-emerald-800 from-sky-600 dark:to-emerald-600 dark:from-sky-400 text-transparent dark:text-transparent"
-								><Typewriter disabled={!shouldAnimateTitle} phrase={'Hello World,'} /></span
+							<h1
+								class="my-1 md:my-2 lg:my-4 text-2xl md:text-4xl lg:text-5xl text-gray-900 dark:text-white"
 							>
-							<br />
-							<span class="italic text-xl md:text-3xl lg:text-5xl"
-								><Typewriter
-									disabled={!shouldAnimateTitle}
-									delay={1200}
-									phrase={"I'm Dylan Langston"}
-									stopBlinking={false}
-								/></span
-							>
-						</h1>
+								<span
+									class="drop-shadow-lg font-extrabold bg-clip-text bg-gradient-to-r to-emerald-800 from-sky-600 dark:to-emerald-600 dark:from-sky-400 text-transparent dark:text-transparent"
+									><Typewriter disabled={!shouldAnimateTitle} phrase={'Hello World,'} /></span
+								>
+								<br />
+								<span class="italic text-xl md:text-3xl lg:text-5xl"
+									><Typewriter
+										disabled={!shouldAnimateTitle}
+										delay={1200}
+										phrase={"I'm Dylan Langston"}
+										stopBlinking={false}
+									/></span
+								>
+							</h1>
+						</a>
 					</div>
 				</svelte:fragment>
 			</Panel>
@@ -74,7 +79,7 @@
 				class="rounded-full glass round-full w-36 h-36 md:h-44 md:w-44 lg:h-56 lg:w-56 mr-auto my-0"
 			>
 				{#await profilePicture}
-					<div out:fade|local={{ duration: 50 }} title={"Loading..."}>
+					<div out:fade|local={{ duration: 50 }} title={'Loading...'}>
 						<UserIcon class="rounded-full aspect-square p-2 lg:p-4 w-full h-full" />
 					</div>
 				{:then src}

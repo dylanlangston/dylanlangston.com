@@ -9,12 +9,15 @@
 	export let rate: number = 100;
 	export let disabled: boolean = false;
 	export let stopBlinking: boolean = true;
+	export let animating: ((active: boolean) => void) | undefined = undefined;
+
 	let typedChar = '';
 	let index = 0;
-	let typewriter: number;
+	let typewriter: NodeJS.Timeout;
 
 	const typeChar = () => {
 		if (index < phrase.length) {
+			if (animating) animating(true);
 			typedChar += phrase[index];
 			index += 1;
 		} else {
@@ -23,9 +26,13 @@
 		}
 	};
 
-	const typing = () => (typewriter = setInterval(typeChar, rate));
+	const typing = () => {
+		if (animating) animating(true);
+		typewriter = setInterval(typeChar, rate)
+	};
 
 	const stopTyping = () => {
+		if (animating) animating(false);
 		clearInterval(typewriter);
 	};
 
