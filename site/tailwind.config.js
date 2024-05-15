@@ -1,6 +1,11 @@
-import { transform } from 'typescript';
-
-const colors = require('tailwindcss/colors')
+const colors = require('tailwindcss/colors');
+const colorsToSkip = ['lightBlue', 'warmGray', 'trueGray', 'coolGray', 'blueGray'];
+const filteredColors = Object.keys(colors)
+  .filter(color => !colorsToSkip.includes(color))
+  .reduce((obj, key) => {
+    obj[key] = colors[key];
+    return obj;
+  }, {});
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -11,7 +16,7 @@ export default {
 	content: ['./src/**/*.{html,js,svelte,ts,css}'],
 	theme: {
 		colors: {
-			...colors,
+			...filteredColors,
 			rainbow: 'var(--Rainbow)'
 		},
 		extend: {
