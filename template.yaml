@@ -212,8 +212,8 @@ Resources:
   ChatFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: lambda_function.lambda_handler
-      Runtime: python3.8
+      Handler: chat.lambda_handler
+      Runtime: python3.12
       Role: !GetAtt ChatFunctionRole.Arn
       CodeUri: python-lambda/src/chat.py
       Timeout: 30
@@ -258,9 +258,13 @@ Outputs:
     Description: "Lambda Function ARN"
     Value: !GetAtt ContactFunction.Arn
 
+  ChatFunction:
+    Description: "Lambda Function ARN"
+    Value: !GetAtt ChatFunction.Arn
+
   ApiUrl:
     Description: "API Gateway URL"
-    Value: !Sub "https://api.${DomainName}/contact"
+    Value: !Sub "https://api.${DomainName}/"
 
   S3URL:
     Value: !GetAtt SiteBucket.RegionalDomainName
