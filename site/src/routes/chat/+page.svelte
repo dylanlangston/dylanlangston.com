@@ -112,13 +112,13 @@
 
 <Panel>
 	<svelte:fragment>
-		<div class="space-y-3 sm:text-center mx-auto w-max">
+		<div class="space-y-3 sm:text-center mx-auto w-max max-w-[80vw] text-center">
 			<p class="text-3xl font-semibold sm:text-4xl px-4">Chat with my Digital Twin</p>
 		</div>
-		<div bind:this={chatArea} class="mt-6 h-[50vh] max-w-screen-xl w-[80vw] mx-5 chatbox overflow-scroll">
+		<div bind:this={chatArea} class="mt-6 h-[50vh] max-w-[80vw] mx-5 chatbox overflow-x-auto overflow-y-auto">
 			<Chat {messages} {isSending} />
 		</div>
-		<div class="flex align-center mt-6 max-w-[80vw] mx-5">
+		<div class="flex align-center mt-6 mx-5">
 			<textarea
 				rows="3"
 				class="resize-none w-full mt-2 px-3 py-2 bg-transparent outline-none border border-black dark:border-white shadow-sm rounded-lg disabled:cursor-not-allowed"

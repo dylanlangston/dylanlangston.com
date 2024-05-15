@@ -10,7 +10,7 @@
 				? 'message user-message'
 				: 'message bot-message'} rounded-xl p-4"
 		>
-			<span class="whitespace-pre-line">{message.text}</span>
+			<span class="whitespace-pre-line whitespace-nowrap">{message.text}</span>
 		</div>
 	{/each}
 	{#if isSending}
@@ -22,6 +22,8 @@
 
 <style>
 	.message {
+		overflow-y: scroll;
+		width: 90%;
 		padding: 10px;
         margin-bottom: 10px;
 		border-radius: 10px;
