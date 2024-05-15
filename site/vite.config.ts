@@ -24,13 +24,7 @@ export default defineConfig({
 			'dylanlangston.com.wasm': resolve('./static/dylanlangston.com.wasm')
 		}
 	},
-	build: {
-		rollupOptions: {
-			output: {
-				globals: {
-					'browser-dtector': 'BrowserDetector'
-				},
-			},
-		}
+	ssr: {
+		noExternal: ['browser-dtector']
 	}
 });
