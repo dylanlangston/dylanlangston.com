@@ -7,6 +7,21 @@
 
 	import { onMount } from 'svelte';
 
+	class Links {
+		public route: string;
+		public label: string;
+
+		constructor(r: string, l: string) {
+			this.route = r;
+			this.label = l;
+		}
+	}
+
+	const links: Links[] = [
+		new Links("/chat", "Chat"),
+		new Links("/contact", "Contact")
+	];
+
 	let menuOpen: boolean = false;
 	let menuButton: HTMLButtonElement | undefined = undefined;
 
@@ -83,26 +98,18 @@
 			{/if}
 		</div>
 		<ul class="items-stretch hidden space-x-3 md:flex">
-			<!-- <li class="flex">
-				<Ripple classList={'flex h-full'} escapeParent={true}>
-					<a
-						rel="noopener noreferrer"
-						href="/about"
-						class="flex items-center -mb-1 border-b-4 border-transparent hover:border-rainbow"
-						>About</a
-					>
-				</Ripple>
-			</li> -->
-			<li class="flex">
-				<Ripple classList={'flex h-full'} escapeParent={true}>
-					<a
-						rel="noopener noreferrer"
-						href="/contact"
-						class="flex items-center -mb-1 border-b-4 border-transparent hover:border-rainbow"
-						>Contact</a
-					>
-				</Ripple>
-			</li>
+			{#each links as link}
+				<li class="flex">
+					<Ripple classList={'flex h-full'} escapeParent={true}>
+						<a
+							rel="noopener noreferrer"
+							href={link.route}
+							class="flex items-center -mb-1 border-b-4 border-transparent hover:border-rainbow"
+							>{link.label}</a
+						>
+					</Ripple>
+				</li>
+			{/each}
 		</ul>
 		<div class="flex items-center justify-end md:hidden">
 			{#key $darkMode}
@@ -137,20 +144,15 @@
 			in:slide|local={{ duration: 250 }}
 			out:slide|local={{ duration: 250 }}
 		>
-			<!-- <Ripple color={'currentColor'}>
-				<a
-					href="/about"
-					class="flex items-center rounded-md px-3 py-2 text-sm hover:shadow-md hover:bg-rainbow transition-colors duration-300"
-					>About</a
-				>
-			</Ripple> -->
-			<Ripple color={'currentColor'}>
-				<a
-					href="/contact"
-					class="flex items-center rounded-md px-3 py-2 text-sm hover:shadow-md hover:bg-rainbow transition-colors duration-300"
-					>Contact</a
-				>
-			</Ripple>
+			{#each links as link}
+				<Ripple color={'currentColor'}>
+					<a
+						href={link.route}
+						class="flex items-center rounded-md px-3 py-2 text-sm hover:shadow-md hover:bg-rainbow transition-colors duration-300"
+						>{link.label}</a
+					>
+				</Ripple>
+			{/each}
 		</div>
 	{/if}
 </header>
