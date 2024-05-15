@@ -25,6 +25,9 @@ Parameters:
   AwsAccountId:
     Type: String
     Description: AWS account ID
+  GeminiAPIKey:
+    Type: String
+    Description: Google Gemini API Key
 
 Resources:
   SiteBucket:
@@ -181,6 +184,56 @@ Resources:
           Type: Api
           Properties:
             Path: /contact
+            Method: OPTIONS
+
+  ChatFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: ChatFunctionPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: 
+                  - !Sub "arn:aws:logs:${AwsRegion}:${AwsAccountId}:log-group:/aws/lambda/ChatFunction:*"
+
+  ChatFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.8
+      Role: !GetAtt ChatFunctionRole.Arn
+      CodeUri: python-lambda/src/chat.py
+      Timeout: 30
+      MemorySize: 128
+      FunctionName: Chat
+      Architectures:
+        - arm64
+      Environment:
+        Variables:
+          GeminiAPI: !Ref GeminiAPIKey
+      Events:
+        Post:
+          Type: Api
+          Properties:
+            Path: /chat
+            Method: post
+        ContactOptions:
+          Type: Api
+          Properties:
+            Path: /chat
             Method: OPTIONS
 
   ApiGatewayCustomDomain:

@@ -27,7 +27,8 @@
 				"rust-lang.rust-analyzer",
 				"tamasfe.even-better-toml",
 				"redhat.vscode-yaml",
-				"amazonwebservices.aws-toolkit-vscode"
+				"amazonwebservices.aws-toolkit-vscode",
+				"ms-python.python"
 			],
 			"settings": {
 				"zig.path": "",

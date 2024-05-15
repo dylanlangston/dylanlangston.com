@@ -28,6 +28,9 @@ inputs:
   aws-account-id:
     description: 'AWS Account ID'
     required: true
+  gemini-api-key:
+    description: 'Gemini API Key'
+    required: true
 runs:
   using: "composite"
   steps:
@@ -68,7 +71,7 @@ runs:
     - name: Deploy Lambda with SAM
       shell: sh
       run: |
-        sam deploy --capabilities CAPABILITY_NAMED_IAM --parameter-overrides SslCertificateArn=${{ inputs.aws-acm-arn }} ToEmail=${{ inputs.to-email }} FromEmail=${{ inputs.from-email }} AwsS3BucketName=${{ inputs.aws-bucket }} AwsRegion=${{ inputs.aws-region }} AwsAccountId=${{ inputs.aws-account-id }}
+        sam deploy --capabilities CAPABILITY_NAMED_IAM --parameter-overrides SslCertificateArn=${{ inputs.aws-acm-arn }} ToEmail=${{ inputs.to-email }} FromEmail=${{ inputs.from-email }} AwsS3BucketName=${{ inputs.aws-bucket }} AwsRegion=${{ inputs.aws-region }} AwsAccountId=${{ inputs.aws-account-id }} GeminiAPIKey=${{ inputs.gemini-api-key }}
     - name: Deploy Site with CLI
       shell: sh
       run: |

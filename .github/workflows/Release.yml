@@ -158,4 +158,5 @@ jobs:
           from-email: "${{ secrets.FROM_EMAIL }}"
           aws-bucket: "${{ secrets.AWS_BUCKET }}"
           aws-account-id: "${{ secrets.AWS_ACCOUNT_ID }}"
+          gemini-api-key: "${{ secrets.GEMINI_API_KEY }}"
             
