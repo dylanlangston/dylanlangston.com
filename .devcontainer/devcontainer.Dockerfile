@@ -38,11 +38,8 @@ RUN echo export ZVM_INSTALL="$HOME/.zvm" >> $HOME/.bashrc
 RUN echo export PATH="\$PATH:\$ZVM_INSTALL/bin" >> $HOME/.bashrc
 RUN echo export PATH="\$PATH:\$ZVM_INSTALL/self" >> $HOME/.bashrc
 
-# Install ZIG
-RUN $HOME/.zvm/self/zvm i master
-
-# Install ZLS
-RUN $HOME/.zvm/self/zvm i -D=zls master
+# Install ZIG & ZLS
+RUN $HOME/.zvm/self/zvm i -D=zls 0.12.0
 
 # Install rust
 RUN curl --proto '=https' --tlsv1.3 -sSf https://sh.rustup.rs | bash -s -- -y
