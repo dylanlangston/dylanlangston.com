@@ -22,7 +22,8 @@
 
 <style>
 	.message {
-		overflow-y: scroll;
+		overflow-x: auto;
+		overflow-y: hidden;
 		width: 90%;
 		padding: 10px;
         margin-bottom: 10px;
