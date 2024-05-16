@@ -72,7 +72,7 @@ jobs:
         with:
           name: dylanlangston.com-email-v${{ inputs.version }}
           path: '${{ runner.temp }}/release/rust-lambda/target/email-forward/'
-      - name: Upload Chat Forward Lambda artifact
+      - name: Upload Chat Lambda artifact
         if: ${{ success() || steps.upload_email_lambda.conclusion == 'success' }}
         id: upload_chat_lambda
         uses: actions/upload-artifact@v4
