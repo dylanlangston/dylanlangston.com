@@ -104,7 +104,8 @@ setup-rust: ## Setup Rust Environment
 	@cd ./rust-lambda; cargo fetch; cd ..
 
 setup-python: ## Setup Python Environment
-	@python3 -m pip install -r ./python-lambda/src/dependencies.txt --target ./python-lambda/package
+	@python3 -m pip install -r ./python-lambda/src/dependencies.txt --platform manylinux2014_x86_64 --implementation cp --python 3.11 --only-binary :all: --upgrade --target ./python-lambda/package
+	@rm -r ./python-lambda/package/__pycache__
 
 build-desktop: ## Build Desktop. Optionally pass in the OPTIMIZE=... argument.
 	@zig build -Doptimize=$(OPTIMIZE) -freference-trace

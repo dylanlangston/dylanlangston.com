@@ -62,7 +62,7 @@
                 const data = await response.json();
                 messages = [
                     ...messages,
-                    { text: data.Message, user: MsgUserType.bot }
+                    { text: data.Message.trim(), user: MsgUserType.bot }
                 ];
             } else {
                 throw new Error('Failed to send message');

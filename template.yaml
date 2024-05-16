@@ -213,14 +213,14 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: chat.lambda_handler
-      Runtime: python3.12
+      Runtime: python3.11
       Role: !GetAtt ChatFunctionRole.Arn
       CodeUri: python-lambda/build/chat.zip
       Timeout: 30
       MemorySize: 128
       FunctionName: Chat
       Architectures:
-        - arm64
+        - x86_64
       Environment:
         Variables:
           GeminiAPI: !Ref GeminiAPIKey

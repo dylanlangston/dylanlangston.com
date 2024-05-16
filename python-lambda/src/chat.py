@@ -57,14 +57,14 @@ def lambda_handler(event, context):
             "https://dylanlangston.com",
             "https://testing.dylanlangston.com",
         ]
-        request_origin = event["headers"].get("Origin", "")
+        request_origin = event["headers"].get("origin", "")
 
         if request_origin in allowed_origins:
             return {
                 "statusCode": 200,
                 "body": "",
                 "headers": {
-                    "Access-Control-Allow-Origin": request_origin,
+                    "Access-Control-Allow-Origin": "*",
                     "Access-Control-Allow-Methods": "POST,OPTIONS",
                     "Access-Control-Allow-Headers": "Content-Type",
                 },
@@ -101,6 +101,8 @@ def lambda_handler(event, context):
 
     message = body["Message"]
 
+    print("Request: " + message)
+
     try:
         gemini_response = chat_session.send_message(message).text
     except Exception as e:
@@ -113,5 +115,10 @@ def lambda_handler(event, context):
     return {
         "statusCode": 200,
         "body": json.dumps({"Message": gemini_response}),
-        "headers": {"Content-Type": "application/json"},
+        "headers": {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "POST,OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type",
+        },
     }
