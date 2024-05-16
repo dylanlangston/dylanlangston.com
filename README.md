@@ -19,7 +19,7 @@ My personal website is built with a modern tech stack to ensure performance and 
 - [🌐 Emscripten](https://emscripten.org/) for compiling to [🕸️ WebAssembly](https://webassembly.org/).
 - [🛠️ Binaryen](https://github.com/WebAssembly/binaryen) for optimizing WebAssembly.
 - [🦀 Rust](https://www.rust-lang.org/) for backend logic utilizing [🔢 AWS Lambda](https://aws.amazon.com/lambda/).
-- [🐍 Python](https://www.python.org/) for additional backend logic utilizing [🔢 AWS Lambda](https://aws.amazon.com/lambda/).
+- [🐍 Python](https://www.python.org/) for additional backend logic utilizing AWS Lambda.
 - [🧠 Gemini API](https://ai.google.dev/gemini-api) for accessing to Google's Gemini generative AI models.
 - [🖥️ Svelte](https://svelte.dev/) for building interactive user interfaces.
 - [📝 TypeScript](https://www.typescriptlang.org/) for improving JavaScript code reliability and developer efficiency.
