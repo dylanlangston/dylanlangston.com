@@ -120,24 +120,16 @@ build-web: ## Build Web. Optionally pass in the OPTIMIZE=... argument.
 
 build-site: ## Build Website. Uses Binaryen to optimize when OPTIMIZE!='Debug', the default.
 ifeq ($(USE_NODE),1)
-ifeq ($(OPTIMIZE),Debug)
-else
-	@cd ./site; npm exec --package=binaryen -c 'wasm-opt ./static/dylanlangston.com.wasm -all --post-emscripten --low-memory-unused -tnh --converge -Oz --flatten --rereloop -Oz -Oz -o ./static/dylanlangston.com.wasm'; cd ../
-endif
 ifeq ($(PRECOMPRESS_RELEASE),1)
-	@npm run build --prefix ./site -- -- --precompress
+	@npm run build --prefix ./site -- -- --precompress --$(OPTIMIZE)
 else
-	@npm run build --prefix ./site
+	@npm run build --prefix ./site -- -- --$(OPTIMIZE)
 endif
 else
-ifeq ($(OPTIMIZE),Debug)
-else
-	@cd ./site; bun exec -b ./node_modules/binaryen/bin/wasm-opt ./static/dylanlangston.com.wasm -all --post-emscripten --low-memory-unused -tnh --converge -Oz --flatten --rereloop -Oz -Oz -o ./static/dylanlangston.com.wasm; cd ../
-endif
 ifeq ($(PRECOMPRESS_RELEASE),1)
-	@bun -b --cwd ./site build -- -- --precompress
+	@bun -b --cwd ./site build -- -- -precompress --Optimize=$(OPTIMIZE)
 else
-	@bun -b --cwd ./site build
+	@bun -b --cwd ./site build -- -- --Optimize=$(OPTIMIZE)
 endif
 endif
 	

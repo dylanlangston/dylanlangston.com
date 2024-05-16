@@ -8,7 +8,7 @@ import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-	preprocess: [ 
+	preprocess: [
 		sveltePreprocess({
 			postcss: {
 				plugins: [autoprefixer]
@@ -27,13 +27,13 @@ const config = {
 			pages: 'build',
 			assets: 'build',
 			fallback: '404.html',
-			precompress: shouldPrecompress(),
-			strict: true
+			precompress: getArgs().precompress,
+			strict: true,
 		}),
 		alias: {
 			'$components': 'src/components/',
 			'$import': 'src/import/',
-		}
+		},
 	},
 
 	prerender: {
@@ -43,7 +43,8 @@ const config = {
 
 export default config;
 
-function getArgs() {
+/** @returns {*} */
+export function getArgs() {
 	const args = {};
 	process.argv.slice(2, process.argv.length).forEach((arg) => {
 		// long arg
@@ -51,6 +52,7 @@ function getArgs() {
 			const longArg = arg.split('=');
 			const longArgFlag = longArg[0].slice(2, longArg[0].length);
 			const longArgValue = longArg.length > 1 ? longArg[1] : true;
+			if (longArgFlag.length == 0) return;
 			args[longArgFlag] = longArgValue;
 		}
 		// flags
@@ -62,8 +64,4 @@ function getArgs() {
 		}
 	});
 	return args;
-}
-
-function shouldPrecompress() {
-	return Object.keys(getArgs()).some((v) => v.toLowerCase() == 'precompress');
 }
