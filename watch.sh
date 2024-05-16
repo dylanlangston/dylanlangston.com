@@ -12,12 +12,14 @@ else
     USENODE="0"
 fi
 
+OPTIMIZE="$2"
+
 # Exit behavior
 trap "exit" INT TERM
 trap "kill 0" EXIT
 
 echo "Starting"
-((make web USE_NODE=$USENODE) && "" || exit) &
+((make web USE_NODE=$USENODE $OPTIMIZE) && "" || exit) &
 
 echo "Press any key to exit"
 until [ "$exit" = "yes" ]; do

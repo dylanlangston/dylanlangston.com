@@ -41,11 +41,7 @@ desktop: clean build-desktop run-desktop ## Default Desktop Target. clean, build
 web: clean build-web run-site ## Default Web Target. clean, build, and run.
 
 develop: ## Uses the watch.sh script to run an interative design loop.
-ifeq ($(USE_NODE),1)
-	@bash ./watch.sh USE_NODE=1
-else
-	@bash ./watch.sh USE_NODE=0
-endif
+	@bash ./watch.sh USE_NODE=$(USE_NODE) OPTIMIZE=$(OPTIMIZE)
 
 test: clean ## Default Test Target.
 	@zig build test
@@ -150,9 +146,9 @@ test-docker:  ## clean, setup, and test using docker.
 
 run-site: build-web ## Run Website
 ifeq ($(USE_NODE),1)
-	@npm run dev --prefix ./site
+	@npm run dev --prefix ./site -- -- --$(OPTIMIZE)
 else
-	@bun -b run --cwd ./site dev
+	@bun -b run --cwd ./site dev -- -- --$(OPTIMIZE)
 endif
 
 update-version: ## Update Version. Optionally pass in the VERSION=1.0.0 argument.
