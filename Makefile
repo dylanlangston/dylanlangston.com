@@ -127,9 +127,9 @@ else
 endif
 else
 ifeq ($(PRECOMPRESS_RELEASE),1)
-	@bun -b --cwd ./site build -- -- -precompress --Optimize=$(OPTIMIZE)
+	@bun -b --cwd ./site build -- -- --precompress --$(OPTIMIZE)
 else
-	@bun -b --cwd ./site build -- -- --Optimize=$(OPTIMIZE)
+	@bun -b --cwd ./site build -- -- --$(OPTIMIZE)
 endif
 endif
 	
