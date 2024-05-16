@@ -5,19 +5,35 @@ import Binaryen from 'binaryen';
 
 function optimizeWasm(code: Uint8Array) {
     const module = Binaryen.readBinary(code);
-    Binaryen.setPassArgument("-all", null);
-    Binaryen.setPassArgument("--post-emscripten", null);
-    Binaryen.setPassArgument("--low-memory-unused", null);
-    Binaryen.setPassArgument("-tnh", null);
-    Binaryen.setPassArgument("--converge", null);
-    Binaryen.setPassArgument("-Oz", null);
-    Binaryen.setPassArgument("--flatten", null);
-    Binaryen.setPassArgument("--rereloop", null);
-    Binaryen.setPassArgument("-Oz", null);
-    Binaryen.setPassArgument("--Oz", null);
     Binaryen.setDebugInfo(false);
-    module.optimize();
-    return module.emitBinary();
+    module.setFeatures(Binaryen.Features.All);
+    Binaryen.setLowMemoryUnused(true);
+    Binaryen.setOptimizeLevel(3);
+    Binaryen.setShrinkLevel(3);
+    module.runPasses(["post-emscripten", "flatten", "rereloop"]);
+
+    function runPass() {
+      module.optimize();
+      module.validate();
+    }
+
+    let lastBinary: Uint8Array | null = null;
+    let i = 0;
+    while (i < 3) {
+      runPass();
+
+      const binary = module.emitBinary();
+      //console.log("Last Binary Size: " + lastBinary?.length + " - Binary size: " + binary.length + " - i:" + i);
+      if (binary.length >= (lastBinary?.length ?? Number.MAX_VALUE)) {
+        i++;
+        continue;
+      };
+
+      i = 0;
+      lastBinary = binary;
+    }
+
+    return lastBinary;
 }
 
 async function getFiles(folderPath: string): Promise<string[]> {
