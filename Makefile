@@ -135,9 +135,9 @@ else
 	@cd ./site; bun exec -b ./node_modules/binaryen/bin/wasm-opt ./static/dylanlangston.com.wasm -all --post-emscripten --low-memory-unused -tnh --converge -Oz --flatten --rereloop -Oz -Oz -o ./static/dylanlangston.com.wasm; cd ../
 endif
 ifeq ($(PRECOMPRESS_RELEASE),1)
-	@bun run -b --cwd ./site build -- -- --precompress
+	@bun -b --cwd ./site build -- -- --precompress
 else
-	@bun run -b --cwd ./site build
+	@bun -b --cwd ./site build
 endif
 endif
 	
