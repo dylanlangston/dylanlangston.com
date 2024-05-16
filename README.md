@@ -19,6 +19,8 @@ My personal website is built with a modern tech stack to ensure performance and 
 - [🌐 Emscripten](https://emscripten.org/) for compiling to [🕸️ WebAssembly](https://webassembly.org/).
 - [🛠️ Binaryen](https://github.com/WebAssembly/binaryen) for optimizing WebAssembly.
 - [🦀 Rust](https://www.rust-lang.org/) for backend logic utilizing [🔢 AWS Lambda](https://aws.amazon.com/lambda/).
+- [🐍 Python](https://www.python.org/) for additional backend logic utilizing [🔢 AWS Lambda](https://aws.amazon.com/lambda/).
+- [🧠 Gemini API](https://ai.google.dev/gemini-api) for accessing to Google's Gemini generative AI models.
 - [🖥️ Svelte](https://svelte.dev/) for building interactive user interfaces.
 - [📝 TypeScript](https://www.typescriptlang.org/) for improving JavaScript code reliability and developer efficiency.
 - [🎨 TailwindCSS](https://tailwindcss.com/) for styling components with utility-first CSS.
@@ -53,7 +55,7 @@ flowchart TB
         S1 & S2 & S3 & subGraph0 --Bundle--> S4 ==Hosting==> S5 ==CDN==> S6
     end
 
-    subgraph "Backend - API"
+    subgraph "Rust Backend - API"
         direction LR
         I1("Rust")
         I2("Cargo Lambda")
@@ -65,7 +67,18 @@ flowchart TB
         I3 -.- I5 -.- I2
     end
 
+    subgraph "Python Backend - API"
+        direction LR
+        P1("Python")
+        P2("Gemini API")
+        P3("AWS Lambda")
+        P4("AWS API Gateway")
+
+        P1 -.- P2 -.- P3 --> P4
+    end
+
 	subGraph1 <-..-> subGraph2
+	subGraph1 <-..-> subGraph3
 	
 ```
 
@@ -90,28 +103,33 @@ flowchart LR
     subgraph "HTML 5 Canvas"
         B2("Zig")
         B3("Emscripten")
-        B4("Binaryen")
     end
     subgraph "Static Site"
         B12("Svelte")
         B13("TypeScript")
         B5("NodeJS/Bun")
         B6("Vite")
+        B4("Binaryen")
     end
-    subgraph "API "
+    subgraph "Rust API"
         B10("rust")
         B11("cargo")
     end
+    subgraph "Python API"
+        B14("python")
+        B15("zip")
+    end
 
 
-    B2 -.- B3 -.- B4
-    B5 -.- B6
+    B2 -.- B3
+    B5 -.- B6 -.- B4
     B10 -.- B11
     B13 -.- B12
+    B14 -.- B15
     B5 -.- B12
     B13 -.- B5
 
-    B1 --Build--> subGraph0 --Build--> subGraph1 --Build--> subGraph2 --Release--> B9
+    B1 --Build--> subGraph0 --Build--> subGraph1 --Build--> subGraph2 --Build--> subGraph3 --Release--> B9
     B8 --Dev Container--> B7 --Setup--> B1
     B8 ~~~ B9
     B8 ~~~ B1
