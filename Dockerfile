@@ -104,7 +104,7 @@ FROM scratch AS publish
 COPY --from=build /root/dylanlangston.com/site/build/ /site/build
 COPY --from=build /root/dylanlangston.com/rust-lambda/target*/contact* /rust-lambda/target/contact
 COPY --from=build /root/dylanlangston.com/rust-lambda/target*/email-forward* /rust-lambda/target/email-forward
-COPY --from=build /root/dylanlangston.com/python-lambda/build*/* /python-lambda/build
+COPY --from=build /root/dylanlangston.com/python-lambda/build*/ /python-lambda/build
 
 # Default Stage is the Base stage
 FROM base as default
