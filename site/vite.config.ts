@@ -12,7 +12,7 @@ export default defineConfig({
 		optimizeWASMPlugin({enabled: !args.Debug}),
 		sveltekit(), 
 		partytownVite({
-			debug: !args.Debug
+			debug: args.Debug
 		})
 	],
 	assetsInclude: './static/**/*',
