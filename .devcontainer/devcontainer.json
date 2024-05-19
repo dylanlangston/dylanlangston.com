@@ -5,6 +5,9 @@
 		"target": "base",
 		"context": ".."
 	},
+	"features": {
+		"ghcr.io/devcontainers/features/github-cli:1": {}
+	},
 	"containerUser": "vscode",
 	"postCreateCommand": "make setup-git-clone setup",
 	"runArgs": ["--volume=/var/lib/docker", "--privileged"],
