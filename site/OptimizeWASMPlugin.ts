@@ -88,7 +88,7 @@ export default function optimizeWASMPlugin({enabled = true}): Plugin {
             const fullPath = path.join(staticFolderPath, filename);
             const wasmCode = await readWasmFile(fullPath);
             const optimizedCode = optimizeWasm(wasmCode);
-            fs.writeFileSync(fullPath, optimizedCode, 'binary');
+            fs.writeFileSync(fullPath, optimizedCode!, 'binary');
         }
       }
       return;
