@@ -100,6 +100,7 @@ Resources:
         Variables:
           ToEmail: !Ref ToEmail
           FromEmail: !Ref FromEmail
+          AwsS3BucketName: !Sub "${AwsS3BucketName}-mail"
       Role: !GetAtt EmailForwarderRole.Arn
       FunctionName: EmailForwarder
 
@@ -174,7 +175,6 @@ Resources:
         Variables:
           ToEmail: !Ref ToEmail
           FromEmail: !Ref FromEmail
-          AwsS3BucketName: !Sub "${AwsS3BucketName}-mail"
       Events:
         ContactPOST:
           Type: Api

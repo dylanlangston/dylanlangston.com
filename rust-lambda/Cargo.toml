@@ -16,6 +16,7 @@ tokio = { version = "1", features = ["full"] }
 aws-config = "1.4.0"
 aws-sdk-sesv2 = "1.26.0"
 aws-sdk-s3 = "1.28.0"
+email = "0.0.21"
 
 [package.metadata.lambda.env]
 ToEmail = "test@test.com"

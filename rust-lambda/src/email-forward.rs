@@ -3,6 +3,7 @@ use aws_config::BehaviorVersion;
 use aws_sdk_s3::{primitives::Blob, Client as S3Client};
 use aws_sdk_sesv2::types::{Destination, EmailContent, RawMessage};
 use aws_sdk_sesv2::Client as SesClient;
+use email::MimeMessage;
 use lambda_runtime::{service_fn, LambdaEvent};
 use serde_json::Value;
 use tokio::io::AsyncReadExt;
@@ -67,7 +68,10 @@ async fn my_handler(event: LambdaEvent<Value>) -> Result<(), Box<dyn std::error:
             let mut buffer = Vec::new();
             reader.read_to_end(&mut buffer).await?;
 
-            Some(Blob::new(buffer))
+            let email = String::from_utf8(buffer)?;
+            let mime_msg = MimeMessage::parse(&email)?;
+
+            Some(Blob::new(mime_msg.as_string_without_headers().into_bytes()))
         }
         None => None,
     };
