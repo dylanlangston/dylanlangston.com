@@ -35,9 +35,9 @@ Resources:
     Properties:
       BucketName: !Ref AwsS3BucketName
       PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
+        BlockPublicAcls: false
         BlockPublicPolicy: false
-        IgnorePublicAcls: true
+        IgnorePublicAcls: false
         RestrictPublicBuckets: false
       WebsiteConfiguration:
         IndexDocument: index.html
