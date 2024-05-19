@@ -35,9 +35,9 @@ Resources:
     Properties:
       BucketName: !Ref AwsS3BucketName
       PublicAccessBlockConfiguration:
-        BlockPublicAcls: false
+        BlockPublicAcls: true
         BlockPublicPolicy: false
-        IgnorePublicAcls: false
+        IgnorePublicAcls: true
         RestrictPublicBuckets: false
       WebsiteConfiguration:
         IndexDocument: index.html
@@ -106,6 +106,7 @@ Resources:
 
   LambdaPermissionForSES:
     Type: AWS::Lambda::Permission
+    DependsOn: EmailForwarderFunction
     Properties:
       Action: lambda:InvokeFunction
       FunctionName: !GetAtt EmailForwarderFunction.Arn
@@ -119,6 +120,7 @@ Resources:
 
   EmailReceiptRule:
     Type: AWS::SES::ReceiptRule
+    DependsOn: LambdaPermissionForSES
     Properties:
       RuleSetName: !Ref EmailReceiptRuleSet
       Rule:
