@@ -4,23 +4,22 @@ use aws_sdk_s3::{primitives::Blob, Client as S3Client};
 use aws_sdk_sesv2::types::{Destination, EmailContent, RawMessage};
 use aws_sdk_sesv2::Client as SesClient;
 use email::MimeMessage;
+use env_logger;
 use lambda_runtime::{service_fn, LambdaEvent};
+use log::{info, warn};
 use serde_json::Value;
 use tokio::io::AsyncReadExt;
-use log::{info, warn, error};
-use env_logger;
+
+struct Clients {
+    s3_client: S3Client,
+    ses_client: SesClient,
+}
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize the logger
     env_logger::init();
-    
-    let func = service_fn(my_handler);
-    let _ = lambda_runtime::run(func).await;
-    Ok(())
-}
 
-async fn my_handler(event: LambdaEvent<Value>) -> Result<(), Box<dyn std::error::Error>> {
     // Initialize SES and S3 clients
     info!("Initializing AWS clients");
     let region_provider = RegionProviderChain::default_provider().or_else("us-east-1");
@@ -28,9 +27,17 @@ async fn my_handler(event: LambdaEvent<Value>) -> Result<(), Box<dyn std::error:
         .region(region_provider)
         .load()
         .await;
-    let ses_client = SesClient::new(&config);
-    let s3_client = S3Client::new(&config);
+    let clients = Clients {
+        s3_client: S3Client::new(&config),
+        ses_client: SesClient::new(&config),
+    };
 
+    let func = service_fn(|event: LambdaEvent<Value>| my_handler(event, &clients));
+    let _ = lambda_runtime::run(func).await;
+    Ok(())
+}
+
+async fn my_handler(event: LambdaEvent<Value>, clients: &Clients) -> Result<(), Box<dyn std::error::Error>> {
     // Get email details from SES event
     info!("Extracting email details from the event");
     let email = event
@@ -63,11 +70,12 @@ async fn my_handler(event: LambdaEvent<Value>) -> Result<(), Box<dyn std::error:
     let raw_email = match message_id {
         Some(message_id) => {
             info!("Fetching raw email from S3 for message ID: {}", message_id);
-            let bucket = std::env::var("AwsS3BucketName").expect("AwsS3BucketName environment variable is not set");
+            let bucket = std::env::var("AwsS3BucketName")
+                .expect("AwsS3BucketName environment variable is not set");
             let key = format!("{}/{}", bucket, message_id);
             info!("S3 Bucket: {}, Key: {}", bucket, key);
 
-            let response = s3_client
+            let response = clients.s3_client
                 .get_object()
                 .bucket(bucket)
                 .key(key)
@@ -99,7 +107,7 @@ async fn my_handler(event: LambdaEvent<Value>) -> Result<(), Box<dyn std::error:
     // Forward email using SES
     if let Some(raw_email) = raw_email {
         info!("Forwarding email using SES");
-        ses_client
+        clients.ses_client
             .send_email()
             .content(
                 EmailContent::builder()
