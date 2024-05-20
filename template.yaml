@@ -119,7 +119,10 @@ Resources:
 
   EmailReceiptRule:
     Type: AWS::SES::ReceiptRule
-    DependsOn: LambdaPermissionForSES
+    DependsOn: [
+      LambdaPermissionForSES,
+      EmailForwarderFunction
+    ]
     Properties:
       RuleSetName: !Ref EmailReceiptRuleSet
       Rule:
@@ -133,6 +136,21 @@ Resources:
               BucketName: !Sub "${AwsS3BucketName}-mail"
           - LambdaAction:
               FunctionArn: !GetAtt EmailForwarderFunction.Arn
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    
+    CreationPolicy:
+      ResourceSignal:
+        Timeout: PT300S
+        Count: 1
+        Delay: PT10S
+        SuccessEvents:
+          - 'ResourceSignalSuccess'
+        FailureEvents:
+          - 'ResourceSignalFailure'
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        "moveIfNecessary"
 
   ContactRole:
     Type: AWS::IAM::Role
