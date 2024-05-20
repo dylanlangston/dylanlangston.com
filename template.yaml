@@ -132,7 +132,8 @@ Resources:
         Actions:
           - S3Action:
               BucketName: !Sub "${AwsS3BucketName}-mail"
-
+          - LambdaAction:
+              FunctionArn: !GetAtt EmailForwarderFunction.Arn
 
   ContactRole:
     Type: AWS::IAM::Role
