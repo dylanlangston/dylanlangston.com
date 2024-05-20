@@ -117,25 +117,7 @@ Resources:
     Properties:
       RuleSetName: ForwardEmails
 
-  EmailReceiptRule:
-    Type: AWS::SES::ReceiptRule
-    DependsOn: [
-      LambdaPermissionForSES,
-      EmailForwarderFunction
-    ]
-    Properties:
-      RuleSetName: !Ref EmailReceiptRuleSet
-      Rule:
-        Name: ForwardEmails
-        Enabled: true
-        ScanEnabled: false
-        Recipients:
-          - !Ref DomainName
-        Actions:
-          - S3Action:
-              BucketName: !Sub "${AwsS3BucketName}-mail"
-          - LambdaAction:
-              FunctionArn: !GetAtt EmailForwarderFunction.Arn
+
 
   ContactRole:
     Type: AWS::IAM::Role
