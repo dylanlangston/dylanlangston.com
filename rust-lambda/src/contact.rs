@@ -52,9 +52,9 @@ impl ContactRequest {
     }
 }
 
-async fn function_handler(event: Request, client: &Client) -> Result<Response<Body>, Error> {
+async fn function_handler(event: Request, client: &Client, from_address: &String, to_address: &String) -> Result<Response<Body>, Error> {
     match event.method().as_str() {
-        "POST" => handle_post(event, &client).await,
+        "POST" => handle_post(event, &client, &from_address, &to_address).await,
         "OPTIONS" => handle_options(),
         _ => {
             // Method not allowed
@@ -63,7 +63,7 @@ async fn function_handler(event: Request, client: &Client) -> Result<Response<Bo
     }
 }
 
-async fn handle_post(event: Request, client: &Client) -> Result<Response<Body>, Error> {
+async fn handle_post(event: Request, client: &Client, from_address: &String, to_address: &String) -> Result<Response<Body>, Error> {
     // Deserialize JSON into ContactRequest struct
     let contact_request: ContactRequest = match serde_json::from_slice(event.body()) {
         Ok(req) => req,
@@ -84,7 +84,7 @@ async fn handle_post(event: Request, client: &Client) -> Result<Response<Body>, 
     }
 
     // Send email using AWS SES
-    send_email(&contact_request, &client).await?;
+    send_email(&contact_request, &client, &from_address, &to_address).await?;
 
     // Return HTTP response
     let resp = Response::builder()
@@ -109,7 +109,7 @@ fn handle_options() -> Result<Response<Body>, Error> {
         .unwrap())
 }
 
-async fn send_email(contact_request: &ContactRequest, client: &Client) -> Result<(), Error> {
+async fn send_email(contact_request: &ContactRequest, client: &Client, from_address: &String, to_address: &String) -> Result<(), Error> {
     // Construct email message
     let subject = format!(
         "Contact Request - {} {}",
@@ -136,8 +136,6 @@ async fn send_email(contact_request: &ContactRequest, client: &Client) -> Result
         contact_request.email,
         html_message
     );
-    let from_address = env::var("FromEmail").expect("FromEmail environment variable not set");
-    let to_address = env::var("ToEmail").expect("ToEmail environment variable not set");
 
     if contact_request.email == "test" {
         // Don't send an email if this is a test
@@ -194,5 +192,8 @@ async fn main() -> Result<(), Error> {
         .await;
     let ses_client = Client::new(&config);
 
-    run(service_fn(|req: Request| function_handler(req, &ses_client))).await
+    let from_address = env::var("FromEmail").expect("FromEmail environment variable not set");
+    let to_address = env::var("ToEmail").expect("ToEmail environment variable not set");
+
+    run(service_fn(|req: Request| function_handler(req, &ses_client, &from_address, &to_address))).await
 }
