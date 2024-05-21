@@ -106,6 +106,9 @@ async fn my_handler(
                             mime_msg.update_headers();
 
                             let sanitized_msg = mime_msg.as_string();
+
+                            info!("Sanitized message: {}", sanitized_msg);
+
                             Some(Blob::new(sanitized_msg.into_bytes()))
                         }
                         Err(e) => {
