@@ -95,13 +95,13 @@ async fn my_handler(
 
                             mime_msg
                                 .headers
-                                .replace(Header::new("To".to_owned(), to_email.clone()));
+                                .insert(Header::new("To".to_owned(), to_email.clone()));
                             mime_msg
                                 .headers
-                                .replace(Header::new("From".to_owned(), from_email.clone()));
+                                .insert(Header::new("From".to_owned(), from_email.clone()));
                             mime_msg
                                 .headers
-                                .replace(Header::new("Reply-To".to_owned(), original_from.clone()));
+                                .insert(Header::new("Reply-To".to_owned(), original_from.clone()));
                             
                             let sanitized_msg = mime_msg.as_string();
 
