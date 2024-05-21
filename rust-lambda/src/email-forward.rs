@@ -102,9 +102,7 @@ async fn my_handler(
                             mime_msg
                                 .headers
                                 .replace(Header::new("Reply-To".to_owned(), original_from.clone()));
-
-                            mime_msg.update_headers();
-
+                            
                             let sanitized_msg = mime_msg.as_string();
 
                             info!("Sanitized message: {}", sanitized_msg);
