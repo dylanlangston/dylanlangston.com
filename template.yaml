@@ -107,11 +107,12 @@ Resources:
   LambdaPermissionForSES:
     Type: AWS::Lambda::Permission
     Properties:
+      StatementId: GiveSESPermissionToInvokeFunction
       Action: lambda:InvokeFunction
       FunctionName: !GetAtt EmailForwarderFunction.Arn
       Principal: ses.amazonaws.com
       SourceAccount: !Sub "${AwsAccountId}"
-      SourceArn: !Sub "arn:aws:ses:${AwsRegion}:${AwsAccountId}:receipt-rule-set/${EmailReceiptRuleSet}:receipt-rule/EmailReceiptRule"
+      SourceArn: !Sub "arn:aws:ses:${AwsRegion}:${AwsAccountId}:receipt-rule-set/${EmailReceiptRuleSet}:receipt-rule/ForwardEmails"
 
   EmailReceiptRuleSet:
     Type: AWS::SES::ReceiptRuleSet
