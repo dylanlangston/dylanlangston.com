@@ -107,7 +107,6 @@ Resources:
   LambdaPermissionForSES:
     Type: AWS::Lambda::Permission
     Properties:
-      StatementId: GiveSESPermissionToInvokeFunction
       Action: lambda:InvokeFunction
       FunctionName: !GetAtt EmailForwarderFunction.Arn
       Principal: ses.amazonaws.com
