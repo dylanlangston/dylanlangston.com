@@ -3,7 +3,7 @@ use aws_config::BehaviorVersion;
 use aws_sdk_s3::{primitives::Blob, Client as S3Client};
 use aws_sdk_sesv2::types::{Destination, EmailContent, RawMessage};
 use aws_sdk_sesv2::Client as SesClient;
-use email::MimeMessage;
+use email::{Header, MimeMessage};
 use env_logger;
 use lambda_runtime::{service_fn, LambdaEvent};
 use log::{error, info, warn};
@@ -32,12 +32,25 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         ses_client: SesClient::new(&config),
     };
 
-    let func = service_fn(|event: LambdaEvent<Value>| my_handler(event, &clients));
+    let from_address = std::env::var("FromEmail").expect("FromEmail environment variable not set");
+    let to_address = std::env::var("ToEmail").expect("ToEmail environment variable not set");
+    let bucket =
+        std::env::var("AwsS3BucketName").expect("AwsS3BucketName environment variable not set");
+
+    let func = service_fn(|event: LambdaEvent<Value>| {
+        my_handler(event, &clients, &from_address, &to_address, &bucket)
+    });
     lambda_runtime::run(func).await?;
     Ok(())
 }
 
-async fn my_handler(event: LambdaEvent<Value>, clients: &Clients) -> Result<(), Box<dyn std::error::Error>> {
+async fn my_handler(
+    event: LambdaEvent<Value>,
+    clients: &Clients,
+    from_email: &String,
+    to_email: &String,
+    bucket: &String,
+) -> Result<(), Box<dyn std::error::Error>> {
     // Get email details from SES event
     info!("Extracting email details from the event");
     let email = event
@@ -50,23 +63,6 @@ async fn my_handler(event: LambdaEvent<Value>, clients: &Clients) -> Result<(), 
         .and_then(|message_id| message_id.as_str());
     info!("Message ID: {:?}", message_id);
 
-    // Get environment variables
-    info!("Retrieving environment variables");
-    let to_email = std::env::var("ToEmail").map_err(|_| {
-        error!("ToEmail environment variable is not set");
-        "ToEmail environment variable is not set"
-    })?;
-    let from_email = std::env::var("FromEmail").map_err(|_| {
-        error!("FromEmail environment variable is not set");
-        "FromEmail environment variable is not set"
-    })?;
-    let bucket = std::env::var("AwsS3BucketName").map_err(|_| {
-        error!("AwsS3BucketName environment variable is not set");
-        "AwsS3BucketName environment variable is not set"
-    })?;
-
-    info!("ToEmail: {}, FromEmail: {}", to_email, from_email);
-
     // Fetch raw email from S3
     let raw_email = match message_id {
         Some(message_id) => {
@@ -74,9 +70,10 @@ async fn my_handler(event: LambdaEvent<Value>, clients: &Clients) -> Result<(), 
             let key = format!("{}", message_id);
             info!("S3 Bucket: {}, Key: {}", bucket, key);
 
-            let response = clients.s3_client
+            let response = clients
+                .s3_client
                 .get_object()
-                .bucket(&bucket)
+                .bucket(bucket)
                 .key(&key)
                 .send()
                 .await;
@@ -90,9 +87,25 @@ async fn my_handler(event: LambdaEvent<Value>, clients: &Clients) -> Result<(), 
                     let email = String::from_utf8(buffer)?;
 
                     match MimeMessage::parse(&email) {
-                        Ok(mime_msg) => {
+                        Ok(mut mime_msg) => {
                             info!("Email parsed successfully");
-                            let sanitized_msg = mime_msg.as_string_without_headers();
+
+                            let original_from: String =
+                                mime_msg.headers.get_value("From".to_owned())?;
+
+                            mime_msg
+                                .headers
+                                .replace(Header::new("To".to_owned(), to_email.clone()));
+                            mime_msg
+                                .headers
+                                .replace(Header::new("From".to_owned(), from_email.clone()));
+                            mime_msg
+                                .headers
+                                .replace(Header::new("Reply-To".to_owned(), original_from.clone()));
+
+                            mime_msg.update_headers();
+
+                            let sanitized_msg = mime_msg.as_string();
                             Some(Blob::new(sanitized_msg.into_bytes()))
                         }
                         Err(e) => {
@@ -116,23 +129,29 @@ async fn my_handler(event: LambdaEvent<Value>, clients: &Clients) -> Result<(), 
     // Forward email using SES
     if let Some(raw_email) = raw_email {
         info!("Forwarding email using SES");
-        match clients.ses_client
+        match clients
+            .ses_client
             .send_email()
             .content(
                 EmailContent::builder()
                     .raw(RawMessage::builder().data(raw_email.clone()).build()?)
                     .build(),
             )
-            .destination(Destination::builder().to_addresses(to_email.clone()).build())
+            .destination(
+                Destination::builder()
+                    .to_addresses(to_email.clone())
+                    .build(),
+            )
             .from_email_address(from_email.clone())
             .send()
-            .await {
-                Ok(_) => info!("Email forwarded successfully"),
-                Err(e) => {
-                    warn!("Failed to forward email: {:?}", e);
-                    return Err(Box::new(e));
-                }
+            .await
+        {
+            Ok(_) => info!("Email forwarded successfully"),
+            Err(e) => {
+                warn!("Failed to forward email: {:?}", e);
+                return Err(Box::new(e));
             }
+        }
         Ok(())
     } else {
         // Handle missing message_id
