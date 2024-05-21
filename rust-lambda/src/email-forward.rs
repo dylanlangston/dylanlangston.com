@@ -93,16 +93,22 @@ async fn my_handler(
                             let original_from: String =
                                 mime_msg.headers.get_value("From".to_owned())?;
 
-                            mime_msg
-                                .headers
+                            let mut new_headers = email::HeaderMap::new();
+                            for header in mime_msg.headers.iter() {
+                                if header.name != "To" && header.name != "From" && header.name != "Reply-To" {
+                                    new_headers.insert(header.clone());
+                                }
+                            }
+
+                            new_headers
                                 .insert(Header::new("To".to_owned(), to_email.clone()));
-                            mime_msg
-                                .headers
+                            new_headers
                                 .insert(Header::new("From".to_owned(), from_email.clone()));
-                            mime_msg
-                                .headers
+                            new_headers
                                 .insert(Header::new("Reply-To".to_owned(), original_from.clone()));
                             
+                            mime_msg.headers = new_headers;
+
                             let sanitized_msg = mime_msg.as_string();
 
                             info!("Sanitized message: {}", sanitized_msg);
