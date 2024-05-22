@@ -93,26 +93,21 @@ async fn my_handler(
                             let original_from: String =
                                 mime_msg.headers.get_value("From".to_owned())?;
 
-                            let mut new_headers = email::HeaderMap::new();
-                            for header in mime_msg.headers.iter() {
-                                if header.name != "To"
-                                    && header.name != "From"
-                                    && header.name != "Reply-To"
-                                {
-                                    new_headers.insert(header.clone());
-                                }
-                            }
-
-                            new_headers.insert(Header::new("To".to_owned(), to_email.clone()));
-                            new_headers.insert(Header::new("From".to_owned(), from_email.clone()));
-                            new_headers
-                                .insert(Header::new("Reply-To".to_owned(), original_from.clone()));
-
                             let mut builder = email::rfc5322::Rfc5322Builder::new();
+                            builder.emit_folded(&Header::new("To".to_owned(), to_email.clone()).to_string()[..]);
+                            builder.emit_raw("\r\n");
+                            builder.emit_folded(&Header::new("From".to_owned(), from_email.clone()).to_string()[..]);
+                            builder.emit_raw("\r\n");
+                            builder.emit_folded(&Header::new("Reply-To".to_owned(), original_from).to_string()[..]);
+                            builder.emit_raw("\r\n");
                             for header in mime_msg.headers.iter() {
-                                if header.name != "To"
-                                    && header.name != "From"
-                                    && header.name != "Reply-To"
+                                if header.name.to_lowercase() != "To"
+                                    && header.name.to_lowercase() != "from"
+                                    && header.name.to_lowercase() != "to"
+                                    && header.name.to_lowercase() != "reply-to"
+                                    && header.name.to_lowercase() != "return-path"
+                                    && header.name.to_lowercase() != "message-id"
+                                    && header.name.to_lowercase() != "dkim-signature"
                                 {
                                     let header_value = header.to_string();
                                     info!("{}", header_value);
@@ -120,18 +115,12 @@ async fn my_handler(
                                     builder.emit_raw("\r\n");
                                 }
                             }
-                            builder.emit_folded(&Header::new("To".to_owned(), to_email.clone()).to_string()[..]);
-                            builder.emit_raw("\r\n");
-                            builder.emit_folded(&Header::new("From".to_owned(), from_email.clone()).to_string()[..]);
-                            builder.emit_raw("\r\n");
-                            builder.emit_folded(&Header::new("Reply-To".to_owned(), original_from).to_string()[..]);
-                            builder.emit_raw("\r\n");
                             builder.emit_raw("\r\n");
                             builder.emit_raw(&mime_msg.as_string_without_headers());
 
                             let sanitized_msg = builder.result().clone();
 
-                            info!("Sanitized message: {}", sanitized_msg);
+                            info!("Email sanitized successfully");
 
                             Some(Blob::new(sanitized_msg.into_bytes()))
                         }
