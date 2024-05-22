@@ -6,7 +6,7 @@ use aws_sdk_sesv2::Client as SesClient;
 use email::{Header, MimeMessage};
 use env_logger;
 use lambda_runtime::{service_fn, LambdaEvent};
-use log::{error, info, warn};
+use log::{info, warn};
 use serde_json::Value;
 use tokio::io::AsyncReadExt;
 
@@ -87,7 +87,7 @@ async fn my_handler(
                     let email = String::from_utf8(buffer)?;
 
                     match MimeMessage::parse(&email) {
-                        Ok(mut mime_msg) => {
+                        Ok(mime_msg) => {
                             info!("Email parsed successfully");
 
                             let original_from: String =
@@ -95,21 +95,41 @@ async fn my_handler(
 
                             let mut new_headers = email::HeaderMap::new();
                             for header in mime_msg.headers.iter() {
-                                if header.name != "To" && header.name != "From" && header.name != "Reply-To" {
+                                if header.name != "To"
+                                    && header.name != "From"
+                                    && header.name != "Reply-To"
+                                {
                                     new_headers.insert(header.clone());
                                 }
                             }
 
-                            new_headers
-                                .insert(Header::new("To".to_owned(), to_email.clone()));
-                            new_headers
-                                .insert(Header::new("From".to_owned(), from_email.clone()));
+                            new_headers.insert(Header::new("To".to_owned(), to_email.clone()));
+                            new_headers.insert(Header::new("From".to_owned(), from_email.clone()));
                             new_headers
                                 .insert(Header::new("Reply-To".to_owned(), original_from.clone()));
-                            
-                            mime_msg.headers = new_headers;
 
-                            let sanitized_msg = mime_msg.as_string();
+                            let mut builder = email::rfc5322::Rfc5322Builder::new();
+                            for header in mime_msg.headers.iter() {
+                                if header.name != "To"
+                                    && header.name != "From"
+                                    && header.name != "Reply-To"
+                                {
+                                    let header_value = header.to_string();
+                                    info!("{}", header_value);
+                                    builder.emit_folded(&header_value[..]);
+                                    builder.emit_raw("\r\n");
+                                }
+                            }
+                            builder.emit_folded(&Header::new("To".to_owned(), to_email.clone()).to_string()[..]);
+                            builder.emit_raw("\r\n");
+                            builder.emit_folded(&Header::new("From".to_owned(), from_email.clone()).to_string()[..]);
+                            builder.emit_raw("\r\n");
+                            builder.emit_folded(&Header::new("Reply-To".to_owned(), original_from).to_string()[..]);
+                            builder.emit_raw("\r\n");
+                            builder.emit_raw("\r\n");
+                            builder.emit_raw(&mime_msg.as_string_without_headers());
+
+                            let sanitized_msg = builder.result().clone();
 
                             info!("Sanitized message: {}", sanitized_msg);
 
