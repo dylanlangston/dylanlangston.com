@@ -107,7 +107,7 @@ async fn my_handler(
                                     && header.name.to_lowercase() != "reply-to"
                                     && header.name.to_lowercase() != "return-path"
                                     && header.name.to_lowercase() != "message-id"
-                                    && header.name.to_lowercase().ends_with("dkim-signature")
+                                    && !header.name.to_lowercase().ends_with("dkim-signature")
                                 {
                                     let header_value = header.to_string();
                                     info!("{}", header_value);
