@@ -101,8 +101,7 @@ async fn my_handler(
                             builder.emit_folded(&Header::new("Reply-To".to_owned(), original_from).to_string()[..]);
                             builder.emit_raw("\r\n");
                             for header in mime_msg.headers.iter() {
-                                if header.name.to_lowercase() != "To"
-                                    && header.name.to_lowercase() != "from"
+                                if header.name.to_lowercase() != "from"
                                     && header.name.to_lowercase() != "to"
                                     && header.name.to_lowercase() != "reply-to"
                                     && header.name.to_lowercase() != "return-path"
