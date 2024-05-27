@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@builder.io/partytown": "^0.10.1",
-    "@playwright/test": "^1.43.0",
+    "@playwright/test": "^1.44.1",
     "@sveltejs/adapter-static": "^3.0.1",
     "@sveltejs/kit": "^2.5.9",
     "@sveltejs/vite-plugin-svelte": "^3.0.2",
