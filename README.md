@@ -4,7 +4,7 @@
 </p>
 
 <p align="center">
-  <a href="https://ziglang.org/download"><img alt="Zig" src="https://img.shields.io/badge/Zig-master-fd9930.svg"></a>
+  <a href="https://ziglang.org/download"><img alt="Zig" src="https://img.shields.io/badge/Zig-Master-fd9930.svg"></a>
   <a href="https://www.raylib.com/"><img alt="Zig" src="https://img.shields.io/badge/raylib-Master-%23FFF.svg"></a>
   <a href="https://github.com/dylanlangston/dylanlangston.com/actions/workflows/OnPush.yml"><img alt="GitHub Workflow CI/CD" src="https://img.shields.io/github/actions/workflow/status/dylanlangston/dylanlangston.com/OnPush.yml?label=CI%2FCD"></a>
   <a href="https://github.com/dylanlangston/dylanlangston.com/blob/main/LICENSE"><img alt="GitHub License" src="https://img.shields.io/github/license/dylanlangston/dylanlangston.com?label=License"></a>
