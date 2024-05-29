@@ -16,7 +16,7 @@ pub fn build(b: *std.Build) !void {
     if (web_build) {
         // Set the sysroot folder for emscripten
         b.sysroot = b.pathJoin(&[_][]const u8{
-            b.build_root.path.?,
+            ".",
             "emsdk",
             "upstream",
             "emscripten",
@@ -86,6 +86,7 @@ fn configure(b: *std.Build, t: std.Build.ResolvedTarget, o: std.builtin.Optimize
         c,
     );
 
+    raylib_artifact.addIncludePath(b.path("./emsdk/upstream/emscripten/cache/sysroot/include/"));
     c.addIncludePath(b.path("./emsdk/upstream/emscripten/cache/sysroot/include/"));
 
     c.linkLibrary(raylib_artifact);
@@ -152,12 +153,18 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
         .windows => "emcc.bat",
         else => "emcc",
     };
-    var emcc_run_arg = try b.allocator.alloc(u8, b.sysroot.?.len + emccExe.len + 1);
+    const emscripten = b.pathJoin(&[_][]const u8{
+        b.build_root.path.?,
+        "emsdk",
+        "upstream",
+        "emscripten",
+    });
+    var emcc_run_arg = try b.allocator.alloc(u8, emscripten.len + emccExe.len + 1);
     defer b.allocator.free(emcc_run_arg);
     emcc_run_arg = try std.fmt.bufPrint(
         emcc_run_arg,
         "{s}" ++ std.fs.path.sep_str ++ "{s}",
-        .{ b.sysroot.?, emccExe },
+        .{ emscripten, emccExe },
     );
 
     const cwd = std.fs.cwd();
