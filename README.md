@@ -148,6 +148,6 @@ This repository includes a *[devcontainer.json](.devcontainer/devcontainer.json)
 The website design and development is the singular effort of [@dylanlangston](https://github.com/dylanlangston). Closed for contributions but feel free to fork or open an issue if you have a question!
 
 ## License 📜
-This tool is licensed under the [MIT License](https://opensource.org/licenses/MIT). See the [`LICENSE`](LICENSE) file for details.
+This repo is licensed under the [MIT License](https://opensource.org/licenses/MIT). See the [`LICENSE`](LICENSE) file for details.
 
 [^local-development]: For local development check out [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) and [DevPod](https://devpod.sh/).
