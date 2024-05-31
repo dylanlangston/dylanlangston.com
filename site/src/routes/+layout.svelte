@@ -107,11 +107,11 @@
 		}
 		// Denied by default
 		gtag('consent', 'default', {
-			'ad_storage': 'denied',
-			'ad_user_data': 'denied',
-			'ad_personalization': 'denied',
-			'analytics_storage': 'denied',
-			'wait_for_update': 500
+			ad_storage: 'denied',
+			ad_user_data: 'denied',
+			ad_personalization: 'denied',
+			analytics_storage: 'denied',
+			wait_for_update: 500
 		});
 		gtag('js', new Date());
 		gtag('config', 'G-VXRC4ZZ8Q9');
@@ -119,10 +119,10 @@
 		// Grant access
 		function allConsentGranted() {
 			gtag('consent', 'update', {
-			  'ad_user_data': 'granted',
-			  'ad_personalization': 'granted',
-			  'ad_storage': 'granted',
-			  'analytics_storage': 'granted'
+				ad_user_data: 'granted',
+				ad_personalization: 'granted',
+				ad_storage: 'granted',
+				analytics_storage: 'granted'
 			});
 		}
 
@@ -132,10 +132,21 @@
 		// 	}
 		// });
 	</script>
+	{#if !loaded}
+		<style>
+			.jsonly {
+				display: none;
+			}
+		</style>
+	{/if}
 </svelte:head>
 
 <div
-	class="w-full h-full {($mobile || $accessibilityRequested || $contrastRequested) ? '' : !loaded ? 'cursor-progress' : 'cursor-none'}"
+	class="w-full h-full {$mobile || $accessibilityRequested || $contrastRequested
+		? ''
+		: !loaded
+			? 'cursor-progress'
+			: 'cursor-none'}"
 >
 	{#if loaded}
 		<div
@@ -170,22 +181,23 @@
 			<MouseCursor />
 		{/if}
 	{:else}
-		<noscript class="flex flex-col h-full">
-			<style>
-				.jsonly {
-					display: none;
-				}
-			</style>
-			<main class="absolute flex top-0 bottom-0 left-0 right-0 items-center justify-center pointer-events-none">
-				<StatusContainer>
-					<svelte:fragment slot="status-slot">
-						<h1>This site requires JavaScript.<br />Please enable to continue.</h1>
-					</svelte:fragment>
-				</StatusContainer>
-			</main>
-		</noscript>
-		<div class="jsonly absolute top-0 left-0 w-screen h-screen flex align-center animate-[fade-in_5s]">
-			<div class="loader m-auto" class:invisible={loaded} out:animateOut={{ key }}></div>
-		</div>
+		<main>
+			<noscript class="flex flex-col h-full">
+				<div
+					class="absolute flex top-0 bottom-0 left-0 right-0 items-center justify-center pointer-events-none"
+				>
+					<StatusContainer>
+						<svelte:fragment slot="status-slot">
+							<h1>This site requires JavaScript.<br />Please enable to continue.</h1>
+						</svelte:fragment>
+					</StatusContainer>
+				</div>
+			</noscript>
+			<div
+				class="jsonly absolute top-0 left-0 w-screen h-screen flex align-center animate-[fade-in_5s]"
+			>
+				<div class="loader m-auto" class:invisible={loaded} out:animateOut={{ key }}></div>
+			</div>
+		</main>
 	{/if}
 </div>

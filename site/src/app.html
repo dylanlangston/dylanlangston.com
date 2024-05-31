@@ -2,11 +2,11 @@
 <html lang="en" class="w-full h-svh">
 
 <head>
-	<meta charset="utf-8" />
+	<meta charset="utf-8">
 	<link rel="apple-touch-icon" sizes="180x180" href="%sveltekit.assets%/apple-touch-icon.png">
 	<link rel="icon" type="image/png" sizes="32x32" href="%sveltekit.assets%/favicon.png">
 	<link rel="manifest" href="%sveltekit.assets%/site.webmanifest">
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Dylan Langston.com</title>
 	<!-- <meta http-equiv="Content-Security-Policy" content="script-src 'none'"> -->
 	%sveltekit.head%
@@ -16,9 +16,9 @@
 	<div class="-z-50 w-full h-dvh fixed bg-rainbow animate-background"></div>
 	<div class="contents">%sveltekit.body%</div>
 	<div class="background-overlay"></div>
+	<script>
+		document.documentElement.style.setProperty('--Rainbow', "hsl(" + (Math.floor(Math.random() * 360)).toString(10) + ",30%,50%)");
+	</script>
 </body>
-<script>
-	document.documentElement.style.setProperty('--Rainbow', "hsl(" + (Math.floor(Math.random() * 360)).toString(10) + ",30%,50%)");
-</script>
 
 </html>
