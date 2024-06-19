@@ -16,6 +16,10 @@
 	import { readable, writable, get } from 'svelte/store';
 	import { Environment, useMediaQuery } from '$lib/Common';
 	import ContextMenu from '$components/context-menu.svelte';
+	import Modal from '$components/modal.svelte';
+	import CookiePrompt from '$components/cookie-prompt.svelte';
+	import CookieSettings from '$components/cookie-settings.svelte';
+	import { CookieSettingsManager } from '$lib/CookieSettingsManager';
 
 	const key = 'main';
 	const [send, receive] = crossfade({
@@ -69,6 +73,9 @@
 	let loaded: boolean = false;
 	let main: HTMLDivElement | undefined = undefined;
 
+	let showCookieModal = false;
+	let showInitialCookieModal = true;
+
 	let mobile: typeof Environment.isMobile | undefined = undefined;
 	let accessibilityRequested: typeof Environment.accessibilityRequested | undefined = undefined;
 	let contrastRequested: typeof Environment.contrastRequested | undefined = undefined;
@@ -78,7 +85,52 @@
 		accessibilityRequested = Environment.accessibilityRequested;
 		contrastRequested = Environment.contrastRequested;
 		loaded = true;
+
+		gtag = (...args: any[]) => {
+			(<any>window).dataLayer.push(args);
+		};
+
+		// Denied by default
+		gtag('consent', 'default', {
+			ad_storage: 'granted',
+			ad_user_data: 'granted',
+			ad_personalization: 'granted',
+			analytics_storage: 'granted',
+			wait_for_update: 500
+		});
+		gtag('js', new Date());
+		gtag('config', 'G-VXRC4ZZ8Q9');
+
+		const { userAccepted, analytics } = CookieSettingsManager.getPreferences();
+
+		showInitialCookieModal = !userAccepted;
+
+		if (!userAccepted) setTimeout(() => (showCookieModal = true), 2500);
+
+		if (analytics) allConsentGranted();
 	});
+
+	let gtag: (...args: any[]) => void;
+
+	function allConsentGranted() {
+		console.log('access granted');
+		gtag('consent', 'update', {
+			ad_user_data: 'granted',
+			ad_personalization: 'granted',
+			ad_storage: 'granted',
+			analytics_storage: 'granted'
+		});
+	}
+
+	function allConsentDenied() {
+		console.log('access denied');
+		gtag('consent', 'update', {
+			ad_user_data: 'denied',
+			ad_personalization: 'denied',
+			ad_storage: 'denied',
+			analytics_storage: 'denied'
+		});
+	}
 </script>
 
 <svelte:head>
@@ -91,7 +143,8 @@
 	<script>
 		// Forward the necessary functions to the web worker layer
 		partytown = {
-			forward: ['dataLayer.push']
+			debug: true,
+			forward: ['window.dataLayer', 'window.dataLayer.push']
 		};
 	</script>
 	{@html '<script>' + partytownSnippet() + '</script>'}
@@ -102,35 +155,6 @@
 	></script>
 	<script type="text/partytown">
 		window.dataLayer = window.dataLayer || [];
-		function gtag() {
-			dataLayer.push(arguments);
-		}
-		// Denied by default
-		gtag('consent', 'default', {
-			ad_storage: 'denied',
-			ad_user_data: 'denied',
-			ad_personalization: 'denied',
-			analytics_storage: 'denied',
-			wait_for_update: 500
-		});
-		gtag('js', new Date());
-		gtag('config', 'G-VXRC4ZZ8Q9');
-
-		// Grant access
-		function allConsentGranted() {
-			gtag('consent', 'update', {
-				ad_user_data: 'granted',
-				ad_personalization: 'granted',
-				ad_storage: 'granted',
-				analytics_storage: 'granted'
-			});
-		}
-
-		// setTimeout(() => {
-		// 	if (confirm("Allow cookies?")) {
-		// 		allConsentGranted();
-		// 	}
-		// });
 	</script>
 	{#if !loaded}
 		<style>
@@ -173,10 +197,51 @@
 				</main>
 			{/key}
 			<div class="w-screen" in:blur|local={{ duration: 500, delay: 250 }}>
-				<Footer />
+				<Footer
+					openCookieSettings={() => {
+						showCookieModal = true;
+					}}
+				/>
 			</div>
 		</div>
-		{#if !$mobile && !$accessibilityRequested && !$contrastRequested}
+		{#if showCookieModal}
+			<Modal showModal={true}>
+				<svelte:fragment>
+					{#if showInitialCookieModal}
+						<CookiePrompt
+							accept={() => {
+								showInitialCookieModal = false;
+								showCookieModal = false;
+								CookieSettingsManager.savePreferences({
+									analytics: true,
+									userAccepted: true
+								});
+
+								allConsentGranted();
+							}}
+							settings={() => {
+								showInitialCookieModal = false;
+							}}
+						/>
+					{:else}
+						<div in:blur|local={{ duration: 250 }}>
+							<CookieSettings
+								onSave={({ analytics }) => {
+									CookieSettingsManager.savePreferences({
+										analytics: analytics,
+										userAccepted: true
+									});
+
+									if (analytics) allConsentGranted();
+									else allConsentDenied();
+									showCookieModal = false;
+								}}
+							/>
+						</div>
+					{/if}
+				</svelte:fragment>
+			</Modal>
+		{:else if !$mobile && !$accessibilityRequested && !$contrastRequested}
 			<!-- <ContextMenu/> -->
 			<MouseCursor />
 		{/if}

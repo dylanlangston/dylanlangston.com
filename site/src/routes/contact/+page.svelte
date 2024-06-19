@@ -8,11 +8,11 @@
 	import { fade, blur, fly, slide, scale, crossfade } from 'svelte/transition';
 
 	onMount(() => {
-		firstName = $page.state.firstName;
-		lastName = $page.state.lastName;
-		email = $page.state.email;
-		phone = $page.state.phone;
-		message = $page.state.message;
+		firstName = (<any>$page.state).firstName;
+		lastName = (<any>$page.state).lastName;
+		email = (<any>$page.state).email;
+		phone = (<any>$page.state).phone;
+		message = (<any>$page.state).message;
 	});
 
 	let firstName = '';
@@ -34,7 +34,11 @@
 		setTimeout(() => console.log($page.state));
 	}
 
-	async function handleSubmit(event: FormDataEvent) {
+	async function handleSubmit(
+		event: SubmitEvent & {
+			currentTarget: EventTarget & HTMLFormElement;
+		}
+	) {
 		event.preventDefault();
 
 		submitting = true;
@@ -58,11 +62,11 @@
 
 			if (response.ok) {
 				alert('Message sent successfully!');
-				firstName = "";
-				lastName = "";
-				email = "";
-				phone = "";
-				message = "";
+				firstName = '';
+				lastName = '';
+				email = '';
+				phone = '';
+				message = '';
 			} else {
 				alert('Failed to send message. Please try again later.');
 				console.error(response.statusText);
@@ -82,7 +86,12 @@
 			<p class="text-3xl font-semibold sm:text-4xl">Get in touch</p>
 		</div>
 		<div class="mt-6 max-w-lg mx-5">
-			<form on:submit={handleSubmit} on:change={handleChange} class="space-y-5" class:opacity-40={submitting}>
+			<form
+				on:submit={handleSubmit}
+				on:change={handleChange}
+				class="space-y-5"
+				class:opacity-40={submitting}
+			>
 				<div class="flex flex-col items-center gap-y-5 gap-x-6 [&>*]:w-full sm:flex-row">
 					<div>
 						<label for="firstName" class="font-medium"> First name </label>
@@ -161,7 +170,11 @@
 			</form>
 			{#if submitting}
 				<div class="absolute top-0 left-0 w-full h-full flex align-center">
-					<div class="loader m-auto" in:blur|local={{ duration: 250 }} out:blur|local={{ duration:250 }}></div>
+					<div
+						class="loader m-auto"
+						in:blur|local={{ duration: 250 }}
+						out:blur|local={{ duration: 250 }}
+					></div>
 				</div>
 			{/if}
 		</div>
