@@ -1,6 +1,6 @@
 const builtin = @import("builtin");
 const std = @import("std");
-const RndGen = std.rand.DefaultPrng;
+const RndGen = std.Random.DefaultPrng;
 const AssetLoader = @import("AssetLoader.zig").AssetLoader;
 const Logger = @import("Logger.zig").Logger;
 const Inputs = @import("Inputs.zig").Inputs;
@@ -77,13 +77,13 @@ pub const Common = struct {
     };
 
     pub const Random = struct {
-        var random: std.rand.Random = undefined;
+        var random: std.Random = undefined;
         inline fn init() void {
             const now: u64 = @intCast(Time.getTimestamp());
             var rng = RndGen.init(now);
             random = rng.random();
         }
-        pub inline fn Get() std.rand.Random {
+        pub inline fn Get() std.Random {
             return random;
         }
     };

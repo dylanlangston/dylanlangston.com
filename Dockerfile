@@ -23,7 +23,7 @@ COPY ./site/bun.lockb /root/dylanlangston.com/site/bun.lockb
 COPY ./site/bunfig.toml /root/dylanlangston.com/site/bunfig.toml
 COPY ./rust-lambda/Cargo.toml /root/dylanlangston.com/rust-lambda/Cargo.toml
 COPY ./rust-lambda/Cargo.lock /root/dylanlangston.com/rust-lambda/Cargo.lock
-COPY ./python-lambda/src/dependencies.txt /root/dylanlangston.com/python-lambda/src/dependencies.txt
+COPY ./python-lambda/src/requirements.txt /root/dylanlangston.com/python-lambda/src/requirements.txt
 COPY ./Makefile /root/dylanlangston.com/Makefile
 
 RUN apt-get update && apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git python3 pip build-essential pkg-config netcat-traditional procps zip \

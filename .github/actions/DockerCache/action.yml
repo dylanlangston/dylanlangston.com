@@ -16,7 +16,7 @@ runs:
         buildkitd-flags: "--allow-insecure-entitlement network.host"
         install: true
     - name: Build and Push
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
         context: .
         allow: network.host
