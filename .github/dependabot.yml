@@ -31,6 +31,15 @@ updates:
     labels:
       - ":label: Dependencies"
       - ":technologist: Rust :red_circle:"
+  - package-ecosystem: "pip"
+    open-pull-requests-limit: 50
+    commit-message:
+      prefix: "Python - "
+    directory: "/python-lambda"
+    schedule:
+      interval: "weekly"
+    labels:
+      - ":label: Dependencies"
   - package-ecosystem: "github-actions"
     open-pull-requests-limit: 10
     commit-message:
