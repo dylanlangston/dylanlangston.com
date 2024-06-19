@@ -1,6 +1,5 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vitest/config';
-import { partytownVite } from '@builder.io/partytown/utils'
 import { resolve, join } from 'path';
 import optimizeWASMPlugin from './OptimizeWASMPlugin.ts';
 import { getArgs } from './svelte.config.js';
@@ -10,10 +9,7 @@ const args = getArgs();
 export default defineConfig({
 	plugins: [
 		optimizeWASMPlugin({enabled: !args.Debug}),
-		sveltekit(), 
-		partytownVite({
-			debug: args.Debug ?? false
-		})
+		sveltekit()
 	],
 	assetsInclude: './static/**/*',
 	test: {

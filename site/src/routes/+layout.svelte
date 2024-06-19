@@ -4,8 +4,6 @@
 
 	import Emscripten from '$components/emscripten.svelte';
 
-	import { partytownSnippet } from '@builder.io/partytown/integration';
-
 	import { page } from '$app/stores';
 	import StatusContainer from '$components/status-container.svelte';
 	import MouseCursor from '$components/mouse-cursor.svelte';
@@ -86,6 +84,7 @@
 		contrastRequested = Environment.contrastRequested;
 		loaded = true;
 
+		(<any>window).dataLayer = (<any>window).dataLayer || [];
 		gtag = (...args: any[]) => {
 			(<any>window).dataLayer.push(args);
 		};
@@ -108,6 +107,7 @@
 		if (!userAccepted) setTimeout(() => (showCookieModal = true), 2500);
 
 		if (analytics) allConsentGranted();
+		else allConsentDenied();
 	});
 
 	let gtag: (...args: any[]) => void;
@@ -139,22 +139,11 @@
 	{/if}
 	<link rel="preload" href="dylanlangston.com.wasm" as="fetch" />
 
-	<!-- GTAG Partytown 🕶️ -->
-	<script>
-		// Forward the necessary functions to the web worker layer
-		partytown = {
-			forward: ['dataLayer', 'dataLayer.push']
-		};
-	</script>
-	{@html '<script>' + partytownSnippet() + '</script>'}
+	<!-- GTAG -->
 	<script
-		type="text/partytown"
 		async
 		src="https://www.googletagmanager.com/gtag/js?id=G-VXRC4ZZ8Q9"
 	></script>
-	<script type="text/partytown">
-		window.dataLayer = window.dataLayer || [];
-	</script>
 	{#if !loaded}
 		<style>
 			.jsonly {
