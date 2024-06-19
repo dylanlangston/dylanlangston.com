@@ -15,9 +15,6 @@
     "test:integration": "playwright test --browser all",
     "test:unit": "vitest run"
   },
-  "dependencies": {
-    "@google/generative-ai": "^0.12.0"
-  },
   "devDependencies": {
     "@builder.io/partytown": "^0.10.1",
     "@playwright/test": "^1.44.1",
