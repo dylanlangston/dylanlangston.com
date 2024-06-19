@@ -143,7 +143,7 @@
 	<script>
 		// Forward the necessary functions to the web worker layer
 		partytown = {
-			forward: ['window.dataLayer', 'window.dataLayer.push']
+			forward: ['dataLayer', 'dataLayer.push']
 		};
 	</script>
 	{@html '<script>' + partytownSnippet() + '</script>'}
