@@ -143,7 +143,6 @@
 	<script>
 		// Forward the necessary functions to the web worker layer
 		partytown = {
-			debug: true,
 			forward: ['window.dataLayer', 'window.dataLayer.push']
 		};
 	</script>
