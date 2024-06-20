@@ -45,7 +45,7 @@
 			<div
 				class="static flex flex-col self-center text-sm text-center md:block lg:row-end-1 lg:col-end-1"
 			>
-				<div class="inline-block static my-1 lg:mr-10 md:mr-5 self-center">
+				<div class="select-none inline-block static my-1 lg:mr-10 md:mr-5 self-center">
 					<Ripple escapeParent={true}>
 						<button
 							class="flex items-center justify-center w-10 h-10 rounded-full hover:shadow-md hover:bg-rainbow transition-colors duration-300"

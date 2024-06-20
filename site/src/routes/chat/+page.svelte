@@ -80,8 +80,10 @@
     }
 
     onMount(() => {
-        messages = [{ text: "Hey there, I'm Dylan Langston's digital twin. I can answer some questions about Dylan's background and experience as a .NET/C# Developer. What can I help you with today?", user: MsgUserType.bot }];
-    });
+		setTimeout(() => {
+        	messages = [{ text: "Hey there, I'm Dylan Langston's digital twin. I can answer some questions about Dylan's background and experience as a .NET/C# Developer. What can I help you with today?", user: MsgUserType.bot }];
+		}, 100);
+	});
 
     function handleKeyPress(event: KeyboardEvent) {
         if (event.key === 'Enter' && !event.shiftKey) {

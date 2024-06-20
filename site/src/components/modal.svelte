@@ -2,6 +2,7 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
 	import MouseCursor from './mouse-cursor.svelte';
+	import ContextMenu from './context-menu.svelte';
 
 	export let showModal: boolean;
 	export let canCloseByClickingOutside: boolean = false;
@@ -25,6 +26,7 @@
 		<slot />
 	</div>
 	<div class="fixed top-0 left-0">
+		<ContextMenu/>
 		<MouseCursor />
 	</div>
 </dialog>

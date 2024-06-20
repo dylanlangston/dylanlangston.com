@@ -19,12 +19,17 @@ Inspired from: Context Menu https://svelte.dev/repl/3a33725c3adb4f57b46b597f9dad
 	// showMenu is state of context-menu visibility
 	let showMenu = true;
 
+	let lastActiveElement: Element | null;
+
 	function rightClickContextMenu(e: MouseEvent) {
-        if (showMenu) {
-            showMenu = false;
-            setTimeout(() => rightClickContextMenu(e));
-            return;
-        }
+		if (e.shiftKey) return false;
+		e.preventDefault();
+
+		if (showMenu) {
+			showMenu = false;
+			setTimeout(() => rightClickContextMenu(e));
+			return;
+		}
 		showMenu = true;
 		browser = {
 			w: window.innerWidth,
@@ -51,6 +56,8 @@ Inspired from: Context Menu https://svelte.dev/repl/3a33725c3adb4f57b46b597f9dad
 		// To make context menu disappear when
 		// mouse is clicked outside context menu
 		showMenu = false;
+
+		lastActiveElement = document.activeElement;
 	}
 	function getContextMenuDimension(node: HTMLElement) {
 		// This function will get context menu dimension
@@ -62,24 +69,95 @@ Inspired from: Context Menu https://svelte.dev/repl/3a33725c3adb4f57b46b597f9dad
 			y: width
 		};
 	}
-	function test() {
-		alert('test');
+	function selectAll() {
+		const elem = document.querySelector('dialog') ?? lastActiveElement ?? document;
+		if (['INPUT', 'TEXTAREA'].filter((e) => e == elem.nodeName).length > 0) {
+			(<HTMLInputElement>elem).select();
+			return;
+		}
+		globalThis.getSelection()?.selectAllChildren(elem);
+	}
+	async function canCopy() {
+		const elem = lastActiveElement ?? document;
+		if (['INPUT', 'TEXTAREA'].filter((e) => e == elem.nodeName).length > 0) {
+			const selectedText = (<HTMLInputElement>elem).value.substring(
+				(<HTMLInputElement>elem).selectionStart ?? 0,
+				(<HTMLInputElement>elem).selectionEnd ?? 0
+			);
+			if (selectedText?.length ?? 0 > 0) return true;
+			return false;
+		}
+		const selectedText = globalThis.getSelection()?.toString();
+		if (selectedText?.length ?? 0 > 0) return true;
+		return false;
+	}
+	function copy() {
+		const elem = lastActiveElement ?? document;
+		if (['INPUT', 'TEXTAREA'].filter((e) => e == elem.nodeName).length > 0) {
+			const selectedText = (<HTMLInputElement>elem).value.substring(
+				(<HTMLInputElement>elem).selectionStart ?? 0,
+				(<HTMLInputElement>elem).selectionEnd ?? 0
+			);
+			if (selectedText) navigator.clipboard.writeText(selectedText);
+			return;
+		}
+
+		const selectedText = globalThis.getSelection()?.toString();
+		if (selectedText) navigator.clipboard.writeText(selectedText);
+	}
+	async function canPaste() {
+		const elem = lastActiveElement ?? document;
+		if (['INPUT', 'TEXTAREA'].filter((e) => e == elem.nodeName).length > 0) {
+			const clipboardText = await navigator.clipboard.readText();
+			if (clipboardText?.length ?? 0 > 0) return true;
+			return false;
+		}
+	}
+	function replaceSelection(
+		initialValue: string,
+		selectionStart: number,
+		selectionEnd: number,
+		clipboardText: string
+	): string {
+		const beforeSelection = initialValue.substring(0, selectionStart);
+		const afterSelection = initialValue.substring(selectionEnd);
+
+		const newValue = beforeSelection + clipboardText + afterSelection;
+		return newValue;
+	}
+
+	function paste() {
+		const elem = lastActiveElement ?? document;
+		navigator.clipboard.readText().then((clipboardText) => {
+			const initialValue = (<HTMLInputElement>elem).value;
+			(<HTMLInputElement>elem).value = replaceSelection(initialValue, (<HTMLInputElement>elem).selectionStart ?? 0, (<HTMLInputElement>elem).selectionEnd ?? initialValue.length, clipboardText);
+		});
 	}
 	let menuItems = [
 		{
-			name: 'test',
-			onClick: test,
-			displayText: 'test',
-			class: ''
+			name: 'selectAll',
+			onClick: selectAll,
+			displayText: 'Select All',
+			class: '',
+			enabled: async () => true
 		},
 		{
-			name: 'hr'
+			name: 'hr',
+			enabled: async () => (await canCopy()) || (await canPaste())
 		},
-        {
-			name: 'test',
-			onClick: test,
-			displayText: 'test 2',
-			class: ''
+		{
+			name: 'copy',
+			onClick: copy,
+			displayText: 'Copy',
+			class: '',
+			enabled: canCopy
+		},
+		{
+			name: 'paste',
+			onClick: paste,
+			displayText: 'Paste',
+			class: '',
+			enabled: canPaste
 		}
 	];
 
@@ -88,36 +166,48 @@ Inspired from: Context Menu https://svelte.dev/repl/3a33725c3adb4f57b46b597f9dad
 	});
 </script>
 
-<div class="overflow-clip">
+<div class="context-menu overflow-clip">
 	{#if showMenu}
-		<nav 
-        in:blur|local={{ duration: 150 }}
-        out:blur|local={{ duration: 150 , delay: 50 }} use:getContextMenuDimension style="position: absolute; top:{pos.y}px; left:{pos.x}px">
+		<nav
+			in:blur|local={{ duration: 150 }}
+			out:blur|local={{ duration: 150, delay: 50 }}
+			use:getContextMenuDimension
+			style="position: absolute; top:{pos.y}px; left:{pos.x}px"
+		>
 			<div
 				class="p-1 glass round rounded-lg glass-no-animate container flex flex-col justify-between mx-auto content-center text-center"
 			>
 				{#each menuItems as item}
-					<div
-						class="top-10 right-0"
-					>
-						{#if item.name == 'hr'}
-							<hr class="my-1 border-current" />
-						{:else}
-							<Ripple color={'currentColor'}>
-								<button class="w-full flex items-center rounded-md px-3 py-1 text-sm hover:shadow-md hover:bg-rainbow transition-colors duration-300" on:click={item.onClick}><i class={item.class}></i>{item.displayText}</button
-								>
-								<!-- <a
-                                href="/contact"
-                                class="flex items-center rounded-md px-3 py-2 text-sm hover:shadow-md hover:bg-rainbow transition-colors duration-300"
-                                >Contact</a
-                            > -->
-							</Ripple>
-						{/if}
-					</div>
+					{#if item.enabled}
+						{#await item.enabled()}
+							<p>...waiting</p>
+						{:then enabled}
+							{#if enabled}
+								<div class="top-10 right-0">
+									{#if item.name == 'hr'}
+										<hr class="my-1 border-current" />
+									{:else}
+										<Ripple color={'currentColor'}>
+											<button
+												class="w-full flex items-center rounded-md px-3 py-1 text-sm hover:shadow-md hover:bg-rainbow transition-colors duration-300"
+												on:click={item.onClick}><i class={item.class}></i>{item.displayText}</button
+											>
+										</Ripple>
+									{/if}
+								</div>
+							{/if}
+						{/await}
+					{/if}
 				{/each}
 			</div>
 		</nav>
 	{/if}
 </div>
 
-<svelte:window on:contextmenu|preventDefault={rightClickContextMenu} on:click={onPageClick} />
+<svelte:window on:contextmenu={rightClickContextMenu} on:click={onPageClick} />
+
+<style>
+	.context-menu ::selection {
+		background: transparent;
+	}
+</style>
