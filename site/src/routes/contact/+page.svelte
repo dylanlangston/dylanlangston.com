@@ -31,7 +31,6 @@
 			phone: phone,
 			message: message
 		});
-		setTimeout(() => console.log($page.state));
 	}
 
 	async function handleSubmit(
@@ -126,11 +125,12 @@
 						id="email"
 						type="email"
 						required
+						placeholder="mail@example.com"
 						bind:value={email}
 						disabled={submitting}
 						name="email"
 						autocomplete="on"
-						class="w-full mt-2 px-3 py-2 bg-transparent outline-none border border-black dark:border-white shadow-sm rounded-lg disabled:cursor-not-allowed"
+						class="w-full mt-2 px-3 py-2 bg-transparent outline-none border border-black dark:border-white shadow-sm rounded-lg placeholder:text-black/[.5] disabled:cursor-not-allowed"
 					/>
 				</div>
 				<div>
