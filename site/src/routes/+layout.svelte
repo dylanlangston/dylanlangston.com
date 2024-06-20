@@ -230,7 +230,7 @@
 				</svelte:fragment>
 			</Modal>
 		{:else if !$mobile && !$accessibilityRequested && !$contrastRequested}
-			<ContextMenu/>
+			<!-- <ContextMenu/> -->
 			<MouseCursor />
 		{/if}
 	{:else}

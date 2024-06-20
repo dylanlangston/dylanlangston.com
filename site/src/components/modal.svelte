@@ -26,7 +26,7 @@
 		<slot />
 	</div>
 	<div class="fixed top-0 left-0">
-		<ContextMenu/>
+		<!-- <ContextMenu/> -->
 		<MouseCursor />
 	</div>
 </dialog>
