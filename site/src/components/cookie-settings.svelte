@@ -56,7 +56,7 @@
 			</button>
 		</div>
 		<p class="text-xs text-left mt-2">
-			Allow us to collect anonymous data about your visit to improve our website's performance.
+			Allow me to collect anonymous data about your visit to improve my website's performance.
 		</p>
 	</div>
 
