@@ -84,22 +84,6 @@
 		contrastRequested = Environment.contrastRequested;
 		loaded = true;
 
-		(<any>window).dataLayer = (<any>window).dataLayer || [];
-		gtag = (...args: any[]) => {
-			(<any>window).dataLayer.push(args);
-		};
-
-		// Denied by default
-		gtag('consent', 'default', {
-			ad_storage: 'granted',
-			ad_user_data: 'granted',
-			ad_personalization: 'granted',
-			analytics_storage: 'granted',
-			wait_for_update: 500
-		});
-		gtag('js', new Date());
-		gtag('config', 'G-VXRC4ZZ8Q9');
-
 		const { userAccepted, analytics } = CookieSettingsManager.getPreferences();
 
 		showInitialCookieModal = !userAccepted;
@@ -110,14 +94,10 @@
 		else allConsentDenied();
 	});
 
-	let gtag: (...args: any[]) => void;
-
 	function allConsentGranted() {
 		console.log('access granted');
 		gtag('consent', 'update', {
-			ad_user_data: 'granted',
-			ad_personalization: 'granted',
-			ad_storage: 'granted',
+			ad_storage: 'denied',
 			analytics_storage: 'granted'
 		});
 	}
@@ -125,8 +105,6 @@
 	function allConsentDenied() {
 		console.log('access denied');
 		gtag('consent', 'update', {
-			ad_user_data: 'denied',
-			ad_personalization: 'denied',
 			ad_storage: 'denied',
 			analytics_storage: 'denied'
 		});
@@ -139,11 +117,20 @@
 	{/if}
 	<link rel="preload" href="dylanlangston.com.wasm" as="fetch" />
 
-	<!-- GTAG -->
-	<script
-		async
-		src="https://www.googletagmanager.com/gtag/js?id=G-VXRC4ZZ8Q9"
-	></script>
+	<!-- Google tag (gtag.js) -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-VXRC4ZZ8Q9"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag() {
+			dataLayer.push(arguments);
+		}
+		gtag('consent', 'default', {
+			ad_storage: 'denied',
+			analytics_storage: 'denied'
+		});
+		gtag('js', new Date());
+		gtag('config', 'G-VXRC4ZZ8Q9');
+	</script>
 	{#if !loaded}
 		<style>
 			.jsonly {

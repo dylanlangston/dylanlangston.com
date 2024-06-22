@@ -11,8 +11,10 @@ declare global {
 	interface Window extends Window {
 		miniaudio: MiniAudio | undefined = undefined;
 	}
+	declare const gtag: (...args: any[]) => void;
 }
 
-declare var saveFileFromMEMFSToDisk: (memoryFSname: string, localFSname: string) => void;
+
+declare let saveFileFromMEMFSToDisk: (memoryFSname: string, localFSname: string) => void;
 
 export {};
