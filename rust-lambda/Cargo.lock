@@ -205,9 +205,9 @@ dependencies = [
 
 [[package]]
 name = "aws-sdk-s3"
-version = "1.37.0"
+version = "1.40.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "955365fd032cc94608c7e0f4aea36a9825399d6a1bf7b96f56cf157414b04c40"
+checksum = "8367c403fdf27690684b926a46ed9524099a69dd5dfcef62028bf4096b5b809f"
 dependencies = [
  "ahash",
  "aws-credential-types",
@@ -369,9 +369,9 @@ dependencies = [
 
 [[package]]
 name = "aws-smithy-checksums"
-version = "0.60.10"
+version = "0.60.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c5b30ea96823b8b25fb6471643a516e1bd475fd5575304e6240aea179f213216"
+checksum = "48c4134cf3adaeacff34d588dbe814200357b0c466d730cf1c0d8054384a2de4"
 dependencies = [
  "aws-smithy-http",
  "aws-smithy-types",
