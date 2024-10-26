@@ -96,7 +96,7 @@ pub inline fn importViews(
         \\  pub const Views = enum {{
         \\    {s}{s}
         \\
-        \\    const drawFunctionTable = [@typeInfo(@This()).Enum.fields.len] View {{
+        \\    const drawFunctionTable = [@typeInfo(@This()).@"enum".fields.len] View {{
         \\      {s}
         \\    }};
         \\

@@ -72,13 +72,13 @@ inline fn embedFiles(
         \\pub const {s} = enum {{
         \\  {s}{s}
         \\
-        \\  const filesTable = [@typeInfo(@This()).Enum.fields.len][:0]const u8{{
+        \\  const filesTable = [@typeInfo(@This()).@"enum".fields.len][:0]const u8{{
         \\      @embedFile("{s}")
         \\  }};
-        \\  const extensionsTable = [@typeInfo(@This()).Enum.fields.len][:0]const u8{{
+        \\  const extensionsTable = [@typeInfo(@This()).@"enum".fields.len][:0]const u8{{
         \\      "{s}"
         \\  }};
-        \\  const hashTable = [@typeInfo(@This()).Enum.fields.len]u64 {{
+        \\  const hashTable = [@typeInfo(@This()).@"enum".fields.len]u64 {{
         \\      {s}
         \\  }};
         \\  pub inline fn extension(self: @This()) [:0]const u8 {{
