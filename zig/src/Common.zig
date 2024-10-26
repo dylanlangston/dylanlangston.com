@@ -291,8 +291,8 @@ pub const Common = struct {
             raylib.InitWindow(width, height, null);
 
             // Handle Resize
-            _ = emscripten.emscripten_set_resize_callback(2, null, 1, &struct {
-                fn resize(t: c_int, data: [*c]const emscripten.struct_EmscriptenUiEvent, callback: ?*anyopaque) callconv(.C) c_int {
+            _ = emscripten.emscripten_set_resize_callback(2, null, true, &struct {
+                fn resize(t: c_int, data: [*c]const emscripten.struct_EmscriptenUiEvent, callback: ?*anyopaque) callconv(.C) bool {
                     _ = t;
                     _ = callback;
 
@@ -307,7 +307,7 @@ pub const Common = struct {
 
                     // Update frame on resize so there isn't a flicker
                     @import("root").UpdateFrame();
-                    return 1;
+                    return true;
                 }
             }.resize);
         } else {

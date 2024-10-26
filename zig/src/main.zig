@@ -16,7 +16,7 @@ pub fn main() !void {
         emscripten.emscripten_set_main_loop(
             &UpdateFrame,
             0,
-            1,
+            true,
         );
     } else {
         while (!raylib.WindowShouldClose()) {
