@@ -64,14 +64,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dylanlangston.com-contact-v${{ inputs.version }}
-          path: '${{ runner.temp }}/release/rust-lambda/target/contact/'
+          path: '${{ runner.temp }}/release/rust-lambda/target/lambda/contact/'
       - name: Upload Email Forward Lambda artifact
         if: ${{ success() || steps.upload_contact_lambda.conclusion == 'success' }}
         id: upload_email_lambda
         uses: actions/upload-artifact@v4
         with:
           name: dylanlangston.com-email-v${{ inputs.version }}
-          path: '${{ runner.temp }}/release/rust-lambda/target/email-forward/'
+          path: '${{ runner.temp }}/release/rust-lambda/target/lambda/email-forward/'
       - name: Upload Chat Lambda artifact
         if: ${{ success() || steps.upload_email_lambda.conclusion == 'success' }}
         id: upload_chat_lambda

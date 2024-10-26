@@ -18,7 +18,7 @@ runs:
     - name: Build and Push
       uses: docker/build-push-action@v6
       env:
-          DOCKER_BUILD_NO_SUMMARY: true
+          DOCKER_BUILD_SUMMARY: false
       with:
         context: .
         allow: network.host
