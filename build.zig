@@ -262,25 +262,25 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
     emcc_command.step.dependOn(&lib.step);
 
     // Copy output to the svelte import folder
-    const writeFiles = b.addWriteFiles();
-    _ = writeFiles.addCopyFile(b.path(emccOutputDir ++ name ++ ".js"), b.pathJoin(&[_][]const u8{
+    const writeFiles = b.addUpdateSourceFiles();
+    _ = writeFiles.addCopyFileToSource(b.path(emccOutputDir ++ name ++ ".js"), b.pathJoin(&[_][]const u8{
         "site",
         "src",
         "import",
         "emscripten.js",
     }));
-    _ = writeFiles.addCopyFile(b.path(emccOutputDir ++ name ++ ".wasm"), b.pathJoin(&[_][]const u8{
+    _ = writeFiles.addCopyFileToSource(b.path(emccOutputDir ++ name ++ ".wasm"), b.pathJoin(&[_][]const u8{
         "site",
         "static",
         name ++ ".wasm",
     }));
     if (debugging_wasm) {
-        _ = writeFiles.addCopyFile(b.path(emccOutputDir ++ name ++ ".wasm.map"), b.pathJoin(&[_][]const u8{
+        _ = writeFiles.addCopyFileToSource(b.path(emccOutputDir ++ name ++ ".wasm.map"), b.pathJoin(&[_][]const u8{
             "site",
             "static",
             name ++ ".wasm.map",
         }));
-        _ = writeFiles.addCopyFile(b.path(emccOutputDir ++ name ++ ".js.symbols"), b.pathJoin(&[_][]const u8{
+        _ = writeFiles.addCopyFileToSource(b.path(emccOutputDir ++ name ++ ".js.symbols"), b.pathJoin(&[_][]const u8{
             "site",
             "src",
             "import",
