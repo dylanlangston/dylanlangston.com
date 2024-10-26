@@ -2,14 +2,13 @@ const std = @import("std");
 const builtin = @import("builtin");
 const raylib_build = @import("raylib");
 
-const raylibStandardOptions = .{
+const raylibStandardOptions = raylib_build.Options{
     .raudio = true,
     .rmodels = false,
     .rshapes = true,
     .rtext = true,
     .rtextures = true,
     .raygui = false,
-    .platform_drm = false,
     .shared = false,
 };
 
@@ -250,6 +249,8 @@ pub fn get_configured_raylib(
     target: std.Build.ResolvedTarget,
     optimize: std.builtin.OptimizeMode,
 ) *std.Build.Step.Compile {
+    b.sysroot = b.pathFromRoot("emsdk/upstream/emscripten/");
+
     const raylib = try raylib_build.addRaylib(b, target, optimize, .{
         .raudio = raylibStandardOptions.raudio,
         .rmodels = raylibStandardOptions.rmodels,
@@ -257,7 +258,6 @@ pub fn get_configured_raylib(
         .rtext = raylibStandardOptions.rtext,
         .rtextures = raylibStandardOptions.rtextures,
         .raygui = raylibStandardOptions.raygui,
-        .platform_drm = raylibStandardOptions.platform_drm,
         .shared = raylibStandardOptions.shared,
     });
 
