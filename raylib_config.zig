@@ -259,6 +259,7 @@ pub fn get_configured_raylib(
         .rtextures = raylibStandardOptions.rtextures,
         .raygui = raylibStandardOptions.raygui,
         .shared = raylibStandardOptions.shared,
+        .linux_display_backend = .X11,
     });
 
     define_macros(&raylib.root_module);
