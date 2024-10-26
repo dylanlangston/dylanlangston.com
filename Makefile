@@ -158,7 +158,9 @@ update-version: ## Update Version. Optionally pass in the VERSION=1.0.0 argument
 	@echo Updated Version to $(VERSION)
 
 build-rust-lambda: ## Build the Contact API and EmailForward Lambda
-	@cd ./rust-lambda; cargo lambda build --release --target aarch64-unknown-linux-gnu --output-format zip -l ./target
+	@zvm use 0.13.0
+	@cd ./rust-lambda; cargo lambda build --release --arm64 --output-format zip --target-dir ./target
+	@zvm use master
 
 test-rust-lambda: ## Test the Contact API Lambda
 	@cd ./rust-lambda; cargo test
