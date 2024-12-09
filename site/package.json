@@ -22,7 +22,7 @@
     "@sveltejs/vite-plugin-svelte": "^4.0.1",
     "@types/eslint": "^9.6.1",
     "@types/node": "^22.10.1",
-    "@typescript-eslint/eslint-plugin": "^8.13.0",
+    "@typescript-eslint/eslint-plugin": "^8.17.0",
     "@typescript-eslint/parser": "^8.16.0",
     "autoprefixer": "^10.4.20",
     "binaryen": "^120.0.0",
