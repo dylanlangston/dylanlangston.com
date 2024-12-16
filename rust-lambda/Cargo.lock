@@ -228,9 +228,9 @@ dependencies = [
 
 [[package]]
 name = "aws-sdk-sesv2"
-version = "1.55.0"
+version = "1.57.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8f691f253faac4b55c7b4625473d5d5ec51a07cd2a888108a4935865da1f003d"
+checksum = "3dfdd8eabbf8aea436830307108e249d9c60f7ecbd6a6953fda475d8985a8288"
 dependencies = [
  "aws-credential-types",
  "aws-runtime",
