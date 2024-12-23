@@ -25,7 +25,7 @@
     "@typescript-eslint/eslint-plugin": "^8.13.0",
     "@typescript-eslint/parser": "^8.18.0",
     "autoprefixer": "^10.4.20",
-    "binaryen": "^120.0.0",
+    "binaryen": "^121.0.0",
     "browser-dtector": "^4.1.0",
     "eslint": "^9.17.0",
     "eslint-config-prettier": "^9.1.0",
