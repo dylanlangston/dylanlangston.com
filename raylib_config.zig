@@ -1,16 +1,7 @@
 const std = @import("std");
 const builtin = @import("builtin");
-const raylib_build = @import("raylib");
-
-const raylibStandardOptions = raylib_build.Options{
-    .raudio = true,
-    .rmodels = false,
-    .rshapes = true,
-    .rtext = true,
-    .rtextures = true,
-    .raygui = false,
-    .shared = false,
-};
+const raylib_builder = @import("raylib");
+const raygui_builder = @import("raygui");
 
 fn define_macros(raylib_module: *std.Build.Module) void {
     // Don't use the built in config.h
@@ -251,18 +242,20 @@ pub fn get_configured_raylib(
 ) *std.Build.Step.Compile {
     b.sysroot = b.pathFromRoot("emsdk/upstream/emscripten/");
 
-    const raylib = try raylib_build.addRaylib(b, target, optimize, .{
-        .raudio = raylibStandardOptions.raudio,
-        .rmodels = raylibStandardOptions.rmodels,
-        .rshapes = raylibStandardOptions.rshapes,
-        .rtext = raylibStandardOptions.rtext,
-        .rtextures = raylibStandardOptions.rtextures,
-        .raygui = raylibStandardOptions.raygui,
-        .shared = raylibStandardOptions.shared,
-        .linux_display_backend = .X11,
-    });
+    const raylib = b.dependency("raylib", .{
+        .target = target,
+        .optimize = optimize,
+        .raudio = true,
+        .rmodels = false,
+        .rshapes = true,
+        .rtext = true,
+        .rtextures = true,
+        .shared = false,
+        // .linux_display_backend = raylibStandardOptions.linux_display_backend,
+        // .opengl_version = raylibStandardOptions.opengl_version,
+    }).artifact("raylib");
 
-    define_macros(&raylib.root_module);
+    define_macros(raylib.root_module);
 
     return raylib;
 }
