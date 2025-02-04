@@ -1,4 +1,6 @@
-import type { PlaywrightTestConfig } from '@playwright/test';
+import { devices, type PlaywrightTestConfig } from '@playwright/test';
+
+
 
 const config: PlaywrightTestConfig = {
 	webServer: {
@@ -7,7 +9,41 @@ const config: PlaywrightTestConfig = {
 	},
 	testDir: 'tests',
 	testMatch: /(.+\.)?(test|spec)\.[jt]s/,
-	workers: '75%'
+	workers: '75%',
+	use: {
+		headless: true,
+		video: 'on',
+	},
+	projects: [
+        {
+            name: 'chromium',
+            use: {
+                ...devices['Desktop Chrome'],
+				headless: false,
+                launchOptions: {
+                    args: [
+						'--headless',
+						'--no-sandbox',
+						'--ignore-gpu-blocklist',
+						'--use-gl=angle',
+						'--use-angle=gl-egl'
+					]
+                }
+            },
+        },
+		{
+			name: 'safari',
+			use: {
+				...devices['Desktop Safari'],
+			}
+		},
+		{
+			name: 'firefox',
+			use: {
+				...devices['Desktop Firefox']
+			}
+		}
+    ],
 };
 
 export default config;

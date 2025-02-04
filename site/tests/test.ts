@@ -37,6 +37,7 @@ test('raylib loaded successfully', async ({ page, browser }, testInfo: TestInfo)
 
 			page.on('console', async (msg: ConsoleMessage) => {
 				const messageText: string = msg.text();
+				// console.log(messageText)
 				if (messageText.includes(searchString)) {
 					clearTimeout(timeoutId);
 					resolve(msg);
@@ -49,3 +50,15 @@ test('raylib loaded successfully', async ({ page, browser }, testInfo: TestInfo)
 	await page.waitForLoadState("domcontentloaded");
 	const consoleMessage = await consoleMsgPromise;
 });
+
+test("GPU hardware acceleration", async ({ page, browser }, testInfo: TestInfo) => {
+	if (browser.browserType().name() != 'chromium') {
+		testInfo.skip(true, "Not supported in non-chromium browsers due to webgl limitations");
+		return;
+	}
+
+	await page.goto("chrome://gpu")
+	let featureStatusList = page.locator("#content")
+	
+	await expect(featureStatusList).toContainText("Hardware accelerated")
+})
