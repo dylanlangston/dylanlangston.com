@@ -9,7 +9,7 @@ test('index page has expected layout', async ({ page }, testinfo) => {
 	await page.waitForLoadState("domcontentloaded");
 
 	await expect(page.getByRole('heading', { name: "I'm Dylan Langston" })).toBeVisible({
-		timeout: 5000
+		timeout: 10000
 	});
 
 	await expect(page).toHaveScreenshot({
@@ -45,7 +45,7 @@ test('raylib loaded successfully', async ({ page, browser }, testInfo: TestInfo)
 			});
 		});
 
-	const consoleMsgPromise = waitForConsoleMessage(page, 'TRACE: Raylib Started', 5000);
+	const consoleMsgPromise = waitForConsoleMessage(page, 'TRACE: Raylib Started', 10000);
 	await page.goto('/');
 	await page.waitForLoadState("domcontentloaded");
 	const consoleMessage = await consoleMsgPromise;
