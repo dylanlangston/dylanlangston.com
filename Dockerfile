@@ -103,8 +103,8 @@ RUN make update-version VERSION=$VERSION release OPTIMIZE=$OPTIMIZE USE_NODE=1 P
 # Export files
 FROM scratch AS publish
 COPY --from=build /root/dylanlangston.com/site/build/ /site/build
-COPY --from=build /root/dylanlangston.com/rust-lambda/target/lambda/contact/ /rust-lambda/target/lambda/contact
-COPY --from=build /root/dylanlangston.com/rust-lambda/target/lambda/email-forward/ /rust-lambda/target/lambda/email-forward
+COPY --from=build /root/dylanlangston.com/rust-lambda/target*/lambda/contact/* /rust-lambda/target/lambda/contact
+COPY --from=build /root/dylanlangston.com/rust-lambda/target*/lambda/email-forward/* /rust-lambda/target/lambda/email-forward
 COPY --from=build /root/dylanlangston.com/python-lambda/build*/ /python-lambda/build
 
 # Default Stage is the Base stage
