@@ -251,7 +251,7 @@ pub fn get_configured_raylib(
         .rtext = true,
         .rtextures = true,
         .shared = false,
-        // .linux_display_backend = raylibStandardOptions.linux_display_backend,
+        .linux_display_backend = .X11,
         // .opengl_version = raylibStandardOptions.opengl_version,
     }).artifact("raylib");
 
