@@ -94,6 +94,7 @@ class WorkerMessageEventHandler extends EventTarget {
 // Worker TypeScript Def and boilerplate
 interface IEmscriptenWorker extends DedicatedWorkerGlobalScope {
     window: WorkerDOM.Window;
+    screen: any;
     document: WorkerDOM.Document;
     miniaudio: WorkerDOM.MiniAudio;
     innerWidth: number,
@@ -108,6 +109,7 @@ declare let self: IEmscriptenWorker;
 
 self.miniaudio = new WorkerDOM.MiniAudio();
 self.window = new WorkerDOM.Window();
+self.screen = {};
 self.onmessage = (ev: MessageEvent<IPCMessage>) => {
     if (ev.data !== undefined && ev.data.type !== undefined && ev.data.message !== undefined) {
         WorkerMessageEventHandler.Handler.OnMessage(ev.data.type, ev.data.message);

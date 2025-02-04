@@ -31,26 +31,13 @@ interface ICustomEmscriptenModule {
 
 	locateFile(url: string, scriptDirectory: string): string;
 
-	instantiateWasm: (
+	instantiateWasm?: (
 		imports: WebAssembly.Imports,
 		successCallback: (module: WebAssembly.Instance) => void
 	) => WebAssembly.Exports;
 }
 
 class CustomEmscriptenModule implements ICustomEmscriptenModule {
-	public instantiateWasm = (
-		imports: WebAssembly.Imports,
-		successCallback: (module: WebAssembly.Instance) => void
-	): WebAssembly.Exports => {
-		setTimeout(async () => {
-			const mod: IEmscripten = <any>this;
-			await mod.instantiateAsync(imports, successCallback);
-			if (mod.loadSymbols) mod.loadSymbols();
-		});
-		
-		return {};
-	}
-
 	requestFullscreen?: (lockPointer: boolean, resizeCanvas: boolean) => void;
 
 	elementPointerLock: boolean = false;
