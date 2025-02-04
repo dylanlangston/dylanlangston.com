@@ -9,10 +9,9 @@ const config: PlaywrightTestConfig = {
 	},
 	testDir: 'tests',
 	testMatch: /(.+\.)?(test|spec)\.[jt]s/,
-	workers: 1,
+	workers: '75%',
 	use: {
-		headless: true,
-		video: 'on',
+		headless: true
 	},
 	projects: [
         {
