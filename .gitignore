@@ -7,4 +7,3 @@ zig-cache/
 .zig-cache/
 zig-out/
 site/test-results/
-core
