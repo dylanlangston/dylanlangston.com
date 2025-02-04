@@ -15,7 +15,8 @@ test('index page has expected layout', async ({ page }, testinfo) => {
 	await expect(page).toHaveScreenshot({
 		fullPage: true,
 		stylePath: ['tests/background-mask.css'],
-		maxDiffPixelRatio: 0.01
+		maxDiffPixelRatio: 0.01,
+		timeout: 10000
 	});
 });
 
