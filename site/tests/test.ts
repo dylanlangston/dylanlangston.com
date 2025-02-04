@@ -37,7 +37,7 @@ test('raylib loaded successfully', async ({ page, browser }, testInfo: TestInfo)
 
 			page.on('console', async (msg: ConsoleMessage) => {
 				const messageText: string = msg.text();
-				// console.log(messageText)
+				console.log(messageText)
 				if (messageText.includes(searchString)) {
 					clearTimeout(timeoutId);
 					resolve(msg);
