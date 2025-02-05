@@ -21,7 +21,7 @@
 
 	const key = 'main';
 	const [send, receive] = crossfade({
-		duration: 750,
+		duration: 500,
 		easing: backOut
 	});
 	const animateIn = (node: any, params: { key: string }) =>
@@ -131,13 +131,13 @@
 		gtag('js', new Date());
 		gtag('config', 'G-VXRC4ZZ8Q9');
 	</script>
-	{#if !loaded}
+	<noscript>
 		<style>
 			.jsonly {
 				display: none;
 			}
 		</style>
-	{/if}
+	</noscript>
 </svelte:head>
 
 <div
@@ -153,30 +153,31 @@
 			in:animateIn={{ key }}
 			bind:this={main}
 		>
-			{#if !$accessibilityRequested && !$contrastRequested}
-				<Emscripten />
-			{/if}
-			<div class="w-screen" in:blur|local={{ duration: 500, delay: 250 }}>
-				<Header />
-			</div>
-			{#key $page.url.pathname + loaded + $page.error}
-				<main
-					class="flex-1 md:w-screen"
-					in:blur|local={{ duration: 250, delay: 50, opacity: 0.25 }}
-				>
-					<div class="overflow-x-auto h-full">
-						<div class="flex h-full justify-center">
-							<slot />
+			<div class="flex h-full w-full flex-col" in:blur|local={{ duration: 500, delay: 250, opacity: 0.25 }}>
+				{#if !$accessibilityRequested && !$contrastRequested}
+					<Emscripten />
+				{/if}
+				<div class="w-screen">
+					<Header />
+				</div>
+				{#key $page.url.pathname + loaded + $page.error}
+					<main
+						class="flex-1 md:w-screen"
+					>
+						<div class="overflow-x-auto h-full">
+							<div class="flex h-full justify-center">
+								<slot />
+							</div>
 						</div>
-					</div>
-				</main>
-			{/key}
-			<div class="w-screen" in:blur|local={{ duration: 500, delay: 250 }}>
-				<Footer
-					openCookieSettings={() => {
-						showCookieModal = true;
-					}}
-				/>
+					</main>
+				{/key}
+				<div class="w-screen">
+					<Footer
+						openCookieSettings={() => {
+							showCookieModal = true;
+						}}
+					/>
+				</div>
 			</div>
 		</div>
 		{#if showCookieModal}
@@ -221,7 +222,7 @@
 			<MouseCursor />
 		{/if}
 	{:else}
-		<main>
+		<main >
 			<noscript class="flex flex-col h-full">
 				<div
 					class="absolute flex top-0 bottom-0 left-0 right-0 items-center justify-center pointer-events-none"
@@ -233,10 +234,10 @@
 					</StatusContainer>
 				</div>
 			</noscript>
-			<div
-				class="jsonly absolute top-0 left-0 w-screen h-screen flex align-center animate-[fade-in_5s]"
+			<div 
+				class="jsonly absolute top-0 left-0 w-screen h-screen flex align-center"
 			>
-				<div class="loader m-auto" class:invisible={loaded} out:animateOut={{ key }}></div>
+				<div class="loader m-auto"><div out:animateOut={{ key }}></div></div>
 			</div>
 		</main>
 	{/if}
