@@ -43,11 +43,18 @@ runs:
         echo "::add-mask::${{ inputs.aws-cloudfront-distribution }}"
         echo "::add-mask::${{ inputs.to-email }}"
         echo "::add-mask::${{ inputs.from-email }}"
+    - name: Setup AWS CLI
+      shell: sh
+      run: |
+        curl -L "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+        unzip awscliv2.zip -d ./awscli
+        rm awscliv2.zip
+        sudo ./awscli/aws/install --update
+        rm -rf ./awscli
     - name: Setup SAM     
       shell: sh
       run: |
-        sudo apt-get -y install --no-install-recommends awscli
-        curl -L "https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip" -o sam.zip
+        curl -L "https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip" -o "sam.zip"
         unzip sam.zip -d ./sam
         rm sam.zip
         sudo ./sam/install --update
