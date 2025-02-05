@@ -8,8 +8,8 @@
 <footer class="p-1 glass px-4 md:px-8">
 	<div class="container mx-auto md:space-y-12">
 		<div class="grid justify-center lg:justify-between">
-			<div class="static flex justify-center space-x-4 lg:col-start-1">
-				<Ripple escapeParent={true}>
+			<div class="static flex justify-center lg:col-start-1">
+				<Ripple escapeParent={true} classList="p-1">
 					<a
 						rel="noopener noreferrer"
 						href="/contact"
@@ -19,7 +19,7 @@
 						<MailIcon size="24" />
 					</a>
 				</Ripple>
-				<Ripple escapeParent={true}>
+				<Ripple escapeParent={true} classList="p-1">
 					<a
 						rel="noopener noreferrer"
 						href="https://www.linkedin.com/in/dylan-langston/"
@@ -30,7 +30,7 @@
 						<LinkedinIcon size="24" />
 					</a>
 				</Ripple>
-				<Ripple escapeParent={true}>
+				<Ripple escapeParent={true} classList="p-1">
 					<a
 						rel="noopener noreferrer"
 						href="https://github.com/dylanlangston"

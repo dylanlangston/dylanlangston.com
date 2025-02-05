@@ -48,11 +48,11 @@
 	}
 </script>
 
-<div class="flex flex-col">
+<div class="flex flex-col gap-4">
 	{#each messages as message, index}
 		<div
 			in:animateMessage={{ messageUser: message.user }}
-			class="message rounded-xl p-4"
+			class="message rounded-xl p-4 border border-black dark:border-white shadow-2xs"
 			class:dark={$darkMode}
 			class:sys-message={message.user === 'sys'}
 			class:user-message={message.user === 'user'}
@@ -78,7 +78,7 @@
 		<div
 			in:slide={{ duration: 250, delay: 100, axis: 'x' }}
 			out:blur={{ duration: 150 }}
-			class="message bot-message rounded-xl p-4"
+			class="message bot-message rounded-xl p-4 border border-black dark:border-white shadow-2xs"
 			class:dark={$darkMode}
 		>
 			<div class="block w-[100px]">
@@ -88,7 +88,9 @@
 	{/if}
 </div>
 
-<style lang="postcss">
+<style>
+	@reference '../app.css'
+
 	.message {
 		border-color: rgba(0,0,0, 0.5);
 		@apply border shadow-sm rounded-lg max-w-[90%] p-3 mb-3 overflow-x-auto overflow-y-hidden backdrop-blur-lg;

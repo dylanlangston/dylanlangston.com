@@ -3,12 +3,14 @@ import { defineConfig } from 'vitest/config';
 import { resolve, join } from 'path';
 import optimizeWASMPlugin from './OptimizeWASMPlugin.ts';
 import { getArgs } from './svelte.config.js';
+import tailwindcss from '@tailwindcss/vite'
 const args = getArgs();
 
 
 export default defineConfig({
 	plugins: [
 		optimizeWASMPlugin({enabled: !args.Debug}),
+		tailwindcss(),
 		sveltekit()
 	],
 	assetsInclude: './static/**/*',

@@ -102,14 +102,14 @@
 		</div>
 		<div
 			bind:this={chatArea}
-			class="mt-3 h-[50vh] max-w-screen-xl w-[80vw] mx-3 chatbox overflow-x-auto overflow-y-auto rounded-lg p-2 border border-black dark:border-white"
+			class="mt-3 h-[50vh] max-w-(--breakpoint-xl) w-[80vw] mx-3 chatbox overflow-x-auto overflow-y-auto rounded-lg p-2 border border-black dark:border-white"
 		>
 			<Chat {messages} {isSending} animating={onAnimating} />
 		</div>
 		<div class="flex align-center mt-3 mx-3">
 			<textarea
 				rows="3"
-				class="resize-none w-full mt-2 px-3 py-2 bg-transparent outline-none border border-black dark:border-white shadow-sm rounded-lg disabled:cursor-not-allowed placeholder:text-black/[.5]"
+				class="resize-none w-full mt-2 px-3 py-2 bg-transparent outline-hidden border border-black dark:border-white shadow-2xs rounded-lg disabled:cursor-not-allowed placeholder:text-black/[.5]"
 				bind:value={inputText}
 				placeholder="Type your message..."
 				on:keydown={handleKeyPress}

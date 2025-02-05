@@ -19,7 +19,7 @@
 	bind:this={dialog}
 	on:close={() => (showModal = false)}
 	on:click|self={() => (canCloseByClickingOutside ? dialog.close() : null)}
-	class="backdrop:cursor-none bg-transparent dark:backdrop:bg-black/30 backdrop:bg-white/30 backdrop:backdrop-blur-md backdrop:backdrop-opacity-80"
+	class="backdrop:cursor-none bg-transparent dark:backdrop:bg-black/30 backdrop:bg-white/30 backdrop:backdrop-blur-md backdrop:backdrop-opacity-80 m-auto"
 >
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
 	<div on:click|stopPropagation class="glass round glass-no-animate">

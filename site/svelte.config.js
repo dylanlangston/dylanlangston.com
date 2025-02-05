@@ -9,11 +9,7 @@ import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	preprocess: [
-		sveltePreprocess({
-			postcss: {
-				plugins: [autoprefixer]
-			}
-		}),
+		sveltePreprocess({}),
 		mdsvex({
 			extensions: ['.md'],
 			rehypePlugins: [rehypeSlug, rehypeAutolinkHeadings]

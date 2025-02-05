@@ -19,7 +19,7 @@
 			<label for="required" class="text-lg">Required</label>
 			<button
 				type="button"
-				class="relative w-12 h-6 rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-rainbow bg-rainbow opacity-50"
+				class="relative w-12 h-6 rounded-full transition-colors duration-300 focus:outline-hidden focus:ring-2 focus:ring-rainbow bg-rainbow opacity-50"
 				role="switch"
 				aria-checked={true}
 				aria-labelledby="required"

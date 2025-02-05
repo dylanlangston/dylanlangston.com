@@ -1,6 +1,6 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@config '../tailwind.config.js';
 
 input,
 textarea,
@@ -35,7 +35,7 @@ a {
 	background: linear-gradient(var(--Rainbow) 0 0) left -65% top 0 /40% 100% no-repeat transparent;
 }
 
-.glass {
+@utility glass {
   filter: blur(6px);
   backdrop-filter: blur(0px);
   @apply relative shadow-lg shadow-black/[.5] outline outline-1 outline-black/[0.15] dark:outline-white/[0.15] animate-glass transition-all;

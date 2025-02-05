@@ -56,7 +56,7 @@
 								class="my-1 md:my-2 lg:my-4 text-2xl md:text-4xl lg:text-5xl text-gray-900 dark:text-white"
 							>
 								<span
-									class="drop-shadow-lg font-extrabold bg-clip-text bg-gradient-to-r to-emerald-800 from-sky-600 dark:to-emerald-600 dark:from-sky-400 text-transparent dark:text-transparent"
+									class="drop-shadow-lg font-extrabold bg-clip-text bg-linear-to-r to-emerald-800 from-sky-600 dark:to-emerald-600 dark:from-sky-400 text-transparent! dark:text-transparent!"
 									><Typewriter disabled={!shouldAnimateTitle} phrase={'Hello World,'} /></span
 								>
 								<br />
