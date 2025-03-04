@@ -1,5 +1,6 @@
 .{
-    .name = "dylanlangston.com",
+    .name = .dylanlangstoncom,
+    .fingerprint = 0xf9f087437090728f,
     .version = "1.0.0",
     .minimum_zig_version = "0.13.0",
     .dependencies = .{
