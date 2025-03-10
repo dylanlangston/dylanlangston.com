@@ -20,7 +20,7 @@
     "@sveltejs/adapter-static": "3.0.8",
     "@sveltejs/kit": "2.18.0",
     "@sveltejs/vite-plugin-svelte": "5.0.3",
-    "@tailwindcss/vite": "^4.0.9",
+    "@tailwindcss/vite": "^4.0.12",
     "@types/eslint": "9.6.1",
     "@types/node": "22.13.9",
     "@typescript-eslint/eslint-plugin": "8.26.0",
