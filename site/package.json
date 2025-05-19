@@ -28,7 +28,7 @@
     "autoprefixer": "10.4.21",
     "binaryen": "123.0.0",
     "browser-dtector": "4.1.0",
-    "eslint": "9.26.0",
+    "eslint": "9.27.0",
     "eslint-config-prettier": "10.1.2",
     "eslint-plugin-svelte": "3.5.1",
     "mdsvex": "0.12.3",
