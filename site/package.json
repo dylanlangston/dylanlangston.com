@@ -33,7 +33,7 @@
     "eslint-plugin-svelte": "3.5.1",
     "mdsvex": "0.12.3",
     "prettier": "3.5.3",
-    "prettier-plugin-svelte": "3.3.3",
+    "prettier-plugin-svelte": "3.4.0",
     "rehype-autolink-headings": "7.1.0",
     "rehype-slug": "^6.0.0",
     "svelte": "5.28.2",
