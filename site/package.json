@@ -29,7 +29,7 @@
     "binaryen": "123.0.0",
     "browser-dtector": "4.1.0",
     "eslint": "9.30.1",
-    "eslint-config-prettier": "10.1.5",
+    "eslint-config-prettier": "10.1.8",
     "eslint-plugin-svelte": "3.10.1",
     "mdsvex": "0.12.6",
     "prettier": "3.6.2",
