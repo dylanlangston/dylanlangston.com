@@ -42,9 +42,11 @@ pub fn build(b: *std.Build) !void {
     }
 
     const exe_unit_tests = b.addTest(.{
-        .root_source_file = b.path("zig/src/main.zig"),
-        .target = target,
-        .optimize = optimize,
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("zig/src/main.zig"),
+            .target = target,
+            .optimize = optimize,
+        }),
     });
 
     const run_exe_unit_tests = b.addRunArtifact(exe_unit_tests);
@@ -57,8 +59,7 @@ pub fn build(b: *std.Build) !void {
 }
 
 fn configure(b: *std.Build, t: std.Build.ResolvedTarget, o: std.builtin.OptimizeMode, c: *std.Build.Step.Compile, raylib_artifact: *std.Build.Step.Compile) !void {
-    const web_build = t.query.cpu_arch == .wasm32 or t.query.cpu_arch == .wasm64;
-
+    const web_build = t.query.cpu_arch.?.isWasm();
     const assets = &[_]build_assets.assetType{
         .{ .path = "music", .module_name = "Music", .allowed_exts = &[_][]const u8{".ogg"} },
         .{ .path = "sound", .module_name = "Sounds", .allowed_exts = &[_][]const u8{".ogg"} },
@@ -96,56 +97,17 @@ fn configure(b: *std.Build, t: std.Build.ResolvedTarget, o: std.builtin.Optimize
 }
 
 fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.builtin.OptimizeMode, raylib_artifact: *std.Build.Step.Compile) !void {
-    const lib = b.addStaticLibrary(.{
+    const lib = b.addLibrary(.{
         .name = name,
-        .root_source_file = b.path("zig/src/main.zig"),
-        // Zig building to emscripten doesn't work, because the Zig standard library
-        // is missing some things in the C system. "std/c.zig" is missing fd_t,
-        // which causes compilation to fail. So build to wasi instead, until it gets
-        // fixed.
-        // https://github.com/ziglang/zig/issues/16776
-        .target = std.Build.resolveTargetQuery(
-            b,
-            .{
-                .cpu_arch = target.query.cpu_arch,
-                .cpu_model = target.query.cpu_model,
-                .cpu_features_add = target.query.cpu_features_add,
-                .cpu_features_sub = target.query.cpu_features_sub,
-                .os_tag = .wasi,
-                .os_version_min = target.query.os_version_min,
-                .os_version_max = target.query.os_version_max,
-                .glibc_version = target.query.glibc_version,
-                .abi = target.query.abi,
-                .dynamic_linker = target.query.dynamic_linker,
-                .ofmt = target.query.ofmt,
-            },
-        ),
-        .optimize = optimize,
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("zig/src/main.zig"),
+            .target = target,
+            .optimize = optimize,
+        }),
+        .linkage = .static,
     });
 
     try configure(b, target, optimize, lib, raylib_artifact);
-
-    // https://github.com/Not-Nik/raylib-zig/blob/f8735a8cc79db221d3c651c93778cfdb5066818d/build.zig#L267C5-L273C54
-    // There are some symbols that need to be defined in C.
-    const webhack_c =
-        \\// Zig adds '__stack_chk_guard', '__stack_chk_fail', and 'errno',
-        \\// which emscripten doesn't actually support.
-        \\// Seems that zig ignores disabling stack checking,
-        \\// and I honestly don't know why emscripten doesn't have errno.
-        \\// TODO: when the updateTargetForWeb workaround gets removed, see if those are nessesary anymore
-        \\#include <stdint.h>
-        \\uintptr_t __stack_chk_guard;
-        \\//I'm not certain if this means buffer overflows won't be detected,
-        \\// However, zig is pretty safe from those, so don't worry about it too much.
-        \\void __stack_chk_fail(void){}
-        \\int errno;
-    ;
-    const webhack_c_file_step = b.addWriteFiles();
-    const webhack_c_file = webhack_c_file_step.add("webhack.c", webhack_c);
-    lib.addCSourceFile(.{ .file = webhack_c_file, .flags = &[_][]u8{} });
-    // Since it's creating a static library, the symbols raylib uses to webgl
-    // and glfw don't need to be linked by emscripten yet.
-    lib.step.dependOn(&webhack_c_file_step.step);
 
     const emccOutputDir = "zig-out" ++ std.fs.path.sep_str ++ "emscripten" ++ std.fs.path.sep_str;
     const emccImportDir = "site" ++ std.fs.path.sep_str ++ "src" ++ std.fs.path.sep_str ++ "import" ++ std.fs.path.sep_str;
@@ -327,9 +289,11 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
 fn build_desktop(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.builtin.OptimizeMode, raylib_artifact: *std.Build.Step.Compile) !void {
     const exe = b.addExecutable(.{
         .name = name,
-        .root_source_file = b.path("zig/src/main.zig"),
-        .target = target,
-        .optimize = optimize,
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("src/main.zig"),
+            .target = target,
+            .optimize = optimize,
+        }),
     });
 
     try configure(b, target, optimize, exe, raylib_artifact);

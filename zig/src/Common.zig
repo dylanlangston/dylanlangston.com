@@ -13,9 +13,6 @@ pub const Common = struct {
         @cInclude("raymath.h");
         @cInclude("rlgl.h");
     });
-    pub const raygui = @cImport({
-        @cInclude("raygui.h");
-    });
     pub const is_emscripten: bool = builtin.os.tag == .emscripten or builtin.os.tag == .wasi;
     pub const emscripten = if (is_emscripten) @cImport({
         @cInclude("emscripten.h");
@@ -292,7 +289,7 @@ pub const Common = struct {
 
             // Handle Resize
             _ = emscripten.emscripten_set_resize_callback(2, null, true, &struct {
-                fn resize(t: c_int, data: [*c]const emscripten.struct_EmscriptenUiEvent, callback: ?*anyopaque) callconv(.C) bool {
+                fn resize(t: c_int, data: [*c]const emscripten.struct_EmscriptenUiEvent, callback: ?*anyopaque) callconv(.c) bool {
                     _ = t;
                     _ = callback;
 

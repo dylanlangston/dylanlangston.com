@@ -195,8 +195,8 @@ pub const MandalbrotView = Common.ViewLocator.createView(
         pub fn init() void {
             const screenSize = Common.Helpers.ScreenSize();
 
-            MandalbrotViewModel.juliaShader = Common.Shader.Get(null, .julia);
-            MandalbrotViewModel.waveShader = Common.Shader.Get(null, .wave);
+            MandalbrotViewModel.juliaShader = Common.Shader.Get(.base, .julia);
+            MandalbrotViewModel.waveShader = Common.Shader.Get(.base, .wave);
             MandalbrotViewModel.juliaTarget = raylib.LoadRenderTexture(@intFromFloat(screenSize.x + 200), @intFromFloat(screenSize.y + 100));
             MandalbrotViewModel.waveTarget = raylib.LoadRenderTexture(@intFromFloat(screenSize.x + 200), @intFromFloat(screenSize.y + 100));
             //raylib.SetTextureFilter(MandalbrotViewModel.target.texture, raylib.TEXTURE_FILTER_ANISOTROPIC_8X);

@@ -13,11 +13,11 @@ pub inline fn importViews(
     _ = t;
     _ = o;
 
-    var views = std.ArrayList([]const u8).init(b.allocator);
-    var viewModels = std.ArrayList([]const u8).init(b.allocator);
-    var viewNames = std.ArrayList([]const u8).init(b.allocator);
-    var viewModelNames = std.ArrayList([]const u8).init(b.allocator);
-    var enumNames = std.ArrayList([]const u8).init(b.allocator);
+    var views = std.array_list.Managed([]const u8).init(b.allocator);
+    var viewModels = std.array_list.Managed([]const u8).init(b.allocator);
+    var viewPaths = std.array_list.Managed([]const u8).init(b.allocator);
+    var viewModelPaths = std.array_list.Managed([]const u8).init(b.allocator);
+    var enumNames = std.array_list.Managed([]const u8).init(b.allocator);
     {
         const cwd = std.fs.cwd();
         const dir = try cwd.openDir(b.pathJoin(&[_][]const u8{
@@ -42,19 +42,21 @@ pub inline fn importViews(
                 );
                 try enumNames.append(enumName);
 
-                const name = b.pathJoin(&[_][]const u8{
+                const name = entry.path[0 .. entry.path.len - 4];
+                const viewImportPath = b.pathJoin(&[_][]const u8{
                     "./zig", "src", viewPath, entry.path,
                 });
 
-                const viewModelFileName = try std.fmt.allocPrint(b.allocator, "./zig/src/{s}/{s}ViewModel.zig", .{
+                const viewModelFileName = try std.fmt.allocPrint(b.allocator, "{s}Model", .{name});
+                const viewModelImportPath = try std.fmt.allocPrint(b.allocator, "./zig/src/{s}/{s}ViewModel.zig", .{
                     viewModelPath,
                     enumName,
                 });
-                const viewModelFile: ?std.fs.File = std.fs.openFileAbsolute(b.pathFromRoot(viewModelFileName), .{}) catch null;
+                const viewModelFile: ?std.fs.File = std.fs.openFileAbsolute(b.pathFromRoot(viewModelImportPath), .{}) catch null;
                 if (viewModelFile != null) {
                     viewModelFile.?.close();
-                    try viewModelNames.append(viewModelFileName);
-                    try viewModels.append(try std.fmt.allocPrint(b.allocator, "{s}: @import(\"{s}\").{s}ViewModel,", .{
+                    try viewModelPaths.append(viewModelImportPath);
+                    try viewModels.append(try std.fmt.allocPrint(b.allocator, ".{s} => @import(\"{s}\").{s}ViewModel,", .{
                         enumName,
                         viewModelFileName,
                         enumName,
@@ -65,7 +67,7 @@ pub inline fn importViews(
                     }));
                 }
 
-                try viewNames.append(name);
+                try viewPaths.append(viewImportPath);
                 try views.append(try std.fmt.allocPrint(b.allocator, "View{{ .draw = &@import(\"{s}\").{s}View.draw, .init = &@import(\"{s}\").{s}View.init, .deinit = &@import(\"{s}\").{s}View.deinit }}", .{
                     name,
                     enumName,
@@ -128,12 +130,10 @@ pub inline fn importViews(
         \\    }}
         \\  }};
         \\
-        \\  const ViewModels = union(Views) {{
-        \\    {s}
-        \\  }};
-        \\
         \\  pub inline fn getViewModel(view: Views) type {{
-        \\      return std.meta.TagPayload(ViewModels, view);
+        \\      return switch (view) {{
+        \\          {s}
+        \\      }};
         \\  }}
         \\}};
     ;
@@ -141,7 +141,7 @@ pub inline fn importViews(
     const string = try std.fmt.allocPrint(b.allocator, format, .{
         module_name,
         try std.mem.join(b.allocator, ",\n    ", enumNames.items),
-        if (viewNames.items.len == 0) "" else ",",
+        if (viewPaths.items.len == 0) "" else ",",
         try std.mem.join(b.allocator, ",\n      ", views.items),
         try std.mem.join(b.allocator, "\n    ", viewModels.items),
     });
@@ -161,13 +161,15 @@ pub inline fn importViews(
             "./zig", "src", viewModelPath, viewModelPath ++ ".zig",
         })),
     });
-    for (viewNames.items) |name| {
-        module.addAnonymousImport(name, .{
+    for (viewPaths.items) |name| {
+        const basename = std.fs.path.basename(name);
+        module.addAnonymousImport(basename[0 .. basename.len - 4], .{
             .root_source_file = b.path(name),
         });
     }
-    for (viewModelNames.items) |name| {
-        module.addAnonymousImport(name, .{
+    for (viewModelPaths.items) |name| {
+        const basename = std.fs.path.basename(name);
+        module.addAnonymousImport(basename[0 .. basename.len - 4], .{
             .root_source_file = b.path(name),
         });
     }

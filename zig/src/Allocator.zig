@@ -2,20 +2,20 @@ const builtin = @import("builtin");
 const std = @import("std");
 const Common = @import("root").Common;
 
-// export fn zig_malloc(s: usize) callconv(.C) *void {
+// export fn zig_malloc(s: usize) callconv(.c) *void {
 //     std.heap.raw_c_allocator.rawAlloc(len: usize, ptr_align: u8, ret_addr: usize)
 //     return @ptrCast((allocator.alloc(void, s) catch |err| {
 //         std.builtin.panicUnwrapError(undefined, err);
 //     }));
 // }
 
-// export fn zig_calloc(num: usize, size: usize) callconv(.C) *void {
+// export fn zig_calloc(num: usize, size: usize) callconv(.c) *void {
 //     return @ptrCast(allocator.alloc(void, num * size) catch |err| {
 //         std.builtin.panicUnwrapError(undefined, err);
 //     });
 // }
 
-// export fn zig_realloc(ptr: *void, resize: usize) callconv(.C) *void {
+// export fn zig_realloc(ptr: *void, resize: usize) callconv(.c) *void {
 //     allocator.rawResize(std.mem.span(ptr), log2_buf_align: u8, new_len: usize, ret_addr: usize)
 //     if (allocator.resize(ptr, resize)) {
 //         return ptr;
@@ -23,7 +23,7 @@ const Common = @import("root").Common;
 //     return undefined;
 // }
 
-// export fn zig_free(ptr: *anyopaque) callconv(.C) void {
+// export fn zig_free(ptr: *anyopaque) callconv(.c) void {
 //     allocator.rawFree(buf: []u8, log2_buf_align: u8, ret_addr: usize)
 //     allocator.free(ptr);
 // }

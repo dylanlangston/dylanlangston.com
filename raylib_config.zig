@@ -252,7 +252,7 @@ pub fn get_configured_raylib(
         .rtextures = true,
         .shared = false,
         .linux_display_backend = .X11,
-        // .opengl_version = raylibStandardOptions.opengl_version,
+        .opengl_version = .auto,
     }).artifact("raylib");
 
     define_macros(raylib.root_module);

@@ -6,7 +6,7 @@ const Maps = Common.Generic.Maps;
 pub const AssetLoader = struct {
     pub inline fn init() void {
         const Callbacks = struct {
-            fn LoadFileData(fileName: [*c]const u8, bytesRead: [*c]c_int) callconv(.C) [*c]u8 {
+            fn LoadFileData(fileName: [*c]const u8, bytesRead: [*c]c_int) callconv(.c) [*c]u8 {
                 _ = fileName;
                 _ = bytesRead;
                 @panic("Not implemented");
@@ -18,7 +18,7 @@ pub const AssetLoader = struct {
                 //     std.builtin.panicUnwrapError(null, err);
                 // };
             }
-            fn LoadFileText(fileName: [*c]const u8) callconv(.C) [*c]u8 {
+            fn LoadFileText(fileName: [*c]const u8) callconv(.c) [*c]u8 {
                 _ = fileName;
                 @panic("Not implemented");
                 // Todo: need to split this into multiple codepaths for each asset type that gets loaded

@@ -34,10 +34,10 @@ inline fn embedFiles(
     _ = t;
     _ = o;
 
-    var names = std.ArrayList([]const u8).init(b.allocator);
-    var extensions = std.ArrayList([]const u8).init(b.allocator);
-    var hashes = std.ArrayList([]const u8).init(b.allocator);
-    var enums = std.ArrayList([]const u8).init(b.allocator);
+    var names = std.array_list.Managed([]const u8).init(b.allocator);
+    var extensions = std.array_list.Managed([]const u8).init(b.allocator);
+    var hashes = std.array_list.Managed([]const u8).init(b.allocator);
+    var enums = std.array_list.Managed([]const u8).init(b.allocator);
     {
         var dir = try std.fs.cwd().openDir(b.pathJoin(&[_][]const u8{
             "zig", "assets", path,

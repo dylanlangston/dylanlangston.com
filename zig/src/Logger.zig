@@ -31,7 +31,7 @@ pub const Logger = struct {
                 return buf[0..size];
             }
 
-            fn TraceLog(c_logLevel: c_int, c_text: [*c]const u8, va_list: if (Common.is_emscripten) ?*anyopaque else ?*raylib.struct___va_list_tag_1) callconv(.C) void {
+            fn TraceLog(c_logLevel: c_int, c_text: [*c]const u8, va_list: if (Common.is_emscripten) ?*anyopaque else ?*raylib.struct___va_list_tag_1) callconv(.c) void {
                 const logLevel: LogLevels = @enumFromInt(c_logLevel);
                 const tagName = std.enums.tagName(LogLevels, logLevel).?;
 
