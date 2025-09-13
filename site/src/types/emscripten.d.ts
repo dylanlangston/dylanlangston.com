@@ -82,19 +82,10 @@ interface EmscriptenModule {
 	_malloc(size: number): number;
 	_free(ptr: number): void;
 
-	WasmOffsetConverter?: WasmOffsetConverter;
 	instantiateAsync: (imports: WebAssembly.Imports, successCallback: (module: WebAssembly.Instance) => void) => Promise<void>;
 	loadSymbols: () => void;
 
 	abort: (msg: string) => void;
-}
-
-interface WasmOffsetConverter {
-	new (wasmBytes: Uint8Array, wasmModule: WebAssembly.Module);
-	convert(funcidx: number, offset: number): number;
-	getIndex(offset: number): number;
-	isSameFunc(offset1: number, offset2: number): boolean;
-	getName(offset: number): string;
 }
 
 /**
