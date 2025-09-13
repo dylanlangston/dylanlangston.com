@@ -165,9 +165,9 @@ build-rust-lambda: ## Build the Contact API and EmailForward Lambda
 
 test-rust-lambda: ## Test the Contact API Lambda
 	@cd ./rust-lambda; cargo test
-	@cd ./rust-lambda; cargo lambda watch -w -a 127.0.0.1 -P 9999 &
+	@cd ./rust-lambda; cargo lambda watch -w -A 127.0.0.1 -P 9999 &
 	@timeout 30 bash -c 'while ! nc -z 127.0.0.1 9999; do sleep 1; done' || (pkill cargo-lambda && exit 1);
-	@cd ./rust-lambda; cargo lambda invoke -a 127.0.0.1 -p 9999 "contact" --data-file ./TestData.json; pkill cargo-lambda
+	@cd ./rust-lambda; cargo lambda invoke -A 127.0.0.1 -P 9999 "contact" --data-file ./TestData.json; pkill cargo-lambda
 
 
 test-python-lambda: ## Test the Chat Lambda locally
