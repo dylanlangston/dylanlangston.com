@@ -59,7 +59,8 @@ pub fn build(b: *std.Build) !void {
 }
 
 fn configure(b: *std.Build, t: std.Build.ResolvedTarget, o: std.builtin.OptimizeMode, c: *std.Build.Step.Compile, raylib_artifact: *std.Build.Step.Compile) !void {
-    const web_build = t.query.cpu_arch.?.isWasm();
+    const arch = t.query.cpu_arch orelse null;
+    const web_build = arch == .wasm32 or arch == .wasm64;
     const assets = &[_]build_assets.assetType{
         .{ .path = "music", .module_name = "Music", .allowed_exts = &[_][]const u8{".ogg"} },
         .{ .path = "sound", .module_name = "Sounds", .allowed_exts = &[_][]const u8{".ogg"} },

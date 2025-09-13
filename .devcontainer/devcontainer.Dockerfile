@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/devcontainers/base:debian as base
 
 # Install General Dependencies
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-      && apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git glslang-tools nodejs npm awscli pkg-config netcat-traditional zip
+      && apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git glslang-tools awscli pkg-config netcat-traditional zip
 
 # Install Docker
 RUN install -m 0755 -d /etc/apt/keyrings \
@@ -51,8 +51,15 @@ RUN curl -L --proto '=https' --tlsv1.3 -sSf https://raw.githubusercontent.com/ca
 # Install Cargo Lambda
 RUN $HOME/.cargo/bin/cargo binstall cargo-lambda -y
 
-# Install Bun
-RUN curl -fsSL https://bun.sh/install | bash
-
 # Install UV
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+RUN curl -L --proto '=https' --tlsv1.3 -sSf https://astral.sh/uv/install.sh | sh
+RUN $HOME/.local/bin/uv python install --default python3.11
+
+# Install NVM
+RUN curl --proto '=https' --tlsv1.3 -sSf https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+
+# Install NodeJS
+RUN bash -c "source $HOME/.nvm/nvm.sh && nvm install node"
+
+# Install Bun
+RUN curl -L --proto '=https' --tlsv1.3 -sSf https://bun.sh/install | bash

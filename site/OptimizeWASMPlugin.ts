@@ -8,8 +8,8 @@ function optimizeWasm(code: Uint8Array) {
     Binaryen.setDebugInfo(false);
     module.setFeatures(Binaryen.Features.All);
     Binaryen.setLowMemoryUnused(true);
-    Binaryen.setOptimizeLevel(3);
-    Binaryen.setShrinkLevel(3);
+    Binaryen.setOptimizeLevel(2);
+    Binaryen.setShrinkLevel(1);
     module.runPasses(["post-emscripten", "flatten", "rereloop"]);
 
     function runPass() {
@@ -23,7 +23,7 @@ function optimizeWasm(code: Uint8Array) {
       runPass();
 
       const binary = module.emitBinary();
-      //console.log("Last Binary Size: " + lastBinary?.length + " - Binary size: " + binary.length + " - i:" + i);
+      // console.log("Last Binary Size: " + lastBinary?.length + " - Binary size: " + binary.length + " - i:" + i);
       if (binary.length >= (lastBinary?.length ?? Number.MAX_VALUE)) {
         i++;
         continue;

@@ -17,7 +17,7 @@ endif
 
 # Specify if nodejs should be used instead of bun
 ifeq ($(USE_NODE),)
-	USE_NODE = 1
+	USE_NODE = 0
 else ifeq ($(USE_NODE),0)
 else ifeq ($(USE_NODE),1)
 else
@@ -59,7 +59,7 @@ else
 	@make build-rust-lambda build-python-lambda
 endif
 
-setup: setup-emscripten setup-bun setup-rust setup-python # Default Setup Target. Sets up emscripten, nodejs, playwright, and rust.
+setup: setup-python setup-emscripten setup-bun setup-rust # Default Setup Target. Sets up python (uv), emscripten, nodejs, playwright, and rust.
 
 clean: ## Default Clean Target.
 	@rm -rf ./zig-out/*
@@ -169,10 +169,6 @@ test-rust-lambda: ## Test the Contact API Lambda
 	@timeout 30 bash -c 'while ! nc -z 127.0.0.1 9999; do sleep 1; done' || (pkill cargo-lambda && exit 1);
 	@cd ./rust-lambda; cargo lambda invoke -a 127.0.0.1 -p 9999 "contact" --data-file ./TestData.json; pkill cargo-lambda
 
-build-python-lambda: setup-python ## Package the Chat Lambda
-	@rm -f ./python-lambda/build/chat.zip
-	@mkdir -p ./python-lambda/build/
-	@cd ./python-lambda/package;zip -r ../build/chat.zip .;cd ../src; zip ../build/chat.zip ./chat.py
 
 test-python-lambda: ## Test the Chat Lambda locally
 	@cd ./python-lambda && . .venv/bin/activate && PYTHONPATH=src python -c "import chat; print(chat.lambda_handler({'httpMethod': 'POST', 'body': '{\"message\": \"Hello, who are you?\"}', 'headers': {'origin': 'https://dylanlangston.com'}}, None))"

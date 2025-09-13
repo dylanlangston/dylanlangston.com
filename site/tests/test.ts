@@ -2,7 +2,7 @@ import { expect, test, type Page, type TestInfo, type ConsoleMessage } from '@pl
 
 test('index page has expected layout', async ({ page }, testinfo) => {
 	await page.addInitScript({
-		content: 'document.cookie = "cookie_preferences=%7B%22analytics%22%3Atrue%2C%22userAccepted%22%3Atrue%7D"'
+		content: 'document.cookie = "cookie_preferences=%7B%22analytics%22%3Afalse%2C%22userAccepted%22%3Atrue%7D"'
 	});
 
 	await page.goto('/');
@@ -27,7 +27,7 @@ test('raylib loaded successfully', async ({ page, browser }, testInfo: TestInfo)
 	}
 
 	await page.addInitScript({
-		content: 'document.cookie = "cookie_preferences=%7B%22analytics%22%3Atrue%2C%22userAccepted%22%3Atrue%7D"'
+		content: 'document.cookie = "cookie_preferences=%7B%22analytics%22%3Afalse%2C%22userAccepted%22%3Atrue%7D"'
 	});
 
 	const waitForConsoleMessage = async (page: Page, searchString: string, timeout: number): Promise<ConsoleMessage> =>
