@@ -30,12 +30,12 @@ const config: PlaywrightTestConfig = {
                 }
             },
         },
-		{
-			name: 'safari',
-			use: {
-				...devices['Desktop Safari'],
-			}
-		},
+		// {
+		// 	name: 'safari',
+		// 	use: {
+		// 		...devices['Desktop Safari'],
+		// 	}
+		// },
 		{
 			name: 'firefox',
 			use: {

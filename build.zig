@@ -174,7 +174,6 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
         "-sWEBAUDIO_DEBUG=" ++ (if (debugging_wasm) "1" else "0"),
         "-sGL_TRACK_ERRORS=" ++ (if (debugging_wasm) "1" else "0"),
         if (debugging_wasm) "-gsource-map" else "",
-        if (debugging_wasm) "-sLOAD_SOURCE_MAP=1" else "",
         //if (debugging_wasm) "-sGL_TRACK_ERRORS=1" else "-sGL_TRACK_ERRORS=0",
         // if (debugging_wasm) "-sRUNTIME_DEBUG=1" else "",
         if (debugging_wasm) "" else "-fno-exceptions",
