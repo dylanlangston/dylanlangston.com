@@ -207,7 +207,6 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
         "--post-js=site/emscripten_post.js",
 
         // Configure memory
-        if (debugging_wasm or optimize == .ReleaseSafe) "-sUSE_OFFSET_CONVERTER" else "",
         //"-sALLOW_MEMORY_GROWTH=1",
         "-sWASM_MEM_MAX=512MB",
         "-sTOTAL_MEMORY=32MB",

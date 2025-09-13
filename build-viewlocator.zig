@@ -62,7 +62,7 @@ pub inline fn importViews(
                         enumName,
                     }));
                 } else {
-                    try viewModels.append(try std.fmt.allocPrint(b.allocator, "{s}: void,", .{
+                    try viewModels.append(try std.fmt.allocPrint(b.allocator, "{s} => @compileError(\"ViewModel not implemented for this view\"),", .{
                         enumName,
                     }));
                 }
