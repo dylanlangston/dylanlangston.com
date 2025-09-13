@@ -88,6 +88,6 @@ jobs:
       - name: Upload GitGub Pages artifact
         if: ${{ success() || steps.build_debug.conclusion == 'success' }}
         id: upload-compressed
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: '${{ runner.temp }}/debug/site/build'
