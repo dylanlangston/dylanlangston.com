@@ -30,7 +30,7 @@ jobs:
           runId: ${{ github.run_id }}
       - name: Checkout
         id: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Checkout Submodules
         run: make setup-git-clone
       - name: Test using Docker
