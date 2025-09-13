@@ -51,6 +51,7 @@ else
 	@bun -b run --cwd ./site test-bun
 endif
 	@make test-rust-lambda
+	@make test-python-lambda
 
 release: clean build-web build-site  ## Default Release Target. Builds Web Version for publish
 ifeq ($(OPTIMIZE),Debug)
@@ -100,8 +101,10 @@ setup-rust: ## Setup Rust Environment
 	@cd ./rust-lambda; cargo fetch; cd ..
 
 setup-python: ## Setup Python Environment
-	@python3 -m pip install -r ./python-lambda/src/requirements.txt --platform manylinux2014_x86_64 --implementation cp --python 3.11 --only-binary :all: --upgrade --target ./python-lambda/package
-	@rm -r ./python-lambda/package/__pycache__
+	@rm -rf ./python-lambda/.venv
+	@cd ./python-lambda && ~/.local/bin/uv venv .venv
+	@cd ./python-lambda && . .venv/bin/activate && ~/.local/bin/uv pip install -e . --link-mode=copy
+	@rm -rf ./python-lambda/package/__pycache__
 
 build-desktop: ## Build Desktop. Optionally pass in the OPTIMIZE=... argument.
 	@zig build -Doptimize=$(OPTIMIZE) -freference-trace
@@ -165,6 +168,14 @@ test-rust-lambda: ## Test the Contact API Lambda
 	@cd ./rust-lambda; cargo lambda watch -w -a 127.0.0.1 -P 9999 &
 	@timeout 30 bash -c 'while ! nc -z 127.0.0.1 9999; do sleep 1; done' || (pkill cargo-lambda && exit 1);
 	@cd ./rust-lambda; cargo lambda invoke -a 127.0.0.1 -p 9999 "contact" --data-file ./TestData.json; pkill cargo-lambda
+
+build-python-lambda: setup-python ## Package the Chat Lambda
+	@rm -f ./python-lambda/build/chat.zip
+	@mkdir -p ./python-lambda/build/
+	@cd ./python-lambda/package;zip -r ../build/chat.zip .;cd ../src; zip ../build/chat.zip ./chat.py
+
+test-python-lambda: ## Test the Chat Lambda locally
+	@cd ./python-lambda && . .venv/bin/activate && PYTHONPATH=src python -c "import chat; print(chat.lambda_handler({'httpMethod': 'POST', 'body': '{\"message\": \"Hello, who are you?\"}', 'headers': {'origin': 'https://dylanlangston.com'}}, None))"
 
 build-python-lambda: setup-python ## Package the Chat Lambda
 	@rm -f ./python-lambda/build/chat.zip

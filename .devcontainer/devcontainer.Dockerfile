@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/devcontainers/base:debian as base
 
 # Install General Dependencies
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-     && apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git python3 pip glslang-tools nodejs npm awscli pkg-config netcat-traditional zip
+      && apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git glslang-tools nodejs npm awscli pkg-config netcat-traditional zip
 
 # Install Docker
 RUN install -m 0755 -d /etc/apt/keyrings \
@@ -53,3 +53,6 @@ RUN $HOME/.cargo/bin/cargo binstall cargo-lambda -y
 
 # Install Bun
 RUN curl -fsSL https://bun.sh/install | bash
+
+# Install UV
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
