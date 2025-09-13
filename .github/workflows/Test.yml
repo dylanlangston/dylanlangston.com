@@ -35,4 +35,6 @@ jobs:
         run: make setup-git-clone
       - name: Test using Docker
         if: ${{ always() }}
+        env: 
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: make test-docker VERSION=${{ inputs.version }}

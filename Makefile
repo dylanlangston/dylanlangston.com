@@ -98,7 +98,7 @@ else
 endif
 
 setup-rust: ## Setup Rust Environment
-	@cd ./rust-lambda; cargo fetch; cd ..
+	@cd ./rust-lambda; cargo fetch
 
 setup-python: ## Setup Python Environment
 	@rm -rf ./python-lambda/.venv
@@ -145,7 +145,7 @@ release-docker:  ## Builds Web Version for publish using docker.
 	@docker build --rm --network=host --progress=plain -t dylanlangston.com . --target publish --output type=local,dest=$(OUTPUT_DIR) --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE) --build-arg PRECOMPRESS_RELEASE=$(PRECOMPRESS_RELEASE)
 
 test-docker:  ## clean, setup, and test using docker.
-	@docker build --rm --network=host --progress=plain -t dylanlangston.com . --target test --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE)
+	@docker build --rm --network=host --secret id=gemini_api_key,env=GEMINI_API_KEY --progress=plain -t dylanlangston.com . --target test --build-arg VERSION=$(VERSION) --build-arg OPTIMIZE=$(OPTIMIZE)
 
 run-site: build-web ## Run Website
 ifeq ($(USE_NODE),1)
@@ -163,14 +163,14 @@ update-version: ## Update Version. Optionally pass in the VERSION=1.0.0 argument
 build-rust-lambda: ## Build the Contact API and EmailForward Lambda
 	@cd ./rust-lambda; cargo lambda build --release --arm64 --output-format zip --target-dir ./target
 
-test-rust-lambda: ## Test the Contact API Lambda
+test-rust-lambda: setup-rust ## Test the Contact API Lambda
 	@cd ./rust-lambda; cargo test
 	@cd ./rust-lambda; cargo lambda watch -w -A 127.0.0.1 -P 9999 &
 	@timeout 30 bash -c 'while ! nc -z 127.0.0.1 9999; do sleep 1; done' || (pkill cargo-lambda && exit 1);
 	@cd ./rust-lambda; cargo lambda invoke -A 127.0.0.1 -P 9999 "contact" --data-file ./TestData.json; pkill cargo-lambda
 
 
-test-python-lambda: ## Test the Chat Lambda locally
+test-python-lambda: setup-python ## Test the Chat Lambda locally
 	@cd ./python-lambda && . .venv/bin/activate && PYTHONPATH=src python -c "import chat; print(chat.lambda_handler({'httpMethod': 'POST', 'body': '{\"message\": \"Hello, who are you?\"}', 'headers': {'origin': 'https://dylanlangston.com'}}, None))"
 
 build-python-lambda: setup-python ## Package the Chat Lambda

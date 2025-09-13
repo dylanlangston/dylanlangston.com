@@ -44,6 +44,8 @@ jobs:
       - name: Test using Docker
         if: ${{ inputs.should-test }}
         id: test
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           make test-docker VERSION=${{ inputs.version }}
       - name: Build Release using Docker

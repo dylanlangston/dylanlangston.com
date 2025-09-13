@@ -92,7 +92,9 @@ RUN make setup-playwright
 
 FROM test-base as test
 COPY . /root/dylanlangston.com/
-RUN --network=host make build-web test USE_NODE=1
+RUN --network=host --mount=type=secret,id=gemini_api_key,required=true \
+    export GEMINI_API_KEY=$(cat /run/secrets/gemini_api_key) &&\
+    make build-web test USE_NODE=1
 
 FROM base AS develop
 EXPOSE 5173
