@@ -1,11 +1,11 @@
-use aws_config::meta::region::RegionProviderChain;
 use aws_config::BehaviorVersion;
-use aws_sdk_s3::{primitives::Blob, Client as S3Client};
-use aws_sdk_sesv2::types::{Destination, EmailContent, RawMessage};
+use aws_config::meta::region::RegionProviderChain;
+use aws_sdk_s3::{Client as S3Client, primitives::Blob};
 use aws_sdk_sesv2::Client as SesClient;
+use aws_sdk_sesv2::types::{Destination, EmailContent, RawMessage};
 use email::{Header, MimeMessage};
 use env_logger;
-use lambda_runtime::{service_fn, LambdaEvent};
+use lambda_runtime::{LambdaEvent, service_fn};
 use log::{info, warn};
 use serde_json::Value;
 use tokio::io::AsyncReadExt;
@@ -94,11 +94,17 @@ async fn my_handler(
                                 mime_msg.headers.get_value("From".to_owned())?;
 
                             let mut builder = email::rfc5322::Rfc5322Builder::new();
-                            builder.emit_folded(&Header::new("To".to_owned(), to_email.clone()).to_string()[..]);
+                            builder.emit_folded(
+                                &Header::new("To".to_owned(), to_email.clone()).to_string()[..],
+                            );
                             builder.emit_raw("\r\n");
-                            builder.emit_folded(&Header::new("From".to_owned(), from_email.clone()).to_string()[..]);
+                            builder.emit_folded(
+                                &Header::new("From".to_owned(), from_email.clone()).to_string()[..],
+                            );
                             builder.emit_raw("\r\n");
-                            builder.emit_folded(&Header::new("Reply-To".to_owned(), original_from).to_string()[..]);
+                            builder.emit_folded(
+                                &Header::new("Reply-To".to_owned(), original_from).to_string()[..],
+                            );
                             builder.emit_raw("\r\n");
                             builder.emit_folded(&Header::new("Sender".to_owned(), from_email.clone()).to_string()[..]);
                             builder.emit_raw("\r\n");

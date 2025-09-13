@@ -1,12 +1,12 @@
 #![allow(non_snake_case)]
 
-use aws_config::meta::region::RegionProviderChain;
 use aws_config::BehaviorVersion;
+use aws_config::meta::region::RegionProviderChain;
 use aws_sdk_sesv2::{
-    types::{Body as ses_Body, Content, Destination, EmailContent, Message},
     Client,
+    types::{Body as ses_Body, Content, Destination, EmailContent, Message},
 };
-use lambda_http::{run, service_fn, Body, Error, Request, Response};
+use lambda_http::{Body, Error, Request, Response, run, service_fn};
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::env;
@@ -52,7 +52,12 @@ impl ContactRequest {
     }
 }
 
-async fn function_handler(event: Request, client: &Client, from_address: &String, to_address: &String) -> Result<Response<Body>, Error> {
+async fn function_handler(
+    event: Request,
+    client: &Client,
+    from_address: &String,
+    to_address: &String,
+) -> Result<Response<Body>, Error> {
     match event.method().as_str() {
         "POST" => handle_post(event, &client, &from_address, &to_address).await,
         "OPTIONS" => handle_options(),
@@ -63,7 +68,12 @@ async fn function_handler(event: Request, client: &Client, from_address: &String
     }
 }
 
-async fn handle_post(event: Request, client: &Client, from_address: &String, to_address: &String) -> Result<Response<Body>, Error> {
+async fn handle_post(
+    event: Request,
+    client: &Client,
+    from_address: &String,
+    to_address: &String,
+) -> Result<Response<Body>, Error> {
     // Deserialize JSON into ContactRequest struct
     let contact_request: ContactRequest = match serde_json::from_slice(event.body()) {
         Ok(req) => req,
@@ -71,7 +81,7 @@ async fn handle_post(event: Request, client: &Client, from_address: &String, to_
             return Ok(Response::builder()
                 .status(400)
                 .body(Body::Text("Invalid JSON data".to_string()))
-                .unwrap())
+                .unwrap());
         }
     };
 
@@ -109,7 +119,12 @@ fn handle_options() -> Result<Response<Body>, Error> {
         .unwrap())
 }
 
-async fn send_email(contact_request: &ContactRequest, client: &Client, from_address: &String, to_address: &String) -> Result<(), Error> {
+async fn send_email(
+    contact_request: &ContactRequest,
+    client: &Client,
+    from_address: &String,
+    to_address: &String,
+) -> Result<(), Error> {
     // Construct email message
     let subject = format!(
         "Contact Request - {} {}",
@@ -195,5 +210,8 @@ async fn main() -> Result<(), Error> {
     let from_address = env::var("FromEmail").expect("FromEmail environment variable not set");
     let to_address = env::var("ToEmail").expect("ToEmail environment variable not set");
 
-    run(service_fn(|req: Request| function_handler(req, &ses_client, &from_address, &to_address))).await
+    run(service_fn(|req: Request| {
+        function_handler(req, &ses_client, &from_address, &to_address)
+    }))
+    .await
 }
