@@ -103,7 +103,7 @@ setup-rust: ## Setup Rust Environment
 setup-python: ## Setup Python Environment
 	@rm -rf ./python-lambda/.venv
 	@cd ./python-lambda && ~/.local/bin/uv venv .venv
-	@cd ./python-lambda && . .venv/bin/activate && ~/.local/bin/uv pip install -e . --link-mode=copy
+	@cd ./python-lambda && . .venv/bin/activate && ~/.local/bin/uv pip install --target ./package -e . --link-mode=copy
 	@rm -rf ./python-lambda/package/__pycache__
 
 build-desktop: ## Build Desktop. Optionally pass in the OPTIMIZE=... argument.
@@ -171,7 +171,7 @@ test-rust-lambda: setup-rust ## Test the Contact API Lambda
 
 
 test-python-lambda: setup-python ## Test the Chat Lambda locally
-	@cd ./python-lambda && . .venv/bin/activate && PYTHONPATH=src python -c "import chat; print(chat.lambda_handler({'httpMethod': 'POST', 'body': '{\"message\": \"Hello, who are you?\"}', 'headers': {'origin': 'https://dylanlangston.com'}}, None))"
+	@cd ./python-lambda && . .venv/bin/activate && PYTHONPATH=src:package python -c "import chat; print(chat.lambda_handler({'httpMethod': 'POST', 'body': '{\"message\": \"Hello, who are you?\"}', 'headers': {'origin': 'https://dylanlangston.com'}}, None))"
 
 build-python-lambda: setup-python ## Package the Chat Lambda
 	@rm -f ./python-lambda/build/chat.zip
