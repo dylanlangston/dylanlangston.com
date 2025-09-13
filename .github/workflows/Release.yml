@@ -39,7 +39,7 @@ jobs:
         id: checkout
         uses: actions/checkout@v4
       - name: 'Create or Update Release'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         env:
           INPUT_COMMIT-MESSAGE: ${{ inputs.commit-message }}
         with:
