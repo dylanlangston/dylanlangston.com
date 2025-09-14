@@ -225,7 +225,7 @@ Resources:
         - x86_64
       Environment:
         Variables:
-          GeminiAPI: !Ref GeminiAPIKey
+          GEMINI_API_KEY: !Ref GeminiAPIKey
       Events:
         Post:
           Type: Api

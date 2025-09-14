@@ -171,7 +171,7 @@ test-rust-lambda: setup-rust ## Test the Contact API Lambda
 
 
 test-python-lambda: setup-python ## Test the Chat Lambda locally
-	@cd ./python-lambda && . .venv/bin/activate && PYTHONPATH=src:package python -c "import chat; print(chat.lambda_handler({'httpMethod': 'POST', 'body': '{\"message\": \"Hello, who are you?\"}', 'headers': {'origin': 'https://dylanlangston.com'}}, None))"
+	@cd ./python-lambda && . .venv/bin/activate && PYTHONPATH=src:package python -c "import chat; print(chat.lambda_handler({'httpMethod': 'POST', 'body': '{\"message\": \"Hello, who are you?\", \"history\": []}', 'headers': {'origin': 'https://dylanlangston.com'}}, None))"
 
 build-python-lambda: setup-python ## Package the Chat Lambda
 	@rm -f ./python-lambda/build/chat.zip

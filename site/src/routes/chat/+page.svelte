@@ -55,14 +55,17 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ "Message": text })
+                body: JSON.stringify({ 
+                    "message": text,
+                    "history": messages
+                })
             });
 
             if (response.ok) {
                 const data = await response.json();
                 messages = [
                     ...messages,
-                    { text: data.Message.trim(), user: MsgUserType.bot }
+                    { text: data.response.trim(), user: MsgUserType.bot }
                 ];
             } else {
                 throw new Error('Failed to send message');
