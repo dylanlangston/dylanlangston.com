@@ -250,7 +250,6 @@ pub fn get_configured_raylib(
         .rshapes = true,
         .rtext = true,
         .rtextures = true,
-        .shared = false,
         .linux_display_backend = .X11,
         .opengl_version = .auto,
     }).artifact("raylib");

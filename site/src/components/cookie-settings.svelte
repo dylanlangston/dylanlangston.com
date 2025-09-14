@@ -25,9 +25,7 @@
 				aria-labelledby="required"
                 disabled={true}
 			>
-				<span
-					class="absolute left-0 top-0 w-6 h-6 bg-white rounded-full transition-transform duration-300 transform translate-x-6"
-				/>
+				<span class="absolute left-0 top-0 w-6 h-6 bg-white rounded-full transition-transform duration-300 transform translate-x-6"></span>
 			</button>
 		</div>
 		<p class="text-xs text-left mt-2">
@@ -48,11 +46,10 @@
 				aria-labelledby="analytics"
 				on:click={() => (analyticsEnabled = !analyticsEnabled)}
 			>
-				<span
-					class="absolute left-0 top-0 w-6 h-6 bg-white rounded-full transition-transform duration-300 transform {analyticsEnabled
+				<span class="absolute left-0 top-0 w-6 h-6 bg-white rounded-full transition-transform duration-300 transform {analyticsEnabled
 						? 'translate-x-6'
 						: 'translate-x-0'}"
-				/>
+				></span>
 			</button>
 		</div>
 		<p class="text-xs text-left mt-2">

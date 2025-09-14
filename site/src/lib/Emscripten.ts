@@ -4,7 +4,7 @@ import { Environment } from '$lib/Common';
 
 export const EmscriptenModule: (canvas: HTMLCanvasElement | OffscreenCanvas) =>
 	ICustomEmscriptenModule = (canvas: HTMLCanvasElement | OffscreenCanvas) => new CustomEmscriptenModule(canvas);
-export const EmscriptenModuleFactory: EmscriptenModuleFactory<IEmscripten> = emscriptenModuleFactory;
+export const EmscriptenModuleFactory = emscriptenModuleFactory as EmscriptenModuleFactory<IEmscripten>;
 export function EmscriptenInitialize(canvas: HTMLCanvasElement | OffscreenCanvas): Promise<IEmscripten> {
 	return EmscriptenModuleFactory(EmscriptenModule(canvas));
 }
@@ -14,7 +14,6 @@ export interface IEmscripten extends CustomEmscriptenModule, EmscriptenModule {
 }
 
 interface ICustomEmscriptenModule {
-	requestFullscreen?: (lockPointer: boolean, resizeCanvas: boolean) => void;
 	onFullScreen?: (fullscreen: boolean) => void;
 
 	onAbort: { (what: any): void };
@@ -38,8 +37,6 @@ interface ICustomEmscriptenModule {
 }
 
 class CustomEmscriptenModule implements ICustomEmscriptenModule {
-	requestFullscreen?: (lockPointer: boolean, resizeCanvas: boolean) => void;
-
 	elementPointerLock: boolean = false;
 
 	public canvas: HTMLCanvasElement | OffscreenCanvas;

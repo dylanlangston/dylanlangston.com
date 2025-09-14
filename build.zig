@@ -198,7 +198,7 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
             "-sEXPORTED_RUNTIME_METHODS=stringToNewUTF8,UTF8ToString,abort"
         else
             "-sEXPORTED_RUNTIME_METHODS=stringToNewUTF8,UTF8ToString,abort",
-        "-sINCOMING_MODULE_JS_API=['setStatus','printErr','print','onAbort','instantiateWasm','locateFile','onRuntimeInitialized','canvas','elementPointerLock','requestFullscreen']",
+        "-sINCOMING_MODULE_JS_API=['setStatus','printErr','print','onAbort','instantiateWasm','locateFile','onRuntimeInitialized','canvas','elementPointerLock']",
         "-sDYNAMIC_EXECUTION=0",
         "-sWASM_BIGINT=1",
         "-sHTML5_SUPPORT_DEFERRING_USER_SENSITIVE_REQUESTS=0",

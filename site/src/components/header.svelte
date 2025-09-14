@@ -157,7 +157,7 @@
 	{/if}
 </header>
 
-<style>
+<style lang="css">
 	/*!
  * Toggle
  * @description Theme Toggle
@@ -173,20 +173,13 @@
 	.theme-toggle
 		input[type='checkbox']:checked
 		~ .theme-toggle__within
-		.theme-toggle__within__circle,
-	.theme-toggle--toggled:not(label).theme-toggle
-		.theme-toggle__within
 		.theme-toggle__within__circle {
 		transform: scale(1.5);
 	}
-	.theme-toggle input[type='checkbox']:checked ~ .theme-toggle__within .theme-toggle__within__inner,
-	.theme-toggle--toggled:not(label).theme-toggle
-		.theme-toggle__within
-		.theme-toggle__within__inner {
+	.theme-toggle input[type='checkbox']:checked ~ .theme-toggle__within .theme-toggle__within__inner {
 		transform: translate3d(3px, -3px, 0) scale(1.2);
 	}
-	.theme-toggle input[type='checkbox']:checked ~ .theme-toggle__within g path,
-	.theme-toggle--toggled:not(label).theme-toggle .theme-toggle__within g path {
+	.theme-toggle input[type='checkbox']:checked ~ .theme-toggle__within g path {
 		transform: scale(0.65);
 	}
 	.theme-toggle {
