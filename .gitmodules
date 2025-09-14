@@ -7,3 +7,6 @@
 [submodule "emsdk"]
 	path = emsdk
 	url = https://github.com/emscripten-core/emsdk.git
+[submodule "resume"]
+	path = resume
+	url = https://github.com/dylanlangston/resume.git
