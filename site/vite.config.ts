@@ -2,7 +2,7 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vitest/config';
 import { resolve, join } from 'path';
 import optimizeWASMPlugin from './OptimizeWASMPlugin.ts';
-import fetchJSONResume from './FetchJSONResume.ts'
+import updateResume from './UpdateResume.ts'
 import { getArgs } from './svelte.config.js';
 import tailwindcss from '@tailwindcss/vite'
 const args = getArgs();
@@ -11,11 +11,7 @@ const args = getArgs();
 export default defineConfig({
 	plugins: [
 		optimizeWASMPlugin({enabled: !args.Debug}),
-		fetchJSONResume({
-			url: 'https://gist.githubusercontent.com/dylanlangston/80380ec68b970189450dd2fae4502ff1/raw/resume.json',
-			filename: 'resume.json',
-		}),
-		tailwindcss(),
+		updateResume({sourceDirectories: ['../resume/dist', '../resume/src/resume']}),
 		sveltekit()
 	],
 	assetsInclude: './static/**/*',
