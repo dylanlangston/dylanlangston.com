@@ -63,3 +63,6 @@ RUN bash -c "source $HOME/.nvm/nvm.sh && nvm install node"
 
 # Install Bun
 RUN curl -L --proto '=https' --tlsv1.3 -sSf https://bun.sh/install | bash
+
+# Install DevTunnels
+RUN curl -sL https://aka.ms/DevTunnelCliInstall | bash
