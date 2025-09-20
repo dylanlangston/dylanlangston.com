@@ -12,6 +12,7 @@ export default defineConfig({
 	plugins: [
 		optimizeWASMPlugin({enabled: !args.Debug}),
 		updateResume({sourceDirectories: ['../resume/dist', '../resume/src/resume']}),
+		tailwindcss(),
 		sveltekit()
 	],
 	assetsInclude: './static/**/*',
