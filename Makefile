@@ -59,7 +59,7 @@ else
 	@make build-rust-lambda build-python-lambda
 endif
 
-setup: setup-python setup-emscripten setup-bun setup-rust # Default Setup Target. Sets up python (uv), emscripten, nodejs, playwright, and rust.
+setup: setup-git-clone setup-python setup-emscripten setup-bun setup-rust # Default Setup Target. Sets up python (uv), emscripten, nodejs, playwright, and rust.
 
 clean: ## Default Clean Target.
 	@rm -rf ./zig-out/*
@@ -176,4 +176,6 @@ test-python-lambda: setup-python ## Test the Chat Lambda locally
 build-python-lambda: setup-python ## Package the Chat Lambda
 	@rm -f ./python-lambda/build/chat.zip
 	@mkdir -p ./python-lambda/build/
-	@cd ./python-lambda/package;zip -r ../build/chat.zip .;cd ../src; zip ../build/chat.zip ./chat.py
+	@cd ./python-lambda/package;zip -r ../build/chat.zip .;
+	@cd ./python-lambda/src; zip ../build/chat.zip ./chat.py; 
+	@cd ./resume/dist/; zip ../../python-lambda/build/chat.zip resume.md
