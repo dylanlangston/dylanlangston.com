@@ -59,7 +59,7 @@ else
 	@make build-rust-lambda build-python-lambda
 endif
 
-setup: setup-git-clone setup-python setup-emscripten setup-bun setup-rust # Default Setup Target. Sets up python (uv), emscripten, nodejs, playwright, and rust.
+setup: setup-python setup-emscripten setup-bun setup-rust # Default Setup Target. Sets up python (uv), emscripten, nodejs, playwright, and rust.
 
 clean: ## Default Clean Target.
 	@rm -rf ./zig-out/*
