@@ -19,7 +19,8 @@
 
 	const links: Links[] = [
 		new Links("/chat", "Chat"),
-		new Links("/contact", "Contact")
+		new Links("/contact", "Contact"),
+		new Links("/resume", "Resume")
 	];
 
 	let menuOpen: boolean = false;
