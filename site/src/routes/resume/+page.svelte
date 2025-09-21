@@ -8,7 +8,7 @@
 			<h3 class="text-3xl font-semibold sm:text-4xl px-4">My Resume</h3>
 		</div>
 
-		<div style="width: 50vw; max-width: 1201px" class="mx-3">
+		<div style="width: 80vw; max-width: 1201px" class="mx-3">
 		<iframe
 			src="/resume.pdf"
 			title="Resume"
