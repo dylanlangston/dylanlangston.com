@@ -145,7 +145,7 @@
 		? ''
 		: !loaded
 			? 'cursor-progress'
-			: 'cursor-none'}"
+			: ''}"
 >
 	{#if loaded}
 		<div
@@ -219,7 +219,7 @@
 			</Modal>
 		{:else if !$mobile && !$accessibilityRequested && !$contrastRequested}
 			<!-- <ContextMenu/> -->
-			<MouseCursor />
+			<!-- <MouseCursor /> -->
 		{/if}
 	{:else}
 		<main >
