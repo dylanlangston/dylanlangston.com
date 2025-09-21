@@ -101,7 +101,7 @@
 <Panel>
 	<svelte:fragment>
 		<div class="space-y-3 sm:text-center mx-auto w-max max-w-[80vw] text-center">
-			<p class="text-3xl font-semibold sm:text-4xl px-4">Chat with my Digital Twin</p>
+			<h3 class="text-3xl font-semibold sm:text-4xl px-4">Chat with my Digital Twin</h3>
 		</div>
 		<div
 			bind:this={chatArea}

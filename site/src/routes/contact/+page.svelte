@@ -82,7 +82,7 @@
 <Panel>
 	<svelte:fragment>
 		<div class="max-w-lg space-y-3 sm:text-center mx-auto w-max">
-			<p class="text-3xl font-semibold sm:text-4xl">Get in touch</p>
+			<h3 class="text-3xl font-semibold sm:text-4xl">Get in touch</h3>
 		</div>
 		<div class="mt-6 max-w-lg mx-5">
 			<form
