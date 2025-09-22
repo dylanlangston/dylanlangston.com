@@ -77,6 +77,6 @@ void main()
     float norm = smoothVal/float(maxIterations);
 
     // If in set, color black. 0.999 allows for some float accuracy error
-    if (norm > 0.999) gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+    if (norm > 0.999) gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
     else gl_FragColor = vec4(Hsv2rgb(vec3(norm*colorCycles, 1.0, 1.0), c.x), 0.80);
 }
