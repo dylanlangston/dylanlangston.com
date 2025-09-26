@@ -8,3 +8,5 @@ zig-cache/
 zig-out/
 site/test-results/
 core
+site/static/resume.html
+site/static/resume.md.html.pdf

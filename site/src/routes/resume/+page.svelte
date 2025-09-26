@@ -10,7 +10,7 @@
 
 		<div style="width: 80vw; max-width: 1201px" class="mx-3">
 		<iframe
-			src="/resume.pdf"
+			src="/resume.md.html.pdf"
 			title="Resume"
 			style="height: calc(100vh - 350px)"
 			class="rounded-lg min-w-full"
@@ -20,7 +20,7 @@
 
 		<div class="flex justify-center mt-3 mx-3">
 			<a
-				href="/resume.pdf"
+				href="/resume.md.html.pdf"
 				class="text-center w-full px-4 py-2 font-medium rounded-lg duration-150 hover:shadow-md hover:bg-rainbow disabled:bg-transparent transition-colors disabled:cursor-not-allowed"
 			>
 				Download Resume
