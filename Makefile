@@ -74,6 +74,7 @@ clean-cache: clean ## Clean the Zig-cache also
 
 setup-git-clone: ## Clone git submodules
 	@git submodule update --init --recursive
+	@git submodule foreach git lfs pull
 
 setup-emscripten: ## Install and Activate Emscripten
 # Source: https://emscripten.org/docs/getting_started/downloads.html#installation-instructions-using-the-emsdk-recommended

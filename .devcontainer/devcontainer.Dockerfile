@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/devcontainers/base:debian as base
 
 # Install General Dependencies
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-      && apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git glslang-tools awscli pkg-config netcat-traditional zip
+      && apt-get -y install --no-install-recommends ca-certificates bash curl unzip xz-utils make git glslang-tools awscli pkg-config netcat-traditional zip git-lfs
 
 # Install Docker
 RUN install -m 0755 -d /etc/apt/keyrings \
@@ -66,3 +66,6 @@ RUN curl -L --proto '=https' --tlsv1.3 -sSf https://bun.sh/install | bash
 
 # Install DevTunnels
 RUN curl -sL https://aka.ms/DevTunnelCliInstall | bash
+
+# Install git lfs
+RUN git lfs install
