@@ -30,7 +30,7 @@
     "browser-dtector": "4.1.0",
     "eslint": "9.36.0",
     "eslint-config-prettier": "10.1.8",
-    "eslint-plugin-svelte": "3.12.4",
+    "eslint-plugin-svelte": "3.12.5",
     "mdsvex": "0.12.6",
     "prettier": "3.6.2",
     "prettier-plugin-svelte": "3.4.0",
