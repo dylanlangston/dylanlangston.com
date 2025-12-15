@@ -25,7 +25,7 @@
     "@types/node": "24.4.0",
     "@typescript-eslint/eslint-plugin": "8.44.0",
     "@typescript-eslint/parser": "8.44.0",
-    "autoprefixer": "10.4.21",
+    "autoprefixer": "10.4.23",
     "binaryen": "124.0.0",
     "browser-dtector": "4.1.0",
     "eslint": "9.36.0",
