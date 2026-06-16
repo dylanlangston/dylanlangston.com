@@ -19,8 +19,8 @@ pub inline fn importViews(
     var viewModelPaths = std.array_list.Managed([]const u8).init(b.allocator);
     var enumNames = std.array_list.Managed([]const u8).init(b.allocator);
     {
-        const cwd = std.fs.cwd();
-        const dir = try cwd.openDir(b.pathJoin(&[_][]const u8{
+        const cwd = std.Io.Dir.cwd();
+        const dir = try cwd.openDir(b.graph.io, b.pathJoin(&[_][]const u8{
             "zig", "src", viewPath,
         }), .{
             .access_sub_paths = true,
@@ -28,12 +28,12 @@ pub inline fn importViews(
         });
         var walker = try dir.walk(b.allocator);
         defer walker.deinit();
-        while (try walker.next()) |entry| {
+        while (try walker.next(b.graph.io)) |entry| {
             if (std.mem.eql(u8, entry.basename, "View.zig")) continue;
-            const ext = std.fs.path.extension(entry.basename);
+            const ext = std.Io.Dir.path.extension(entry.basename);
             const include_file = std.mem.eql(u8, ext, ".zig");
             if (include_file) {
-                const enumName = b.dupe(entry.basename[0 .. entry.basename.len - 8]);
+                const enumName = b.allocator.dupe(u8, entry.basename[0 .. entry.basename.len - 8]) catch @panic("OOM");
                 std.mem.replaceScalar(
                     u8,
                     enumName,
@@ -52,9 +52,10 @@ pub inline fn importViews(
                     viewModelPath,
                     enumName,
                 });
-                const viewModelFile: ?std.fs.File = std.fs.openFileAbsolute(b.pathFromRoot(viewModelImportPath), .{}) catch null;
+                const viewModelAbsPath = b.root.joinString(b.allocator, viewModelImportPath) catch @panic("OOM");
+                const viewModelFile: ?std.Io.File = std.Io.Dir.openFileAbsolute(b.graph.io, viewModelAbsPath, .{}) catch null;
                 if (viewModelFile != null) {
-                    viewModelFile.?.close();
+                    viewModelFile.?.close(b.graph.io);
                     try viewModelPaths.append(viewModelImportPath);
                     try viewModels.append(try std.fmt.allocPrint(b.allocator, ".{s} => @import(\"{s}\").{s}ViewModel,", .{
                         enumName,
@@ -149,7 +150,7 @@ pub inline fn importViews(
     const files_step = b.addWriteFiles();
     const file = files_step.add(file_name, string);
     const module = b.addModule(module_name, .{
-        .root_source_file = file.dupe(b),
+        .root_source_file = file.dupe(b.graph),
     });
     module.addAnonymousImport("ViewImport", .{
         .root_source_file = b.path(b.pathJoin(&[_][]const u8{
@@ -162,13 +163,13 @@ pub inline fn importViews(
         })),
     });
     for (viewPaths.items) |name| {
-        const basename = std.fs.path.basename(name);
+        const basename = std.Io.Dir.path.basename(name);
         module.addAnonymousImport(basename[0 .. basename.len - 4], .{
             .root_source_file = b.path(name),
         });
     }
     for (viewModelPaths.items) |name| {
-        const basename = std.fs.path.basename(name);
+        const basename = std.Io.Dir.path.basename(name);
         module.addAnonymousImport(basename[0 .. basename.len - 4], .{
             .root_source_file = b.path(name),
         });

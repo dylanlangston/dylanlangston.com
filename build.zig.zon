@@ -2,7 +2,7 @@
     .name = .dylanlangstoncom,
     .fingerprint = 0xf9f087437090728f,
     .version = "1.0.0",
-    .minimum_zig_version = "0.15.1",
+    .minimum_zig_version = "0.17.0-dev.864+3deb86baf",
     .dependencies = .{
         .raylib = .{
             .path = "raylib",

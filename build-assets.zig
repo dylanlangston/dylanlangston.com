@@ -39,7 +39,7 @@ inline fn embedFiles(
     var hashes = std.array_list.Managed([]const u8).init(b.allocator);
     var enums = std.array_list.Managed([]const u8).init(b.allocator);
     {
-        var dir = try std.fs.cwd().openDir(b.pathJoin(&[_][]const u8{
+        var dir = try std.Io.Dir.cwd().openDir(b.graph.io, b.pathJoin(&[_][]const u8{
             "zig", "assets", path,
         }), .{
             .access_sub_paths = true,
@@ -47,8 +47,8 @@ inline fn embedFiles(
         });
         var walker = try dir.walk(b.allocator);
         defer walker.deinit();
-        while (try walker.next()) |entry| {
-            const ext = std.fs.path.extension(entry.basename);
+        while (try walker.next(b.graph.io)) |entry| {
+            const ext = std.Io.Dir.path.extension(entry.basename);
             const include_file = for (allowed_exts) |e| {
                 if (std.mem.eql(u8, ext, e))
                     break true;
@@ -117,7 +117,7 @@ inline fn embedFiles(
     const files_step = b.addWriteFiles();
     const file = files_step.add(file_name, string);
     const module = b.addModule(module_name, .{
-        .root_source_file = file.dupe(b),
+        .root_source_file = file.dupe(b.graph),
     });
     for (names.items) |name| {
         module.addAnonymousImport(name, .{
