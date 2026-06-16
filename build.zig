@@ -13,16 +13,6 @@ pub fn build(b: *std.Build) !void {
 
     const web_build = target.query.cpu_arch == .wasm32 or target.query.cpu_arch == .wasm64;
 
-    if (web_build) {
-        // Set the sysroot folder for emscripten
-        b.sysroot = b.pathJoin(&[_][]const u8{
-            ".",
-            "emsdk",
-            "upstream",
-            "emscripten",
-        });
-    }
-
     const raylib_artifact = raylib_config.get_configured_raylib(b, target, optimize);
 
     if (web_build) {
@@ -88,10 +78,10 @@ fn configure(b: *std.Build, t: std.Build.ResolvedTarget, o: std.builtin.Optimize
         c,
     );
 
-    raylib_artifact.addIncludePath(b.path("./emsdk/upstream/emscripten/cache/sysroot/include/"));
-    c.addIncludePath(b.path("./emsdk/upstream/emscripten/cache/sysroot/include/"));
+    raylib_artifact.root_module.addIncludePath(b.path("./emsdk/upstream/emscripten/cache/sysroot/include/"));
+    c.root_module.addIncludePath(b.path("./emsdk/upstream/emscripten/cache/sysroot/include/"));
 
-    c.linkLibrary(raylib_artifact);
+    c.root_module.linkLibrary(raylib_artifact);
 
     b.installArtifact(c);
     b.installArtifact(raylib_artifact);
@@ -110,14 +100,14 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
 
     try configure(b, target, optimize, lib, raylib_artifact);
 
-    const emccOutputDir = "zig-out" ++ std.fs.path.sep_str ++ "emscripten" ++ std.fs.path.sep_str;
-    const emccImportDir = "site" ++ std.fs.path.sep_str ++ "src" ++ std.fs.path.sep_str ++ "import" ++ std.fs.path.sep_str;
+    const emccOutputDir = "zig-out" ++ std.Io.Dir.path.sep_str ++ "emscripten" ++ std.Io.Dir.path.sep_str;
+    const emccImportDir = "site" ++ std.Io.Dir.path.sep_str ++ "src" ++ std.Io.Dir.path.sep_str ++ "import" ++ std.Io.Dir.path.sep_str;
     const emccExe = switch (builtin.os.tag) {
         .windows => "emcc.bat",
         else => "emcc",
     };
     const emscripten = b.pathJoin(&[_][]const u8{
-        b.build_root.path.?,
+        b.root.root_dir.path.?,
         "emsdk",
         "upstream",
         "emscripten",
@@ -126,17 +116,17 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
     defer b.allocator.free(emcc_run_arg);
     emcc_run_arg = try std.fmt.bufPrint(
         emcc_run_arg,
-        "{s}" ++ std.fs.path.sep_str ++ "{s}",
+        "{s}" ++ std.Io.Dir.path.sep_str ++ "{s}",
         .{ emscripten, emccExe },
     );
 
-    const cwd = std.fs.cwd();
+    const cwd = std.Io.Dir.cwd();
 
     // Create the output directory
-    try cwd.makePath(emccOutputDir);
+    try cwd.createDirPath(b.graph.io, emccOutputDir);
 
     // Create the import directory
-    try cwd.makePath(emccImportDir);
+    try cwd.createDirPath(b.graph.io, emccImportDir);
 
     const emcc_command = b.addSystemCommand(&[_][]const u8{emcc_run_arg});
 
@@ -261,9 +251,7 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
         "./site",
     });
     run_cmd.step.dependOn(b.getInstallStep());
-    if (b.args) |args| {
-        run_cmd.addArgs(args);
-    }
+    run_cmd.addPassthruArgs();
     // This creates a build step. It will be visible in the `zig build --help` menu and can be selected like this: `zig build run`
     const run_step = b.step("run", "Run the app using NPM");
     run_step.dependOn(&run_cmd.step);
@@ -278,9 +266,7 @@ fn build_web(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.buil
         "./site",
     });
     publish_cmd.step.dependOn(b.getInstallStep());
-    if (b.args) |args| {
-        publish_cmd.addArgs(args);
-    }
+    publish_cmd.addPassthruArgs();
     const publish_step = b.step("publish", "Publish the app via NPM");
     publish_step.dependOn(&publish_cmd.step);
 }
@@ -299,9 +285,7 @@ fn build_desktop(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.
 
     const run_cmd = b.addRunArtifact(exe);
     run_cmd.step.dependOn(b.getInstallStep());
-    if (b.args) |args| {
-        run_cmd.addArgs(args);
-    }
+    run_cmd.addPassthruArgs();
     // This creates a build step. It will be visible in the `zig build --help` menu and can be selected like this: `zig build run`
     const run_step = b.step("run", "Run the app");
     run_step.dependOn(&run_cmd.step);

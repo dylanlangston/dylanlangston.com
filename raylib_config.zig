@@ -240,8 +240,6 @@ pub fn get_configured_raylib(
     target: std.Build.ResolvedTarget,
     optimize: std.builtin.OptimizeMode,
 ) *std.Build.Step.Compile {
-    b.sysroot = b.pathFromRoot("emsdk/upstream/emscripten/");
-
     const raylib = b.dependency("raylib", .{
         .target = target,
         .optimize = optimize,
