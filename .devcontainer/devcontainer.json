@@ -6,10 +6,21 @@
 		"context": ".."
 	},
 	"features": {
-		"ghcr.io/devcontainers/features/github-cli:1": {}
+		"ghcr.io/devcontainers/features/github-cli:1": {},
+		"ghcr.io/devcontainers/features/git-lfs:1": {}
 	},
 	"containerUser": "vscode",
-	"postCreateCommand": "make setup-git-clone setup",
+	// Init top-level submodules first; the nested gist inside `resume` may
+	// require external auth and is optional for development, so it is allowed
+	// to fail. LFS objects are pulled where available.
+	"postCreateCommand": "git submodule update --init emsdk raygui raylib && (git submodule update --init resume || true) && git submodule foreach --quiet 'git lfs pull || true' && make setup",
+	"forwardPorts": [5173],
+	"portsAttributes": {
+		"5173": {
+			"label": "Dev Server",
+			"onAutoForward": "notify"
+		}
+	},
 	"runArgs": ["--volume=/var/lib/docker", "--privileged"],
 	"customizations": {
 		"vscode": {
@@ -31,7 +42,8 @@
 				"tamasfe.even-better-toml",
 				"redhat.vscode-yaml",
 				"amazonwebservices.aws-toolkit-vscode",
-				"ms-python.python"
+				"ms-python.python",
+				"bradlc.vscode-tailwindcss"
 			],
 			"settings": {
 				"zig.path": "",
@@ -41,6 +53,14 @@
 				"glsllint.additionalStageAssociations": {
 					".fs": "frag",
 					".vs": "vert"
+				},
+				"editor.formatOnSave": true,
+				"editor.defaultFormatter": "esbenp.prettier-vscode",
+				"[zig]": {
+					"editor.defaultFormatter": "ziglang.vscode-zig"
+				},
+				"[rust]": {
+					"editor.defaultFormatter": "rust-lang.rust-analyzer"
 				}
 			}
 		}

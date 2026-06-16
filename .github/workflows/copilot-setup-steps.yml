@@ -1,0 +1,148 @@
+name: "Copilot Setup Steps"
+
+# Automatically run when this file changes so setup failures are caught early.
+# Also allows manual validation from the Actions tab.
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+  pull_request:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+
+jobs:
+  # The job MUST be called `copilot-setup-steps` or it will not be picked up by Copilot.
+  copilot-setup-steps:
+    runs-on: ubuntu-latest
+    timeout-minutes: 59
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      # Init only the submodules Copilot needs; skip the nested gist inside `resume`
+      # which requires external network access that may not be available.
+      - name: Checkout submodules
+        run: |
+          git submodule update --init emsdk raygui raylib
+          git submodule update --init resume || true
+
+      # ── System dependencies ─────────────────────────────────────────────────
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            ca-certificates bash curl unzip xz-utils make git \
+            build-essential pkg-config netcat-traditional procps zip \
+            libasound2t64 libatk-bridge2.0-0t64 libatk1.0-0t64 libatspi2.0-0t64 \
+            libcairo2 libcups2t64 libdbus-1-3 libdrm2 libgbm1 libglib2.0-0t64 \
+            libnspr4 libnss3 libpango-1.0-0 libx11-6 libxcb1 libxcomposite1 \
+            libxdamage1 libxext6 libxfixes3 libxkbcommon0 libxrandr2 \
+            libcairo-gobject2 libdbus-glib-1-2 libfontconfig1 libfreetype6 \
+            libgdk-pixbuf-2.0-0 libgtk-3-0t64 libharfbuzz0b libpangocairo-1.0-0 \
+            libx11-xcb1 libxcb-shm0 libxcursor1 libxi6 libxrender1 libxtst6 \
+            libsoup-3.0-0 gstreamer1.0-libav gstreamer1.0-plugins-bad \
+            gstreamer1.0-plugins-base gstreamer1.0-plugins-good libegl1 \
+            libenchant-2-2 libepoxy0 libevdev2 libgles2 libglx0 \
+            libgstreamer-gl1.0-0 libgstreamer-plugins-base1.0-0 libgstreamer1.0-0 \
+            libgtk-4-1 libgudev-1.0-0 libharfbuzz-icu0 libhyphen0 libicu76 \
+            libjpeg62-turbo liblcms2-2 libmanette-0.2-0 libnotify4 libopengl0 \
+            libopenjp2-7 libopus0 libpng16-16t64 libproxy1v5 libsecret-1-0 \
+            libwayland-client0 libwayland-egl1 libwayland-server0 libwebp7 \
+            libwebpdemux2 libwoff1 libxml2 libxslt1.1 libatomic1 \
+            libevent-2.1-7t64 libavif16 xvfb \
+            fonts-noto-color-emoji fonts-unifont xfonts-scalable \
+            fonts-liberation fonts-ipafont-gothic fonts-wqy-zenhei \
+            fonts-tlwg-loma-otf fonts-freefont-ttf
+
+      # ── Zig (via ZVM) ───────────────────────────────────────────────────────
+      - name: Install ZVM
+        run: |
+          curl --proto '=https' --tlsv1.3 -sSfL \
+            https://raw.githubusercontent.com/tristanisham/zvm/master/install.sh | bash
+          echo "$HOME/.zvm/self" >> "$GITHUB_PATH"
+          echo "$HOME/.zvm/bin" >> "$GITHUB_PATH"
+
+      - name: Cache Zig master
+        id: cache-zig
+        uses: actions/cache@v4
+        with:
+          path: ~/.zvm/versions
+          key: ${{ runner.os }}-zig-master-${{ hashFiles('build.zig.zon') }}
+          restore-keys: ${{ runner.os }}-zig-master-
+
+      - name: Install Zig and ZLS
+        if: steps.cache-zig.outputs.cache-hit != 'true'
+        run: $HOME/.zvm/self/zvm i --zls master
+
+      # ── Rust ────────────────────────────────────────────────────────────────
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-unknown-linux-gnu
+
+      - name: Cache Rust registry and build
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            ~/.cargo/git/db
+            rust-lambda/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('rust-lambda/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
+
+      - name: Install cargo-binstall
+        run: |
+          curl --proto '=https' --tlsv1.3 -sSfL \
+            https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+
+      - name: Install cargo-lambda
+        run: cargo binstall cargo-lambda -y
+
+      # ── Python (via UV) ─────────────────────────────────────────────────────
+      - name: Install UV
+        run: |
+          curl --proto '=https' --tlsv1.3 -sSfL https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Install Python 3.11
+        run: uv python install --default python3.11
+
+      # ── Bun ─────────────────────────────────────────────────────────────────
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+
+      # ── Project dependencies ────────────────────────────────────────────────
+      - name: Install site dependencies
+        run: make setup-bun
+
+      - name: Install Python lambda dependencies
+        run: make setup-python
+
+      - name: Fetch Rust dependencies
+        run: make setup-rust
+
+      - name: Install Playwright browsers
+        run: make setup-playwright
+
+      # ── Emscripten ──────────────────────────────────────────────────────────
+      - name: Cache Emscripten
+        id: cache-emsdk
+        uses: actions/cache@v4
+        with:
+          path: emsdk/upstream
+          key: ${{ runner.os }}-emsdk-${{ hashFiles('emsdk/.emscripten_version') }}
+          restore-keys: ${{ runner.os }}-emsdk-
+
+      - name: Install Emscripten
+        if: steps.cache-emsdk.outputs.cache-hit != 'true'
+        run: |
+          cd emsdk
+          ./emsdk install latest --shallow
+          ./emsdk activate latest
+          rm -rf upstream/emscripten/tests
